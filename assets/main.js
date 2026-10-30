@@ -2,6 +2,9 @@ document.documentElement.classList.add('js');
 const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
+const sleep = ms => new Promise(r => setTimeout(r, reduce ? 0 : ms));
+const seg = new Intl.Segmenter('th', { granularity: 'grapheme' }); // keeps Thai vowels/tone marks attached while typing
+const graphemes = s => [...seg.segment(s)].map(x => x.segment);
 
 // ---- Menu
 const menuBtn = $('.menu-btn');
@@ -11,6 +14,7 @@ menuBtn.addEventListener('click', () => {
   menuBtn.setAttribute('aria-expanded', open);
 });
 addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('menu-open')) menuBtn.click(); });
+addEventListener('click', e => { if (document.body.classList.contains('menu-open') && !e.target.closest('.links, .menu-btn')) menuBtn.click(); });
 
 // ---- Scroll reveal (fires a 'reveal' event so pages can hook in)
 const io = new IntersectionObserver(es => es.forEach(e => {
@@ -40,31 +44,49 @@ if (road || big) {
   onScroll();
 }
 
-// ---- About: the name appears big in the middle of the screen, then glides to its place
+// ---- About: the name types in Thai, retypes in English big in the middle, glides into place, then keeps switching
 const intro = $('[data-intro]');
-if (intro && !reduce) {
+if (intro && !reduce) (async () => {
+  const name = $('.name', intro), out = $('.typed', intro), names = ['อาลีฟ เกษมสวัสดิ์', 'Arlif Kaseamsawat'];
+  const type = async (text, en = false) => { out.classList.toggle('accent', en); for (const g of graphemes(text)) { out.textContent += g; await sleep(55); } };
+  const erase = async () => { const gs = graphemes(out.textContent); while (gs.length) { gs.pop(); out.textContent = gs.join(''); await sleep(25); } };
   document.body.classList.add('name-intro');
-  document.fonts.ready.then(() => {
-    const r = intro.getBoundingClientRect(), s = Math.min(1.5, innerWidth * .9 / r.width);
-    intro.style.transform = `translate(${innerWidth / 2 - (r.left + r.width / 2)}px, ${innerHeight / 2 - (r.top + r.height / 2)}px) scale(${s})`;
-    document.body.classList.add('go');
-    setTimeout(() => {
-      intro.style.transition = 'transform 1s var(--ease)';
-      intro.style.transform = '';
-      document.body.classList.remove('name-intro', 'go');
-    }, 1600);
-  });
+  out.textContent = '';
+  await document.fonts.ready;
+  await sleep(200);
+  await type(names[0]); await sleep(500); await erase(); await sleep(150); await type(names[1], true); await sleep(450);
+  // FLIP: measure in the middle, drop into place, then animate from the old spot
+  const a = name.getBoundingClientRect(), fa = parseFloat(getComputedStyle(intro).fontSize);
+  document.body.classList.remove('name-intro');
+  const b = name.getBoundingClientRect(), fb = parseFloat(getComputedStyle(intro).fontSize);
+  name.animate([{ transform: `translate(${a.left - b.left}px, ${a.top - b.top}px) scale(${fa / fb})` }, { transform: 'none' }], { duration: 750, easing: 'cubic-bezier(.2,.8,.2,1)' });
+  [$('.site-header'), ...$$('.page > :not(.fold), .fold > :not([data-intro])'), $('.site-footer')].forEach((el, i) => el.style.transitionDelay = 150 + i * 90 + 'ms');
+  for (let i = 0; ; i++) { await sleep(4000); await erase(); await sleep(250); await type(names[i % 2], i % 2 === 1); }
+})();
+
+// ---- About: the education title waits big at the bottom of the first screen, then slides into place while scrolling
+const edu = $('.edu-title');
+if (edu && !reduce) {
+  // offset* ignore transforms, so this always reads the title's real spot
+  const place = () => {
+    // phones: the profile is taller than the screen, so the big title would sit on top of it
+    if (innerWidth < 760) { edu.style.transform = ''; edu.style.removeProperty('--m'); return; }
+    const vh = innerHeight, w = edu.offsetWidth, h = edu.offsetHeight, top = edu.offsetTop;
+    const s = Math.min(3, innerWidth * .8 / w), end = top - vh * .55;
+    const p = end > 0 ? Math.min(1, Math.max(0, scrollY / end)) : 1, k = 1 - p;
+    const dx = innerWidth / 2 - (edu.offsetLeft + w / 2), dy = vh - h * s * .3 - (top - scrollY + h / 2);
+    edu.style.transform = `translate(${dx * k}px, ${dy * k}px) scale(${1 + (s - 1) * k})`;
+    edu.style.setProperty('--m', 30 + 70 * p + '%');
+  };
+  addEventListener('scroll', place, { passive: true });
+  new ResizeObserver(place).observe(document.body); // also re-places after the name intro changes the layout
 }
 
 // ---- Pointer effects (mouse only)
 if (finePointer && !reduce) {
-  const glow = document.createElement('div');
-  glow.id = 'glow';
-  document.body.append(glow);
   const heroImg = $('.hero-photo img');
-  addEventListener('pointermove', e => {
-    glow.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-    if (heroImg) heroImg.style.translate = `${(e.clientX / innerWidth - .5) * -18}px ${(e.clientY / innerHeight - .5) * -12}px`;
+  if (heroImg) addEventListener('pointermove', e => {
+    heroImg.style.translate = `${(e.clientX / innerWidth - .5) * -18}px ${(e.clientY / innerHeight - .5) * -12}px`;
   }, { passive: true });
 
   $$('[data-tilt]').forEach(el => {
@@ -96,14 +118,54 @@ if (filters) {
   const tiles = $$('.tile');
   const show = cat => tiles
     .filter(t => !(t.hidden = cat !== 'all' && t.dataset.cat !== cat))
-    .forEach((t, i) => { t.classList.remove('enter'); t.offsetWidth; t.style.setProperty('--delay', i * 35 + 'ms'); t.classList.add('enter'); });
+    .forEach((t, i) => { t.classList.remove('enter'); t.offsetWidth; t.style.setProperty('--delay', i * 100 + 'ms'); t.classList.add('enter'); });
   filters.addEventListener('click', e => {
     const b = e.target.closest('button');
     if (!b) return;
     $$('button', filters).forEach(x => x.setAttribute('aria-pressed', x === b));
     show(b.dataset.cat);
+    $('.slides').scrollTo({ left: 0 });
   });
-  $('.grid').addEventListener('reveal', () => show('all'), { once: true });
+  $('.carousel').addEventListener('reveal', () => show('all'), { once: true });
+}
+
+// ---- Skills carousel: next button loops back to the start, arrow keys, mouse drag
+const slides = $('.slides');
+if (slides) {
+  const step = dir => {
+    const card = $$('.tile', slides).find(t => !t.hidden), max = slides.scrollWidth - slides.clientWidth;
+    if (dir > 0 && slides.scrollLeft >= max - card.offsetWidth / 2) return slides.scrollTo({ left: 0 });
+    if (dir < 0 && slides.scrollLeft <= card.offsetWidth / 2) return slides.scrollTo({ left: max });
+    slides.scrollBy({ left: dir * (card.offsetWidth + 16) });
+  };
+  $('.carousel-next').addEventListener('click', () => step(1));
+  $('.carousel').addEventListener('keydown', e => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    e.preventDefault();
+    step(e.key === 'ArrowRight' ? 1 : -1);
+  });
+  let x0 = null, s0 = 0;
+  slides.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') { x0 = e.clientX; s0 = slides.scrollLeft; slides.classList.add('dragging'); } });
+  addEventListener('pointermove', e => { if (x0 !== null) slides.scrollLeft = s0 - (e.clientX - x0); });
+  addEventListener('pointerup', () => { x0 = null; slides.classList.remove('dragging'); });
+}
+
+// ---- Featured skills: "ดูผลงาน" opens that skill's works below and scrolls to them
+const works = $('#works');
+if (works) $$('.see-works').forEach(b => b.addEventListener('click', () => {
+  works.hidden = false;
+  $$('.works-panel', works).forEach(p => p.hidden = p.dataset.skill !== b.dataset.skill);
+  const panel = $(`.works-panel[data-skill="${b.dataset.skill}"]`, works);
+  $$('.work', panel).forEach((w, i) => { w.classList.remove('in'); w.offsetWidth; w.style.animationDelay = 250 + i * 120 + 'ms'; w.classList.add('in'); });
+  panel.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+}));
+// close the works again once the visitor scrolls back up past them
+if (works) {
+  let seen = false;
+  new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) seen = true;
+    else if (seen && e.boundingClientRect.top > 0) { works.hidden = true; seen = false; }
+  }, { rootMargin: '0px 0px -15% 0px' }).observe(works); // works starts right at the fold, so ignore the bottom edge
 }
 
 // ---- Goal terminal: types commands, prints output
@@ -111,13 +173,11 @@ const term = $('.terminal');
 if (term) {
   const code = $('code', term), caret = document.createElement('span');
   caret.className = 'caret';
-  const seg = new Intl.Segmenter('th', { granularity: 'grapheme' }); // keeps Thai vowels/tone marks attached while typing
   const script = [
     ['cmd', 'whoami'], ['out', 'arlif kaseamsawat'],
     ['cmd', 'cat goal.txt'], ['out hl', 'คณะวิศวกรรมศาสตร์ สาขาวิศวกรรมคอมพิวเตอร์'], ['out hl', 'มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี'],
     ['cmd', 'status'], ['out', 'กำลังเตรียมตัว...'], ['cmd', ''],
   ];
-  const sleep = ms => new Promise(r => setTimeout(r, reduce ? 0 : ms));
   term.addEventListener('reveal', async () => {
     for (const [cls, text] of script) {
       const row = document.createElement('div'), t = document.createTextNode('');

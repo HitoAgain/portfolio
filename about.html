@@ -13,8 +13,8 @@
 </head>
 <body>
 <header class="site-header">
-  <nav class="nav wrap" aria-label="เมนูหลัก">
-    <a class="logo" href="index.html">Arlif<span class="accent">.</span></a>
+  <nav aria-label="เมนูหลัก">
+    <button class="menu-btn" type="button" aria-label="เปิดเมนู" aria-expanded="false" aria-controls="menu"><i></i><i></i></button>
     <ul class="links" id="menu">
       <li><a href="index.html">หน้าแรก</a></li>
       <li><a href="about.html" aria-current="page">ประวัติ</a></li>
@@ -23,28 +23,25 @@
       <li><a href="certificates.html">เกียรติบัตร</a></li>
       <li><a href="goal.html">เป้าหมาย</a></li>
     </ul>
-    <button class="menu-btn" type="button" aria-label="เปิดเมนู" aria-expanded="false" aria-controls="menu"><i></i><i></i></button>
   </nav>
 </header>
 
 <main class="page wrap">
-  <nav class="crumb" aria-label="ตำแหน่งหน้า"><a href="index.html">หน้าแรก</a><span>/</span>ประวัติ</nav>
-  <h1 class="page-title" data-intro>
-    <span class="line"><span>อาลีฟ เกษมสวัสดิ์</span></span>
-    <span class="line" style="--d:1"><span class="accent">Arlif Kaseamsawat</span></span>
-  </h1>
-  <p class="lead">นักเรียนสายวิทย์-คณิต (STEM) ที่ชอบสร้างของด้วยโค้ด ทั้งเกม เว็บไซต์ และงาน 3D ลองทำ พัง แล้วแก้ จนมันใช้งานได้จริง</p>
+  <div class="fold">
+    <nav class="crumb" aria-label="ตำแหน่งหน้า"><a href="index.html">หน้าแรก</a><span>/</span>ประวัติ</nav>
+    <h1 class="page-title" data-intro aria-label="อาลีฟ เกษมสวัสดิ์ (Arlif Kaseamsawat)"><span class="name" aria-hidden="true"><span class="typed">อาลีฟ เกษมสวัสดิ์</span><span class="caret"></span></span></h1>
 
-  <dl class="profile">
-    <div class="rv"><dt>ชื่อ-นามสกุล</dt><dd>นายอาลีฟ เกษมสวัสดิ์</dd></div>
-    <div class="rv"><dt>อายุ</dt><dd>17 ปี</dd></div>
-    <div class="rv"><dt>วันเกิด</dt><dd>9 กุมภาพันธ์ 2552</dd></div>
-    <div class="rv"><dt>สัญชาติ</dt><dd>ไทย</dd></div>
-    <div class="rv"><dt>แผนการเรียน</dt><dd>วิทย์-คณิต (STEM)</dd></div>
-    <div class="rv"><dt>อีเมล</dt><dd><a href="mailto:hitonewgen1234@gmail.com">hitonewgen1234@gmail.com</a></dd></div>
-  </dl>
+    <dl class="profile">
+      <div class="rv"><dt>ชื่อ-นามสกุล</dt><dd>นายอาลีฟ เกษมสวัสดิ์</dd></div>
+      <div class="rv"><dt>อายุ</dt><dd>17 ปี</dd></div>
+      <div class="rv"><dt>วันเกิด</dt><dd>9 กุมภาพันธ์ 2552</dd></div>
+      <div class="rv"><dt>สัญชาติ</dt><dd>ไทย</dd></div>
+      <div class="rv"><dt>แผนการเรียน</dt><dd>วิทย์-คณิต (STEM)</dd></div>
+      <div class="rv"><dt>อีเมล</dt><dd><a href="mailto:hitonewgen1234@gmail.com">hitonewgen1234@gmail.com</a></dd></div>
+    </dl>
+  </div>
 
-  <h2 class="rv">การศึกษา</h2>
+  <h2 class="edu-title">การศึกษา</h2>
   <div class="road rv">
     <svg viewBox="0 0 1000 600" aria-hidden="true">
       <path class="base" d="M60 110H880C990 110 990 410 880 410H170"/>
@@ -56,7 +53,7 @@
       <li style="--x:47%;--y:18.33%" data-at=".21"><small>ประถมศึกษา 4–6</small><h3>โรงเรียนเยาว์ลักษณ์ธนบุรี</h3></li>
       <li style="--x:79%;--y:18.33%" data-at=".38"><small>มัธยมศึกษาตอนต้น</small><h3>โรงเรียนวัดพุทธบูชา</h3></li>
       <li style="--x:70%;--y:68.33%" data-at=".73"><small>มัธยมศึกษาตอนปลาย</small><h3>โรงเรียนวัดพุทธบูชา</h3><p>วิทย์-คณิต (STEM)</p></li>
-      <li class="next" style="--x:17%;--y:68.33%" data-at=".99"><small>ก้าวต่อไป</small><h3>วิศวกรรมคอมพิวเตอร์ มจธ.</h3><p><a class="more" href="goal.html">ดูเป้าหมาย <span>→</span></a></p></li>
+      <li class="next" style="--x:17%;--y:68.33%" data-at=".99"><img class="stop-logo" src="assets/kmutt-logo.png" alt="ตรามหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี" width="56" height="56"><small>ก้าวต่อไป</small><h3>วิศวกรรมคอมพิวเตอร์ มจธ.</h3><p><a class="more" href="goal.html">ดูเป้าหมาย <span>→</span></a></p></li>
     </ol>
   </div>
 </main>

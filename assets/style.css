@@ -21,26 +21,26 @@ img{display:block;max-width:100%}
 @keyframes vt-out{to{opacity:0;transform:translateY(-10px)}}
 @keyframes vt-in{from{opacity:0;transform:translateY(18px)}}
 
-/* ---------- Navbar ---------- */
-.site-header{position:fixed;top:14px;left:0;right:0;z-index:50}
-.nav{position:relative;isolation:isolate;display:flex;align-items:center;gap:16px;padding:8px 8px 8px 22px;border-radius:99px}
-/* blur lives on a pseudo-element so the fixed mobile menu isn't trapped inside the nav box */
-.nav::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;background:rgba(22,17,14,.94);border:1px solid var(--line)}
-.logo{position:relative;z-index:2;font:800 21px/1 Kanit;margin-right:auto}
-.links{position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;justify-content:center;gap:2px;list-style:none;counter-reset:nav;
-  padding:0 max(32px,calc((100vw - 1120px) / 2 + 22px));background:rgba(13,10,8,.97);opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s}
-.links a{display:inline-flex;align-items:baseline;gap:18px;font:600 clamp(34px,6vw,64px)/1.25 Kanit;color:var(--text);padding:4px 0;
-  opacity:0;transform:translateY(22px);transition:opacity .45s var(--ease),transform .45s var(--ease),color .25s}
-.links a::before{content:counter(nav,decimal-leading-zero);counter-increment:nav;font:600 14px/1 Kanit;color:var(--muted)}
+/* ---------- Menu: one button top-left, pages slide in from the left ---------- */
+.site-header{position:fixed;top:18px;left:18px;z-index:50}
+.menu-btn{position:relative;z-index:2;width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:rgba(22,17,14,.94);cursor:pointer;transition:border-color .25s}
+.menu-btn:hover{border-color:rgba(255,106,19,.6)}
+.menu-btn i{position:absolute;left:14px;right:14px;height:2px;background:var(--text);border-radius:2px;transition:transform .35s var(--ease)}
+.menu-btn i:first-child{top:19px}.menu-btn i:last-child{top:27px}
+.menu-open .menu-btn i:first-child{transform:translateY(4px) rotate(45deg)}
+.menu-open .menu-btn i:last-child{transform:translateY(-4px) rotate(-45deg)}
+.links{position:fixed;top:0;left:0;bottom:0;z-index:1;width:min(420px,86vw);display:flex;flex-direction:column;justify-content:center;gap:2px;list-style:none;counter-reset:nav;
+  padding:96px 40px 40px;background:var(--surface);border-right:1px solid var(--line);transform:translateX(-100%);visibility:hidden;transition:transform .55s var(--ease),visibility .55s}
+.links a{display:inline-flex;align-items:baseline;gap:16px;font:600 clamp(30px,4vw,42px)/1.3 Kanit;color:var(--text);padding:4px 0;
+  opacity:0;transform:translateX(-24px);transition:opacity .45s var(--ease),transform .45s var(--ease),color .25s}
+.links a::before{content:counter(nav,decimal-leading-zero);counter-increment:nav;font:600 13px/1 Kanit;color:var(--muted)}
 .links a:hover,.links a[aria-current=page]{color:var(--orange)}
+/* dims the page behind the open menu; clicking it closes the menu (main.js) */
+.site-header::after{content:"";position:fixed;inset:0;z-index:-1;background:rgba(0,0,0,.55);opacity:0;visibility:hidden;transition:opacity .4s,visibility .4s}
 body.menu-open{overflow:hidden}
-.menu-open .links{opacity:1;visibility:visible}
-.menu-open .links a{opacity:1;transform:none;transition-delay:calc(var(--i,0) * 55ms + 80ms)}
-.menu-btn{position:relative;z-index:2;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:none;cursor:pointer}
-.menu-btn i{position:absolute;left:12px;right:12px;height:2px;background:var(--text);border-radius:2px;transition:transform .35s var(--ease)}
-.menu-btn i:first-child{top:16px}.menu-btn i:last-child{top:23px}
-.menu-open .menu-btn i:first-child{transform:translateY(3.5px) rotate(45deg)}
-.menu-open .menu-btn i:last-child{transform:translateY(-3.5px) rotate(-45deg)}
+.menu-open .links{transform:none;visibility:visible}
+.menu-open .site-header::after{opacity:1;visibility:visible}
+.menu-open .links a{opacity:1;transform:none;transition-delay:calc(var(--i,0) * 55ms + 150ms)}
 
 /* ---------- Line-by-line reveal for big headings ---------- */
 /* padding keeps Thai tone marks from being clipped by overflow:hidden */
@@ -72,7 +72,6 @@ body.menu-open{overflow:hidden}
 .crumb a{transition:color .2s}.crumb a:hover{color:var(--orange)}
 .crumb span{margin:0 8px;opacity:.5}
 .page-title{font-size:clamp(40px,6.6vw,84px);font-weight:800}
-.lead{color:var(--muted);font-size:18px;max-width:620px;margin-top:20px}
 h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;margin:96px 0 32px}
 
 /* profile facts */
@@ -96,7 +95,9 @@ h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;margin:96px 0 32px}
   transition:background .4s,border-color .4s,transform .4s var(--ease)}
 .road li.on::before{background:var(--orange);border-color:var(--orange);transform:scale(1.15)}
 .road li.next::before{border-style:dashed}
-.road li.next.on::before{background:var(--bg)}
+.road li.next::before{display:none}
+.stop-logo{display:block;width:56px;height:56px;margin:-16px auto 8px;opacity:.35;transition:opacity .4s,transform .5s cubic-bezier(.3,1.6,.5,1)}
+.road li.next.on .stop-logo{opacity:1;transform:scale(1.1)}
 .road small{font:600 14px/1 Kanit;color:var(--orange);letter-spacing:.04em}
 .road h3{font-size:20px;font-weight:600;margin:8px 0 2px}
 .road li.next h3{color:var(--orange)}
@@ -107,33 +108,81 @@ h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;margin:96px 0 32px}
   .road::before{content:"";position:absolute;left:10px;top:8px;bottom:8px;width:3px;border-radius:3px;background:linear-gradient(var(--orange) var(--p,0%),rgba(255,255,255,.1) 0)}
   .road li{position:relative;left:auto;top:auto;width:auto;margin:0 0 32px;text-align:left}
   .road li::before{position:absolute;left:-40px;top:0;margin:0}
+  .stop-logo{position:absolute;left:-52px;top:-12px;width:44px;height:44px;margin:0}
 }
 
-/* about: the name starts big in the middle of the screen, then glides into place (main.js) */
-[data-intro]{display:inline-block}
-.site-header,.page>*,.site-footer{transition:opacity .8s var(--ease) .2s}
-.name-intro .site-header,.name-intro .page>:not([data-intro]),.name-intro .site-footer{opacity:0}
-.name-intro:not(.go) [data-intro] .line>span{animation-play-state:paused}
+/* about: the name types in the middle of the screen, then glides into place (main.js) */
+.name{display:inline-block;transform-origin:0 0}
+.page-title .caret{width:.07em;height:.85em;vertical-align:-.06em;margin-left:.06em}
+.name-intro [data-intro]{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:0 16px;text-align:center;font-size:clamp(44px,8vw,112px)}
+.page>*,.fold>*,.site-footer{transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.site-header{transition:opacity .9s var(--ease)}
+.name-intro .site-header{opacity:0}
+.name-intro .page>:not(.fold),.name-intro .fold>:not([data-intro]),.name-intro .site-footer{opacity:0;transform:translateY(28px)}
+/* history: the education title waits big at the bottom of the first screen, then slides into place as you scroll (main.js) */
+.edu-title{width:fit-content;transform-origin:50% 50%;will-change:transform;
+  -webkit-mask-image:linear-gradient(180deg,#000 var(--m,100%),transparent calc(var(--m,100%) + 35%));mask-image:linear-gradient(180deg,#000 var(--m,100%),transparent calc(var(--m,100%) + 35%))}
+.page>.edu-title{transition:opacity .9s var(--ease)}
+/* first screen of the history page; the education part only shows after scrolling */
+.fold{min-height:calc(100svh - clamp(124px,17vh,170px))}
 
-/* skills */
-.filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:48px}
+/* skills: card carousel (same design and behaviour as the shadcn ServiceCarousel, in plain CSS/JS) */
+.skills-page{display:flex;flex-direction:column;justify-content:center;min-height:100svh;padding:96px 0 40px}
+.skills-page .page-title{font-size:clamp(32px,4.2vw,54px)}
+.skills-page .line{display:inline-block;margin-right:.25em}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:40px}
 .filters button{font:500 15px/1 "IBM Plex Sans Thai";padding:11px 18px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;transition:.25s}
 .filters button:hover{color:var(--text);border-color:rgba(255,106,19,.45)}
 .filters button[aria-pressed=true]{background:var(--orange);border-color:var(--orange);color:#1a0b02;font-weight:600}
-.grid{display:flex;flex-wrap:wrap;gap:14px;margin-top:28px}
-/* fixed-size cell; the chip inside grows over its neighbours on hover instead of pushing them around */
-.tile{position:relative;width:84px;height:84px}
-.chip{position:absolute;left:0;top:0;height:100%;display:flex;align-items:center;padding:21px;border-radius:22px;white-space:nowrap;
-  background:var(--surface);border:1px solid var(--line);transition:border-color .3s,background .3s,transform .4s var(--ease)}
-.chip img{width:40px;height:40px;flex:none}
-.chip img.mono{filter:brightness(0) invert(1)}
-.chip b{font:600 17px/1 Kanit;max-width:0;opacity:0;overflow:hidden;transition:max-width .45s var(--ease),opacity .3s,margin .45s var(--ease)}
-.tile:hover .chip,.tile:focus-visible .chip{z-index:5;background:var(--surface-2);border-color:rgba(255,106,19,.5);transform:translateY(-3px)}
-.tile:hover b,.tile:focus-visible b{max-width:200px;opacity:1;margin-left:14px}
-@media (hover:none){.tile{width:auto}.chip{position:static}.chip b{max-width:none;opacity:1;margin-left:12px}}
+.carousel{position:relative;margin-top:28px}
+.slides{display:flex;gap:16px;padding:4px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;cursor:grab;user-select:none}
+.slides::-webkit-scrollbar{display:none}
+.slides.dragging{scroll-snap-type:none;scroll-behavior:auto;cursor:grabbing}
+.tile{position:relative;flex:0 0 calc((100% - 16px) / 2);height:260px;display:flex;align-items:center;justify-content:center;padding:24px;border-radius:24px;overflow:hidden;scroll-snap-align:start;
+  background:linear-gradient(90deg,var(--c1),var(--c2));border:1px solid var(--line);transition:border-color .3s,transform .4s var(--ease)}
+@media (min-width:768px){.tile{flex-basis:calc((100% - 32px) / 3)}}
+@media (min-width:1024px){.tile{flex-basis:calc((100% - 48px) / 4)}}
+.tile[data-cat=lang]{--c1:rgba(124,45,18,.5);--c2:rgba(154,52,18,.5)}
+.tile[data-cat=tool]{--c1:rgba(120,53,15,.5);--c2:rgba(146,64,14,.5)}
+.tile[data-cat=app]{--c1:rgba(127,29,29,.5);--c2:rgba(153,27,27,.5)}
+.tile::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(13,10,8,.2),transparent);pointer-events:none}
+.tile>*{position:relative;z-index:1}
+.tile-body{display:flex;flex-direction:column;align-items:center;gap:20px;transition:transform .4s var(--ease)}
+.tile img{width:88px;height:88px;-webkit-user-drag:none}
+.tile img.mono{filter:brightness(0) invert(1)}
+.tile h2{margin:0;font-size:clamp(14px,1.4vw,17px);font-weight:600;letter-spacing:.06em;text-transform:uppercase;text-align:center}
+.tile:hover,.tile:focus-visible{border-color:rgba(255,106,19,.5)}
+.carousel-next{position:absolute;right:8px;top:50%;z-index:2;transform:translateY(-50%);width:40px;height:40px;display:grid;place-items:center;border:0;border-radius:50%;
+  background:rgba(246,239,233,.1);color:var(--text);cursor:pointer;backdrop-filter:blur(6px);transition:background .25s}
+.carousel-next:hover{background:rgba(246,239,233,.2)}
+/* featured skills: crown + "see works" button on hover */
+.crown{position:absolute;top:16px;right:16px;z-index:1;width:28px;height:28px;color:var(--orange);opacity:0;transform:scale(.4) rotate(-25deg);
+  transition:opacity .3s,transform .5s cubic-bezier(.3,1.6,.5,1)}
+.see-works{position:absolute;left:50%;bottom:18px;z-index:1;padding:9px 16px;border:0;border-radius:99px;white-space:nowrap;cursor:pointer;
+  background:var(--orange);color:#1a0b02;font:600 14px/1 "IBM Plex Sans Thai";opacity:0;transform:translate(-50%,10px);transition:opacity .3s,transform .4s var(--ease),background .25s}
+.see-works:hover{background:var(--orange-2)}
+.star:hover,.star:focus-within{border-color:var(--orange)}
+.star:hover .crown,.star:focus-within .crown{opacity:1;transform:none}
+.star:hover .see-works,.star:focus-within .see-works{opacity:1;transform:translate(-50%,0)}
+.star:hover .tile-body,.star:focus-within .tile-body{transform:translateY(-16px)}
+@media (hover:none){.crown{opacity:1;transform:none}.see-works{opacity:1;transform:translate(-50%,0)}.star .tile-body{transform:translateY(-16px)}}
 .js .tile{opacity:0}
-.tile.enter{opacity:1;animation:tile-in .55s var(--ease) backwards;animation-delay:var(--delay,0ms)}
-@keyframes tile-in{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:none}}
+.tile.enter{opacity:1;animation:tile-in .5s var(--ease) backwards;animation-delay:var(--delay,0ms)}
+@keyframes tile-in{from{opacity:0;transform:translateY(50px)}to{opacity:1;transform:none}}
+
+/* works for a featured skill: opened by its button, zoom + fade in */
+.works{padding:40px 0 20px}
+.works-panel{scroll-margin-top:96px}
+.works-panel h2{display:flex;align-items:center;gap:14px;margin:0 0 28px}
+.works-panel h2 img{width:44px;height:44px}
+.works-panel h2 img.mono{filter:brightness(0) invert(1)}
+.works-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.work{border-radius:20px;overflow:hidden;background:var(--surface);border:1px solid var(--line)}
+.work img,.work-ph{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.work-ph{display:grid;place-items:center;color:var(--muted);font-size:15px;background:var(--surface-2);border-bottom:1px dashed rgba(255,255,255,.12)}
+.work figcaption{padding:14px 18px;font-weight:500}
+.work.in{animation:zoom-in .8s var(--ease) both}
+@keyframes zoom-in{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
 
 /* award */
 .feature{display:grid;grid-template-columns:1.35fr 1fr;gap:48px;align-items:center;margin-top:56px}
@@ -180,19 +229,20 @@ h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;margin:96px 0 32px}
 .reason h3{font-size:21px;font-weight:600;margin:14px 0 6px}
 .reason p{color:var(--muted);font-size:15px}
 @media (max-width:860px){.reasons{grid-template-columns:1fr}}
-.kmutt{margin-top:96px;text-align:center;font:800 clamp(84px,21vw,280px)/.9 Kanit;letter-spacing:-.04em;user-select:none;
+.kmutt-logo{display:block;width:112px;height:112px;margin:96px auto 0}
+.kmutt{margin-top:24px;text-align:center;font:800 clamp(84px,21vw,280px)/.9 Kanit;letter-spacing:-.04em;user-select:none;
   -webkit-text-stroke:2px rgba(255,106,19,.55);color:transparent;
   background:linear-gradient(90deg,var(--orange) 0 var(--fill,0%),transparent var(--fill,0%));-webkit-background-clip:text;background-clip:text}
+
+/* ---------- Page entrance: content fades in ---------- */
+main,.site-footer{animation:page-in .8s var(--ease) .3s backwards}
+@keyframes page-in{from{opacity:0}}
 
 /* ---------- Footer ---------- */
 .site-footer{border-top:1px solid var(--line);margin-top:80px;padding:28px 0 36px}
 .site-footer .wrap{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;color:var(--muted);font-size:14px}
 .site-footer a{color:var(--text);transition:color .2s}
 .site-footer a:hover{color:var(--orange)}
-
-/* cursor glow */
-#glow{position:fixed;left:0;top:0;width:480px;height:480px;margin:-240px 0 0 -240px;border-radius:50%;pointer-events:none;z-index:-1;
-  background:radial-gradient(circle,rgba(255,106,19,.09),transparent 65%)}
 
 /* lightbox */
 dialog{margin:auto;border:0;padding:0;background:transparent;max-width:min(1200px,94vw);overflow:visible}
