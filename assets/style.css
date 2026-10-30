@@ -1,0 +1,209 @@
+:root{
+  --bg:#0d0a08; --surface:#16110e; --surface-2:#1f1814; --line:rgba(255,255,255,.08);
+  --text:#f6efe9; --muted:#ab9f96; --orange:#ff6a13; --orange-2:#ffa047; --orange-dim:rgba(255,106,19,.14);
+  --radius:20px; --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;background:var(--bg)}
+body{color:var(--text);font:400 17px/1.75 "IBM Plex Sans Thai",system-ui,sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:Kanit,sans-serif;line-height:1.2;letter-spacing:-.01em}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+:focus-visible{outline:2px solid var(--orange);outline-offset:3px;border-radius:6px}
+.wrap{width:min(1120px,100% - 32px);margin-inline:auto}
+.accent{color:var(--orange)}
+
+/* ---------- Page transitions (Chrome/Edge; other browsers just navigate) ---------- */
+@view-transition{navigation:auto}
+.site-header{view-transition-name:site-header}
+::view-transition-old(root){animation:vt-out .3s var(--ease) both}
+::view-transition-new(root){animation:vt-in .55s var(--ease) both}
+@keyframes vt-out{to{opacity:0;transform:translateY(-10px)}}
+@keyframes vt-in{from{opacity:0;transform:translateY(18px)}}
+
+/* ---------- Navbar ---------- */
+.site-header{position:fixed;top:14px;left:0;right:0;z-index:50}
+.nav{position:relative;isolation:isolate;display:flex;align-items:center;gap:16px;padding:8px 8px 8px 22px;border-radius:99px}
+/* blur lives on a pseudo-element so the fixed mobile menu isn't trapped inside the nav box */
+.nav::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;background:rgba(22,17,14,.94);border:1px solid var(--line)}
+.logo{position:relative;z-index:2;font:800 21px/1 Kanit;margin-right:auto}
+.links{position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;justify-content:center;gap:2px;list-style:none;counter-reset:nav;
+  padding:0 max(32px,calc((100vw - 1120px) / 2 + 22px));background:rgba(13,10,8,.97);opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s}
+.links a{display:inline-flex;align-items:baseline;gap:18px;font:600 clamp(34px,6vw,64px)/1.25 Kanit;color:var(--text);padding:4px 0;
+  opacity:0;transform:translateY(22px);transition:opacity .45s var(--ease),transform .45s var(--ease),color .25s}
+.links a::before{content:counter(nav,decimal-leading-zero);counter-increment:nav;font:600 14px/1 Kanit;color:var(--muted)}
+.links a:hover,.links a[aria-current=page]{color:var(--orange)}
+body.menu-open{overflow:hidden}
+.menu-open .links{opacity:1;visibility:visible}
+.menu-open .links a{opacity:1;transform:none;transition-delay:calc(var(--i,0) * 55ms + 80ms)}
+.menu-btn{position:relative;z-index:2;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:none;cursor:pointer}
+.menu-btn i{position:absolute;left:12px;right:12px;height:2px;background:var(--text);border-radius:2px;transition:transform .35s var(--ease)}
+.menu-btn i:first-child{top:16px}.menu-btn i:last-child{top:23px}
+.menu-open .menu-btn i:first-child{transform:translateY(3.5px) rotate(45deg)}
+.menu-open .menu-btn i:last-child{transform:translateY(-3.5px) rotate(-45deg)}
+
+/* ---------- Line-by-line reveal for big headings ---------- */
+/* padding keeps Thai tone marks from being clipped by overflow:hidden */
+.line{display:block;overflow:hidden;padding:.16em 0 .06em;margin:-.16em 0 -.06em}
+.line>span{display:inline-block;transform:translateY(110%);animation:line-up 1s var(--ease) forwards;animation-delay:calc(var(--d,0) * 130ms + 150ms)}
+@keyframes line-up{to{transform:none}}
+.fade-up{opacity:0;animation:fade-up .9s var(--ease) forwards;animation-delay:calc(var(--d,0) * 130ms + 150ms)}
+@keyframes fade-up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* scroll reveal */
+.js .rv{opacity:0;transform:translateY(36px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.js .rv.on{opacity:1;transform:none}
+
+/* ---------- Home: photo + caption only ---------- */
+.hero-photo{position:relative;height:100svh;min-height:560px;overflow:hidden;display:flex;align-items:flex-end}
+.hero-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:52% 40%;
+  animation:kenburns 18s ease-out both;transition:translate .8s ease-out}
+@keyframes kenburns{from{transform:scale(1.16)}to{transform:scale(1.05)}}
+.hero-photo::after{content:"";position:absolute;inset:0;background:
+  linear-gradient(180deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,0) 26%,rgba(0,0,0,.15) 50%,rgba(10,6,4,.94) 100%)}
+.caption{position:relative;z-index:1;padding-bottom:clamp(40px,9vh,88px)}
+.caption h1{font-size:clamp(42px,7.4vw,96px);font-weight:800}
+.caption .sub{display:flex;align-items:center;gap:14px;margin-top:22px;color:rgba(255,255,255,.82);font-size:clamp(15px,1.6vw,18px)}
+.caption .sub::before{content:"";width:36px;height:2px;flex:none;background:var(--orange)}
+
+/* ---------- Inner pages ---------- */
+.page{padding:clamp(124px,17vh,170px) 0 40px;min-height:calc(100svh - 120px)}
+.crumb{font-size:14px;color:var(--muted);margin-bottom:22px}
+.crumb a{transition:color .2s}.crumb a:hover{color:var(--orange)}
+.crumb span{margin:0 8px;opacity:.5}
+.page-title{font-size:clamp(40px,6.6vw,84px);font-weight:800}
+.lead{color:var(--muted);font-size:18px;max-width:620px;margin-top:20px}
+h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;margin:96px 0 32px}
+
+/* profile facts */
+.profile{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:56px}
+.profile div{padding:20px 22px;border-radius:16px;background:var(--surface);border:1px solid var(--line);transition:border-color .3s,transform .4s var(--ease)}
+.profile div:hover{border-color:rgba(255,106,19,.45);transform:translateY(-4px)}
+.profile dt{color:var(--muted);font-size:13px}
+.profile dd{font-weight:500;margin-top:2px;overflow-wrap:anywhere}
+@media (max-width:860px){.profile{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.profile{grid-template-columns:1fr}}
+
+/* education: a winding path that draws itself while scrolling */
+.road{position:relative;aspect-ratio:1000/600}
+.road svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.road path{fill:none;stroke-width:4;stroke-linecap:round}
+.road .base{stroke:rgba(255,255,255,.1)}
+.road .draw{stroke:var(--orange);stroke-dasharray:1;stroke-dashoffset:var(--off,1)}
+.road ol{list-style:none}
+.road li{position:absolute;left:var(--x);top:var(--y);width:220px;margin:-12px 0 0 -110px;text-align:center}
+.road li::before{content:"";display:block;width:24px;height:24px;margin:0 auto 14px;border-radius:50%;background:var(--bg);border:3px solid rgba(255,255,255,.18);
+  transition:background .4s,border-color .4s,transform .4s var(--ease)}
+.road li.on::before{background:var(--orange);border-color:var(--orange);transform:scale(1.15)}
+.road li.next::before{border-style:dashed}
+.road li.next.on::before{background:var(--bg)}
+.road small{font:600 14px/1 Kanit;color:var(--orange);letter-spacing:.04em}
+.road h3{font-size:20px;font-weight:600;margin:8px 0 2px}
+.road li.next h3{color:var(--orange)}
+.road p{color:var(--muted);font-size:15px}
+@media (max-width:760px){
+  .road{aspect-ratio:auto;padding-left:40px}
+  .road svg{display:none}
+  .road::before{content:"";position:absolute;left:10px;top:8px;bottom:8px;width:3px;border-radius:3px;background:linear-gradient(var(--orange) var(--p,0%),rgba(255,255,255,.1) 0)}
+  .road li{position:relative;left:auto;top:auto;width:auto;margin:0 0 32px;text-align:left}
+  .road li::before{position:absolute;left:-40px;top:0;margin:0}
+}
+
+/* about: the name starts big in the middle of the screen, then glides into place (main.js) */
+[data-intro]{display:inline-block}
+.site-header,.page>*,.site-footer{transition:opacity .8s var(--ease) .2s}
+.name-intro .site-header,.name-intro .page>:not([data-intro]),.name-intro .site-footer{opacity:0}
+.name-intro:not(.go) [data-intro] .line>span{animation-play-state:paused}
+
+/* skills */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:48px}
+.filters button{font:500 15px/1 "IBM Plex Sans Thai";padding:11px 18px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;transition:.25s}
+.filters button:hover{color:var(--text);border-color:rgba(255,106,19,.45)}
+.filters button[aria-pressed=true]{background:var(--orange);border-color:var(--orange);color:#1a0b02;font-weight:600}
+.grid{display:flex;flex-wrap:wrap;gap:14px;margin-top:28px}
+/* fixed-size cell; the chip inside grows over its neighbours on hover instead of pushing them around */
+.tile{position:relative;width:84px;height:84px}
+.chip{position:absolute;left:0;top:0;height:100%;display:flex;align-items:center;padding:21px;border-radius:22px;white-space:nowrap;
+  background:var(--surface);border:1px solid var(--line);transition:border-color .3s,background .3s,transform .4s var(--ease)}
+.chip img{width:40px;height:40px;flex:none}
+.chip img.mono{filter:brightness(0) invert(1)}
+.chip b{font:600 17px/1 Kanit;max-width:0;opacity:0;overflow:hidden;transition:max-width .45s var(--ease),opacity .3s,margin .45s var(--ease)}
+.tile:hover .chip,.tile:focus-visible .chip{z-index:5;background:var(--surface-2);border-color:rgba(255,106,19,.5);transform:translateY(-3px)}
+.tile:hover b,.tile:focus-visible b{max-width:200px;opacity:1;margin-left:14px}
+@media (hover:none){.tile{width:auto}.chip{position:static}.chip b{max-width:none;opacity:1;margin-left:12px}}
+.js .tile{opacity:0}
+.tile.enter{opacity:1;animation:tile-in .55s var(--ease) backwards;animation-delay:var(--delay,0ms)}
+@keyframes tile-in{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:none}}
+
+/* award */
+.feature{display:grid;grid-template-columns:1.35fr 1fr;gap:48px;align-items:center;margin-top:56px}
+.shot{position:relative;border-radius:24px;overflow:hidden;border:1px solid var(--line);cursor:zoom-in;transition:transform .25s ease-out;background:var(--surface)}
+.shot img{width:100%;aspect-ratio:3/2;object-fit:cover}
+.shot .hint{position:absolute;right:14px;bottom:14px;padding:7px 14px;border-radius:99px;font-size:13px;background:rgba(13,10,8,.72);border:1px solid var(--line);backdrop-filter:blur(8px)}
+.story p{font-size:18px}
+.story p+p{color:var(--muted);margin-top:14px}
+.meta{display:grid;grid-template-columns:auto 1fr;gap:12px 24px;margin:28px 0;padding:22px 24px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line)}
+.meta dt{color:var(--muted);font-size:14px}
+.meta dd{font-weight:500}
+.more{display:inline-flex;gap:10px;align-items:center;font-weight:600;color:var(--orange)}
+.more span{transition:transform .3s var(--ease)}
+.more:hover span{transform:translateX(6px)}
+@media (max-width:860px){.feature{grid-template-columns:1fr}}
+
+/* certificates */
+.certs{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;margin-top:56px}
+.cert{border-radius:var(--radius);overflow:hidden;background:var(--surface);border:1px solid var(--line);cursor:zoom-in;transition:border-color .3s}
+.cert:hover{border-color:rgba(255,106,19,.45)}
+.cert .frame{aspect-ratio:4/3;overflow:hidden}
+/* starts zoomed on the certificate itself, pulls back to the whole moment on hover */
+.cert .frame img{width:100%;height:100%;object-fit:cover;transform:scale(2.3);transform-origin:51% 50%;transition:transform 1.2s var(--ease)}
+.cert:hover .frame img,.cert:focus-visible .frame img{transform:scale(1)}
+.cert figcaption{padding:18px 22px}
+.cert b{display:block;font:600 18px/1.3 Kanit}
+.cert small{color:var(--muted);font-size:14px}
+
+/* goal */
+.terminal{margin-top:56px;max-width:720px;border-radius:16px;overflow:hidden;background:#090706;border:1px solid var(--line)}
+.terminal .bar{display:flex;gap:7px;padding:13px 16px;border-bottom:1px solid var(--line)}
+.terminal .bar i{width:11px;height:11px;border-radius:50%;background:#3a302a}
+.terminal .bar i:first-child{background:var(--orange)}
+.terminal code{display:block;padding:20px 22px;min-height:13.5em;font:15px/1.9 ui-monospace,Consolas,"IBM Plex Sans Thai",monospace;color:#e9ded6;white-space:pre-wrap}
+.terminal .cmd::before{content:"$ ";color:var(--orange)}
+.terminal .out{color:var(--muted)}
+.terminal .out.hl{color:var(--orange-2)}
+.caret{display:inline-block;width:9px;height:1.1em;background:var(--orange);vertical-align:-.2em;margin-left:2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.reasons{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.reason{padding:26px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line);transition:border-color .3s,transform .4s var(--ease)}
+.reason:hover{border-color:rgba(255,106,19,.45);transform:translateY(-4px)}
+.reason span{font:700 14px/1 Kanit;color:var(--orange)}
+.reason h3{font-size:21px;font-weight:600;margin:14px 0 6px}
+.reason p{color:var(--muted);font-size:15px}
+@media (max-width:860px){.reasons{grid-template-columns:1fr}}
+.kmutt{margin-top:96px;text-align:center;font:800 clamp(84px,21vw,280px)/.9 Kanit;letter-spacing:-.04em;user-select:none;
+  -webkit-text-stroke:2px rgba(255,106,19,.55);color:transparent;
+  background:linear-gradient(90deg,var(--orange) 0 var(--fill,0%),transparent var(--fill,0%));-webkit-background-clip:text;background-clip:text}
+
+/* ---------- Footer ---------- */
+.site-footer{border-top:1px solid var(--line);margin-top:80px;padding:28px 0 36px}
+.site-footer .wrap{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;color:var(--muted);font-size:14px}
+.site-footer a{color:var(--text);transition:color .2s}
+.site-footer a:hover{color:var(--orange)}
+
+/* cursor glow */
+#glow{position:fixed;left:0;top:0;width:480px;height:480px;margin:-240px 0 0 -240px;border-radius:50%;pointer-events:none;z-index:-1;
+  background:radial-gradient(circle,rgba(255,106,19,.09),transparent 65%)}
+
+/* lightbox */
+dialog{margin:auto;border:0;padding:0;background:transparent;max-width:min(1200px,94vw);overflow:visible}
+dialog[open]{animation:pop .4s var(--ease)}
+@keyframes pop{from{opacity:0;transform:scale(.94)}}
+dialog::backdrop{background:rgba(0,0,0,.88);backdrop-filter:blur(6px)}
+dialog img{border-radius:16px;max-height:84vh;width:auto;margin:auto}
+dialog button{position:absolute;top:12px;right:12px;width:42px;height:42px;border-radius:50%;border:0;background:var(--orange);color:#1a0b02;font-size:22px;cursor:pointer}
+dialog p{color:#ddd;text-align:center;margin-top:12px;font-size:14px}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after,::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important;transition:none!important}
+  .line>span,.fade-up,.js .rv,.js .tile{opacity:1;transform:none}
+}
