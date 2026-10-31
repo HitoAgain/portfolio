@@ -1,4 +1,5 @@
 document.documentElement.classList.add('js');
+document.body.insertAdjacentHTML('afterbegin', '<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>');
 const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -27,22 +28,20 @@ const io = new IntersectionObserver(es => es.forEach(e => {
 }), { threshold: .15 });
 $$('.rv').forEach((el, i) => { el.style.transitionDelay = (i % 3) * 90 + 'ms'; io.observe(el); });
 
-// ---- Scroll-linked: education path, KMUTT fill
-const road = $('.road'), big = $('.kmutt');
-if (road || big) {
-  const onScroll = () => {
-    const vh = innerHeight;
-    if (road) {
-      const r = road.getBoundingClientRect(), p = Math.max(0, Math.min(1, (vh * .85 - r.top) / r.height));
-      road.style.setProperty('--off', 1 - p);
-      road.style.setProperty('--p', p * 100 + '%');
-      $$('li', road).forEach(li => li.classList.toggle('on', p >= li.dataset.at));
-    }
-    if (big) { const r = big.getBoundingClientRect(); big.style.setProperty('--fill', Math.max(0, Math.min(100, (vh - r.top) / (r.height + 40) * 100)) + '%'); }
-  };
+// ---- Scroll-linked: KMUTT fill
+const big = $('.kmutt');
+if (big) {
+  const onScroll = () => { const r = big.getBoundingClientRect(); big.style.setProperty('--fill', Math.max(0, Math.min(100, (innerHeight - r.top) / (r.height + 40) * 100)) + '%'); };
   addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 }
+
+// ---- About: the education button swaps the card face to the three school crests, and back
+const idCard = $('.id-card');
+if (idCard) $$('.id-flip', idCard).forEach(b => b.addEventListener('click', () => {
+  const edu = idCard.classList.toggle('show-edu');
+  $(edu ? '.id-back .id-flip' : '.id-front .id-flip', idCard).focus(); // keep keyboard focus on the visible face
+}));
 
 // ---- About: the name types in Thai, retypes in English big in the middle, glides into place, then keeps switching
 const intro = $('[data-intro]');
@@ -64,29 +63,24 @@ if (intro && !reduce) (async () => {
   for (let i = 0; ; i++) { await sleep(4000); await erase(); await sleep(250); await type(names[i % 2], i % 2 === 1); }
 })();
 
-// ---- About: the education title waits big at the bottom of the first screen, then slides into place while scrolling
-const edu = $('.edu-title');
-if (edu && !reduce) {
-  // offset* ignore transforms, so this always reads the title's real spot
-  const place = () => {
-    // phones: the profile is taller than the screen, so the big title would sit on top of it
-    if (innerWidth < 760) { edu.style.transform = ''; edu.style.removeProperty('--m'); return; }
-    const vh = innerHeight, w = edu.offsetWidth, h = edu.offsetHeight, top = edu.offsetTop;
-    const s = Math.min(3, innerWidth * .8 / w), end = top - vh * .55;
-    const p = end > 0 ? Math.min(1, Math.max(0, scrollY / end)) : 1, k = 1 - p;
-    const dx = innerWidth / 2 - (edu.offsetLeft + w / 2), dy = vh - h * s * .3 - (top - scrollY + h / 2);
-    edu.style.transform = `translate(${dx * k}px, ${dy * k}px) scale(${1 + (s - 1) * k})`;
-    edu.style.setProperty('--m', 30 + 70 * p + '%');
+// ---- Home: photos take turns, each with its own caption; picking a dot stops the auto-play
+const heroSlides = $$('.hero-photo .slide'), heroDots = $$('.hero-photo .dots button');
+if (heroSlides.length > 1) {
+  let cur = 0;
+  const go = i => {
+    heroSlides[cur].classList.remove('on'); heroDots[cur].removeAttribute('aria-current');
+    cur = i;
+    heroSlides[cur].classList.add('on'); heroDots[cur].setAttribute('aria-current', 'true');
   };
-  addEventListener('scroll', place, { passive: true });
-  new ResizeObserver(place).observe(document.body); // also re-places after the name intro changes the layout
+  const timer = reduce ? 0 : setInterval(() => go((cur + 1) % heroSlides.length), 6000);
+  heroDots.forEach((d, i) => d.addEventListener('click', () => { clearInterval(timer); go(i); }));
 }
 
 // ---- Pointer effects (mouse only)
 if (finePointer && !reduce) {
-  const heroImg = $('.hero-photo img');
-  if (heroImg) addEventListener('pointermove', e => {
-    heroImg.style.translate = `${(e.clientX / innerWidth - .5) * -18}px ${(e.clientY / innerHeight - .5) * -12}px`;
+  const heroImgs = $$('.hero-photo img');
+  if (heroImgs.length) addEventListener('pointermove', e => {
+    heroImgs.forEach(img => img.style.translate = `${(e.clientX / innerWidth - .5) * -18}px ${(e.clientY / innerHeight - .5) * -12}px`);
   }, { passive: true });
 
   $$('[data-tilt]').forEach(el => {

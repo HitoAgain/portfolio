@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>อาลีฟ เกษมสวัสดิ์ · Portfolio</title>
-<meta name="description" content="Portfolio ของอาลีฟ เกษมสวัสดิ์ — รางวัลชมเชยจาก มจธ. และเป้าหมายสู่วิศวกรรมคอมพิวเตอร์ KMUTT">
+<meta name="description" content="Portfolio ของอาลีฟ เกษมสวัสดิ์ — รางวัลชมเชยจาก มจธ. เว็บไซต์ EXACT AI และเป้าหมายสู่วิศวกรรมคอมพิวเตอร์ KMUTT">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
@@ -26,14 +26,31 @@
   </nav>
 </header>
 
-<main class="hero-photo">
-  <img src="assets/kmutt-award.webp" alt="อาลีฟ เกษมสวัสดิ์ รับเกียรติบัตรรางวัลชมเชย ที่มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี">
-  <div class="caption wrap">
-    <h1>
-      <span class="line"><span>ครั้งแรกที่บางมด</span></span>
-      <span class="line" style="--d:1"><span class="accent">แต่ไม่ใช่ครั้งสุดท้าย</span></span>
-    </h1>
-    <p class="sub fade-up" style="--d:4">รางวัลชมเชย · มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี</p>
+<!-- each .slide = one photo + its own caption; they take turns every few seconds (main.js) -->
+<main class="hero-photo" aria-roledescription="carousel" aria-label="ผลงาน">
+  <div class="slide on">
+    <img src="assets/kmutt-award.webp" alt="อาลีฟ เกษมสวัสดิ์ รับเกียรติบัตรรางวัลชมเชย ที่มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี">
+    <div class="caption wrap">
+      <h1>
+        <span class="line"><span>ประกวดโครงงานวิทยาศาสตร์</span></span>
+        <span class="line" style="--d:1"><span class="accent">ที่ มจธ.</span></span>
+      </h1>
+      <p class="sub fade-up" style="--d:4">แม้จะได้รางวัลชมเชย แต่ได้ประสบการณ์ที่ล้ำค่าที่สุดแน่ๆ</p>
+    </div>
+  </div>
+  <div class="slide logo-slide">
+    <img src="assets/exact-ai.webp" alt="โลโก้ EXACT AI และ CEDT">
+    <div class="caption wrap">
+      <h2>
+        <span class="line"><span>เว็บไซต์<wbr><span style="white-space:nowrap">ทบทวนบทเรียน</span></span></span>
+        <span class="line" style="--d:1"><span class="accent">EXACT AI</span></span>
+      </h2>
+      <p class="sub fade-up" style="--d:4">ครั้งแรกที่เปิดโอกาสกับการแข่งขันที่จุฬา</p>
+    </div>
+  </div>
+  <div class="dots">
+    <button type="button" aria-label="รูปที่ 1" aria-current="true"></button>
+    <button type="button" aria-label="รูปที่ 2"></button>
   </div>
 </main>
 </body>
