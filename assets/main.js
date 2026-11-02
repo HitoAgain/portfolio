@@ -12,6 +12,7 @@ const menuBtn = $('.menu-btn');
 $$('.links a').forEach((a, i) => a.style.setProperty('--i', i));
 menuBtn.addEventListener('click', () => {
   const open = document.body.classList.toggle('menu-open');
+  document.body.classList.add('menu-seen'); // the home arrow hint has done its job
   menuBtn.setAttribute('aria-expanded', open);
 });
 addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('menu-open')) menuBtn.click(); });
@@ -43,6 +44,28 @@ if (idCard) $$('.id-flip', idCard).forEach(b => b.addEventListener('click', () =
   $(edu ? '.id-back .id-flip' : '.id-front .id-flip', idCard).focus(); // keep keyboard focus on the visible face
 }));
 
+// ---- Intros: FLIP the title from the middle of the screen into its place, then fade the rest of the page in one after another
+const settle = (el, cls, rest) => {
+  const a = el.getBoundingClientRect();
+  document.body.classList.remove(cls);
+  const b = el.getBoundingClientRect();
+  el.animate([{ transform: `translate(${a.left - b.left}px, ${a.top - b.top}px) scale(${a.width / b.width})` }, { transform: 'none' }], { duration: 750, easing: 'cubic-bezier(.2,.8,.2,1)' });
+  [$('.site-header'), ...$$(rest), $('.site-footer')].forEach((x, i) => x.style.transitionDelay = 150 + i * 90 + 'ms');
+};
+
+// ---- About: the cloud glides down to the skills, slower than native smooth scroll, leaving room above the SKILL title
+$$('.cloud').forEach(a => a.addEventListener('click', e => {
+  e.preventDefault();
+  const from = scrollY, to = $(a.hash).getBoundingClientRect().top + scrollY - 110, t0 = performance.now(), dur = reduce ? 0 : 1400;
+  const ease = t => t < .5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2;
+  const tick = now => {
+    const t = dur ? Math.max(0, Math.min(1, (now - t0) / dur)) : 1; // a frame's timestamp can be a hair before t0
+    scrollTo({ top: from + (to - from) * ease(t), behavior: 'instant' });
+    if (t < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}));
+
 // ---- About: the name types in Thai, retypes in English big in the middle, glides into place, then keeps switching
 const intro = $('[data-intro]');
 if (intro && !reduce) (async () => {
@@ -54,27 +77,51 @@ if (intro && !reduce) (async () => {
   await document.fonts.ready;
   await sleep(200);
   await type(names[0]); await sleep(500); await erase(); await sleep(150); await type(names[1], true); await sleep(450);
-  // FLIP: measure in the middle, drop into place, then animate from the old spot
-  const a = name.getBoundingClientRect(), fa = parseFloat(getComputedStyle(intro).fontSize);
-  document.body.classList.remove('name-intro');
-  const b = name.getBoundingClientRect(), fb = parseFloat(getComputedStyle(intro).fontSize);
-  name.animate([{ transform: `translate(${a.left - b.left}px, ${a.top - b.top}px) scale(${fa / fb})` }, { transform: 'none' }], { duration: 750, easing: 'cubic-bezier(.2,.8,.2,1)' });
-  [$('.site-header'), ...$$('.page > :not(.fold), .fold > :not([data-intro])'), $('.site-footer')].forEach((el, i) => el.style.transitionDelay = 150 + i * 90 + 'ms');
+  settle(name, 'name-intro', '.page > :not(.fold), .fold > :not([data-intro])');
   for (let i = 0; ; i++) { await sleep(4000); await erase(); await sleep(250); await type(names[i % 2], i % 2 === 1); }
 })();
 
-// ---- Home: photos take turns, each with its own caption; picking a dot stops the auto-play
-const heroSlides = $$('.hero-photo .slide'), heroDots = $$('.hero-photo .dots button');
-if (heroSlides.length > 1) {
+// ---- Works: "ผลงาน" writes itself big in the middle, glitching a few times, then glides into place
+const awTitle = $('.aw-title');
+if (awTitle && !reduce) (async () => {
+  const svg = $('svg', awTitle);
+  document.body.classList.add('aw-intro');
+  for (const ms of [200, 350, 350, 300]) {
+    await sleep(ms);
+    svg.classList.remove('zap'); svg.offsetWidth; svg.classList.add('zap');
+  }
+  await sleep(300);
+  settle(svg, 'aw-intro', '.page > :not(.aw-title)');
+})();
+
+// ---- Slideshows (home hero, KMUTT certificates on the works page): slides take turns; picking a dot stops the auto-play
+$$('[data-slides]').forEach(box => {
+  const slides = $$('.slide', box), dots = $$('.dots button', box);
   let cur = 0;
   const go = i => {
-    heroSlides[cur].classList.remove('on'); heroDots[cur].removeAttribute('aria-current');
+    slides[cur].classList.remove('on'); dots[cur].removeAttribute('aria-current');
     cur = i;
-    heroSlides[cur].classList.add('on'); heroDots[cur].setAttribute('aria-current', 'true');
+    slides[cur].classList.add('on'); dots[cur].setAttribute('aria-current', 'true');
   };
-  const timer = reduce ? 0 : setInterval(() => go((cur + 1) % heroSlides.length), 6000);
-  heroDots.forEach((d, i) => d.addEventListener('click', () => { clearInterval(timer); go(i); }));
-}
+  const timer = reduce ? 0 : setInterval(() => go((cur + 1) % slides.length), +box.dataset.slides);
+  dots.forEach((d, i) => d.addEventListener('click', () => { clearInterval(timer); go(i); }));
+});
+
+// ---- Works: a card opens its detail sheet; the cover photo morphs into the sheet's first photo (Chrome/Edge)
+const morph = (from, to, update) => {
+  if (reduce || !document.startViewTransition) return update();
+  from.style.viewTransitionName = 'aw-photo';
+  const t = document.startViewTransition({ update: () => { from.style.viewTransitionName = ''; update(); to.style.viewTransitionName = 'aw-photo'; }, types: ['aw'] });
+  t.ready.catch(() => {}); // a skipped transition (fast double click) still runs update; nothing to report
+  t.finished.finally(() => to.style.viewTransitionName = '');
+};
+$$('[data-open]').forEach(b => {
+  const d = $('#' + b.dataset.open), cover = $('.aw-photo img', b.closest('.aw-card')), photo = $('.aw-gallery img', d);
+  const close = () => morph(photo, cover, () => d.close());
+  b.addEventListener('click', () => morph(cover, photo, () => { d.showModal(); $('.aw-sheet', d).scrollTop = 0; }));
+  d.addEventListener('click', e => { if (e.target === d || e.target.closest('.aw-close')) close(); });
+  d.addEventListener('cancel', e => { e.preventDefault(); close(); });
+});
 
 // ---- Pointer effects (mouse only)
 if (finePointer && !reduce) {
@@ -87,6 +134,7 @@ if (finePointer && !reduce) {
     el.addEventListener('pointermove', e => {
       const b = el.getBoundingClientRect(), x = (e.clientX - b.left) / b.width - .5, y = (e.clientY - b.top) / b.height - .5;
       el.style.transform = `perspective(1000px) rotateY(${x * 10}deg) rotateX(${-y * 10}deg)`;
+      el.style.setProperty('--mx', (x + .5) * 100 + '%'); el.style.setProperty('--my', (y + .5) * 100 + '%');
     });
     el.addEventListener('pointerleave', () => el.style.transform = '');
   });
@@ -104,44 +152,6 @@ if (lb) {
     el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
   });
   lb.addEventListener('click', e => { if (e.target === lb || e.target.closest('button')) lb.close(); });
-}
-
-// ---- Skills filter
-const filters = $('.filters');
-if (filters) {
-  const tiles = $$('.tile');
-  const show = cat => tiles
-    .filter(t => !(t.hidden = cat !== 'all' && t.dataset.cat !== cat))
-    .forEach((t, i) => { t.classList.remove('enter'); t.offsetWidth; t.style.setProperty('--delay', i * 100 + 'ms'); t.classList.add('enter'); });
-  filters.addEventListener('click', e => {
-    const b = e.target.closest('button');
-    if (!b) return;
-    $$('button', filters).forEach(x => x.setAttribute('aria-pressed', x === b));
-    show(b.dataset.cat);
-    $('.slides').scrollTo({ left: 0 });
-  });
-  $('.carousel').addEventListener('reveal', () => show('all'), { once: true });
-}
-
-// ---- Skills carousel: next button loops back to the start, arrow keys, mouse drag
-const slides = $('.slides');
-if (slides) {
-  const step = dir => {
-    const card = $$('.tile', slides).find(t => !t.hidden), max = slides.scrollWidth - slides.clientWidth;
-    if (dir > 0 && slides.scrollLeft >= max - card.offsetWidth / 2) return slides.scrollTo({ left: 0 });
-    if (dir < 0 && slides.scrollLeft <= card.offsetWidth / 2) return slides.scrollTo({ left: max });
-    slides.scrollBy({ left: dir * (card.offsetWidth + 16) });
-  };
-  $('.carousel-next').addEventListener('click', () => step(1));
-  $('.carousel').addEventListener('keydown', e => {
-    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
-    e.preventDefault();
-    step(e.key === 'ArrowRight' ? 1 : -1);
-  });
-  let x0 = null, s0 = 0;
-  slides.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') { x0 = e.clientX; s0 = slides.scrollLeft; slides.classList.add('dragging'); } });
-  addEventListener('pointermove', e => { if (x0 !== null) slides.scrollLeft = s0 - (e.clientX - x0); });
-  addEventListener('pointerup', () => { x0 = null; slides.classList.remove('dragging'); });
 }
 
 // ---- Featured skills: "ดูผลงาน" opens that skill's works below and scrolls to them
@@ -173,6 +183,7 @@ if (term) {
     ['cmd', 'status'], ['out', 'กำลังเตรียมตัว...'], ['cmd', ''],
   ];
   term.addEventListener('reveal', async () => {
+    if ($('.goal-intro')) await sleep(2700); // wait for the circle intro to close
     for (const [cls, text] of script) {
       const row = document.createElement('div'), t = document.createTextNode('');
       row.className = cls;

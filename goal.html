@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css">
-<script src="assets/main.js" defer></script>
+<link rel="stylesheet" href="assets/style.css?v=5">
+<script src="assets/main.js?v=5" defer></script>
 </head>
 <body>
 <header class="site-header">
@@ -18,13 +18,18 @@
     <ul class="links" id="menu">
       <li><a href="index.html">หน้าแรก</a></li>
       <li><a href="about.html">ประวัติ</a></li>
-      <li><a href="skills.html">ทักษะ</a></li>
-      <li><a href="awards.html">รางวัล</a></li>
-      <li><a href="certificates.html">เกียรติบัตร</a></li>
+      <li><a href="works.html">ผลงาน</a></li>
       <li><a href="goal.html" aria-current="page">เป้าหมาย</a></li>
     </ul>
+    <a class="brand" href="index.html">Portfolio</a>
   </nav>
 </header>
+
+<!-- intro: a circle grows to fill the screen, the KMUTT crest pops in with the question, then the circle closes (CSS only) -->
+<div class="goal-intro" aria-hidden="true">
+  <img src="assets/kmutt-logo.png" alt="" width="122" height="122">
+  <p>ทำไมต้องที่นี่?</p>
+</div>
 
 <main class="page wrap">
   <nav class="crumb fade-up" aria-label="ตำแหน่งหน้า"><a href="index.html">หน้าแรก</a><span>/</span>เป้าหมาย</nav>
