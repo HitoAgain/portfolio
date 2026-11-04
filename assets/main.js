@@ -192,34 +192,41 @@ if (works) {
 //      button (shown once it is scrolled to) shatters the glass from where it was clicked; the shards fly back together
 //      and the next text types in. The last question opens the white circle and lets the goal page in.
 //      goalReady resolves once the goal page itself is uncovered.
+// ---- Typing (goal page): a typed line keeps its full text for screen readers; on screen it is the typed part, a caret,
+//      and the untyped rest, which stays laid out but invisible so nothing moves while it types
+const frame = () => new Promise(requestAnimationFrame);
+const prepType = el => {
+  const text = el.textContent.trim();
+  el.innerHTML = '<span class="sr-only"></span><span aria-hidden="true"><span class="tt"></span><span class="tc"></span><span class="tr"></span></span>';
+  $('.sr-only', el).textContent = $('.tr', el).textContent = text;
+  el.chars = graphemes(text);
+};
+const showTyped = (el, n) => { $('.tt', el).textContent = el.chars.slice(0, n).join(''); $('.tr', el).textContent = el.chars.slice(n).join(''); };
+// types el at data-type ms per character (several per frame when that is faster than the screen); the caret moves along
+// within scope; skip() true = show the rest at once
+const typeLine = async (el, scope, skip = () => false) => {
+  const ms = +el.dataset.type || 30, t0 = performance.now();
+  $$('.cur', scope).forEach(x => x.classList.remove('cur'));
+  el.classList.add('cur');
+  for (let n = 0; n < el.chars.length;) {
+    await frame();
+    n = skip() || reduce ? el.chars.length : Math.min(el.chars.length, Math.floor((performance.now() - t0) / ms) + 1);
+    showTyped(el, n);
+  }
+};
+
 const story = $('.story');
 let goalReady = $('.goal-intro') ? sleep(2700) : Promise.resolve();
 if (story) goalReady = new Promise(done => {
   const win = $('.glass-term', story), steps = $$('.story-step', story), cue = $('.story-cue'), outro = $('.goal-outro');
   const hold = ms => new Promise(r => setTimeout(r, ms)); // reading time: kept even with reduced motion
-  const frame = () => new Promise(requestAnimationFrame);
   const top0 = () => scrollTo({ top: 0, behavior: 'instant' });
   document.body.classList.add('story-on');
 
-  // each typed line: the full text for screen readers, then (hidden from them) typed part + caret + untyped rest
-  $$('[data-type]', story).forEach(el => {
-    const text = el.textContent.trim();
-    el.innerHTML = '<span class="sr-only"></span><span aria-hidden="true"><span class="tt"></span><span class="tc"></span><span class="tr"></span></span>';
-    $('.sr-only', el).textContent = $('.tr', el).textContent = text;
-    el.chars = graphemes(text);
-  });
+  $$('[data-type]', story).forEach(prepType);
   let rush = false; // a click on the window while it types finishes the text at once
   win.addEventListener('click', e => { if (!e.target.closest('.story-next')) rush = true; });
-  const type = async el => {
-    const g = el.chars, t = $('.tt', el), r = $('.tr', el), ms = +el.dataset.type, t0 = performance.now();
-    $$('.cur', story).forEach(x => x.classList.remove('cur'));
-    el.classList.add('cur');
-    for (let n = 0; n < g.length;) {
-      await frame();
-      n = rush || reduce ? g.length : Math.min(g.length, Math.floor((performance.now() - t0) / ms) + 1);
-      t.textContent = g.slice(0, n).join(''); r.textContent = g.slice(n).join('');
-    }
-  };
+  const type = el => typeLine(el, story, () => rush);
   const reveal = async (step, focus) => {
     step.classList.add('on');
     if (focus) step.focus({ preventScroll: true }); // keyboard and screen-reader users land on the new text
@@ -308,36 +315,44 @@ if (story) goalReady = new Promise(done => {
   (async () => {
     await sleep(2600); // the intro circle is closing
     win.classList.add('on');
-    await sleep(350);
-    await reveal(steps[0]);
-    await hold(1500);
+    await sleep(120);
+    await reveal(steps[0]); // "ชอบเล่นเกม": in quick, out quick
+    await hold(750);
     next(steps[0], steps[1]);
   })();
 });
 
-// ---- Goal terminal: types commands, prints output
-const term = $('.terminal');
-if (term) {
-  const code = $('code', term), caret = document.createElement('span');
-  caret.className = 'caret';
-  const script = [
-    ['cmd', 'whoami'], ['out', 'arlif kaseamsawat'],
-    ['cmd', 'cat goal.txt'], ['out hl', 'คณะวิศวกรรมศาสตร์ สาขาวิศวกรรมคอมพิวเตอร์'], ['out hl', 'มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี'],
-    ['cmd', 'status'], ['out', 'กำลังเตรียมตัว...'], ['cmd', ''],
-  ];
-  term.addEventListener('reveal', async () => {
-    await goalReady; // wait until the intro (and the story) has uncovered the page
-    for (const [cls, text] of script) {
-      const row = document.createElement('div'), t = document.createTextNode('');
-      row.className = cls;
-      row.append(t);
-      code.append(row);
-      if (cls === 'cmd') {
-        row.append(caret);
-        await sleep(400);
-        for (const { segment } of seg.segment(text)) { t.data += segment; await sleep(75); }
-        await sleep(300);
-      } else { t.data = text; await sleep(180); }
+// ---- Goal headline: "$ cat goal.html/your_goal.txt" types at a readable pace, waits, erases and types again, forever
+const goalCmd = $('.goal-typed');
+if (goalCmd) {
+  prepType(goalCmd);
+  goalCmd.classList.add('cur');
+  if (reduce) showTyped(goalCmd, goalCmd.chars.length);
+  else (async () => {
+    showTyped(goalCmd, 0);
+    await goalReady; // starts as the page is uncovered
+    for (;;) {
+      await sleep(350);
+      for (let n = 1; n <= goalCmd.chars.length; n++) { showTyped(goalCmd, n); await sleep(85); }
+      await sleep(2600);
+      for (let n = goalCmd.chars.length - 1; n >= 0; n--) { showTyped(goalCmd, n); await sleep(28); }
     }
-  }, { once: true });
+  })();
+}
+
+// ---- Statement of purpose: once the terminal scrolls into view, the command and then the whole statement type in fast;
+//      a click on it shows the rest at once
+const sop = $('.sop');
+if (sop) {
+  const lines = $$('.sop-body p', sop);
+  lines.forEach(prepType);
+  let rush = false;
+  sop.addEventListener('click', () => { rush = true; });
+  const start = new IntersectionObserver(async ([e]) => {
+    if (!e.isIntersecting) return;
+    start.disconnect();
+    await goalReady;
+    for (const el of lines) await typeLine(el, sop, () => rush);
+  }, { rootMargin: '0px 0px -20% 0px' }); // a tall box: start once its top is well inside the screen
+  start.observe(sop);
 }

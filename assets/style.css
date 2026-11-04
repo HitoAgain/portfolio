@@ -422,14 +422,21 @@ html:not(.js) .story-next{display:none}
 .story-done .goal-intro~main :is(.line>span,.fade-up){animation-delay:calc(var(--d,0) * 130ms + 1.7s)}
 
 /* goal */
-.terminal{margin-top:56px;max-width:720px;border-radius:16px;overflow:hidden;background:#090706;border:1px solid var(--line)}
-.terminal .bar{display:flex;gap:7px;padding:13px 16px;border-bottom:1px solid var(--line)}
+/* headline: a terminal command that types, waits, erases and types again */
+.goal-cmd{font:700 clamp(17px,4.6vw,58px)/1.35 ui-monospace,Menlo,Consolas,monospace;letter-spacing:-.02em;overflow-wrap:anywhere}
+.goal-cmd .prompt{color:var(--orange)}
+.goal-cmd .tc{width:.55em;height:1em;margin-right:-.55em;vertical-align:-.15em}
+.terminal{margin-top:56px;max-width:860px;border-radius:16px;overflow:hidden;background:#090706;border:1px solid var(--line)}
+.terminal .bar{position:relative;display:flex;gap:7px;padding:13px 16px;border-bottom:1px solid var(--line)}
 .terminal .bar i{width:11px;height:11px;border-radius:50%;background:#3a302a}
 .terminal .bar i:first-child{background:var(--orange)}
-.terminal code{display:block;padding:20px 22px;min-height:13.5em;font:15px/1.9 ui-monospace,Consolas,"IBM Plex Sans Thai",monospace;color:#e9ded6;white-space:pre-wrap}
-.terminal .cmd::before{content:"$ ";color:var(--orange)}
-.terminal .out{color:var(--muted)}
-.terminal .out.hl{color:var(--orange-2)}
+.terminal .bar h2{position:absolute;inset:0;display:grid;place-items:center;margin:0;font:600 12px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.16em;color:var(--muted);pointer-events:none}
+.sop-body{padding:22px 24px 26px;font:15.5px/1.95 "IBM Plex Sans Thai",system-ui,sans-serif;color:#e9ded6;cursor:text}
+.sop-body p+p{margin-top:1em}
+.sop-body .cmd{font-family:ui-monospace,Menlo,Consolas,"IBM Plex Sans Thai",monospace}
+.sop-body .cmd::before{content:"$ ";color:var(--orange)}
+.sop-body .tc{width:.6em;height:1.1em;margin-right:-.6em;vertical-align:-.2em}
+@media (max-width:600px){.sop-body{padding:18px 16px 22px;font-size:15px}}
 .caret{display:inline-block;width:9px;height:1.1em;background:var(--orange);vertical-align:-.2em;margin-left:2px;animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
 .reasons{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
