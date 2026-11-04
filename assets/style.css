@@ -4,7 +4,7 @@
   --radius:20px; --ease:cubic-bezier(.2,.8,.2,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;background:var(--bg)}
+html{scroll-behavior:smooth;background:var(--bg);scrollbar-gutter:stable}
 /* site background: three soft orange lights drifting slowly (the Aurora component in plain CSS; main.js adds the layer) */
 .aurora{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
 .aurora i{position:absolute;width:75%;height:75%;border-radius:50%;opacity:.22;background:radial-gradient(closest-side,var(--c),transparent);animation:aurora 20s ease-in-out infinite}
@@ -53,7 +53,7 @@ html:active-view-transition-type(aw)::view-transition-new(root){animation:page-i
 .menu-open .menu-btn i:first-child{transform:translateY(4px) rotate(45deg)}
 .menu-open .menu-btn i:last-child{transform:translateY(-4px) rotate(-45deg)}
 .links{position:fixed;top:0;left:0;bottom:0;z-index:1;width:min(340px,80vw);display:flex;flex-direction:column;justify-content:center;gap:2px;list-style:none;counter-reset:nav;
-  padding:96px 40px 40px;background:var(--surface);border-right:1px solid var(--line);transform:translateX(-100%);visibility:hidden;transition:transform .55s var(--ease),visibility .55s}
+  padding:96px 40px 40px;background:var(--surface);border-right:1px solid var(--line);transform:translateX(-100%);visibility:hidden;transition:transform .45s var(--ease),visibility .45s;will-change:transform}
 .links a{display:inline-flex;align-items:baseline;gap:16px;font:600 clamp(36px,4.6vw,50px)/1.3 Kanit;color:var(--text);padding:4px 0;
   opacity:0;transform:translateX(-24px);transition:opacity .45s var(--ease),transform .45s var(--ease),color .25s}
 .links a::before{content:counter(nav,decimal-leading-zero);counter-increment:nav;font:600 13px/1 Kanit;color:var(--muted)}
@@ -63,7 +63,12 @@ html:active-view-transition-type(aw)::view-transition-new(root){animation:page-i
 body.menu-open{overflow:hidden}
 .menu-open .links{transform:none;visibility:visible}
 .menu-open .site-header::after{opacity:1;visibility:visible}
-.menu-open .links a{opacity:1;transform:none;transition-delay:calc(var(--i,0) * 55ms + 150ms)}
+.menu-open .links a{opacity:1;transform:none;transition-delay:calc(var(--i,0) * 45ms + 90ms)}
+.site-header::after{will-change:opacity}
+/* while the menu is open, the always-moving effects behind it (background lights, glass blur over them, rainbow) hold still,
+   so the browser only has to move the panel */
+.menu-open :is(.aurora i,[data-tier=rainbow],.rainbow-text,.aw-tags .rainbow,.cat-tabs .rainbow-tab,.id-word span,.hero-photo img),
+.menu-open .aw-slot::before,.menu-open .aw-tags .silver::after{animation-play-state:paused}
 
 /* ---------- Line-by-line reveal for big headings ---------- */
 /* padding keeps Thai tone marks from being clipped by overflow:hidden */
@@ -377,7 +382,7 @@ html:has(.goal-intro)::view-transition-new(root){animation:none}
 .tg-bar{position:relative;display:flex;gap:8px;align-items:center;padding:13px 16px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08)}
 .tg-bar i{width:12px;height:12px;border-radius:50%;background:#ff5f57}
 .tg-bar i:nth-child(2){background:#febc2e}.tg-bar i:nth-child(3){background:#28c840}
-.tg-bar span{position:absolute;inset:0;display:grid;place-items:center;font:500 13px/1 ui-monospace,Menlo,Consolas,monospace;color:var(--muted)}
+.tg-bar .tg-title{position:absolute;inset:0;display:grid;place-items:center;font:500 13px/1 ui-monospace,Menlo,Consolas,monospace;color:var(--muted);pointer-events:none}
 .tg-body{padding:clamp(20px,3.6vw,40px)}
 .story-step:focus,.page-title:focus{outline:none}
 html:not(.js) .story-step+.story-step{margin-top:48px}
@@ -392,15 +397,46 @@ html:not(.js) .story-step+.story-step{margin-top:48px}
 .cur .tc{display:inline-block}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .js .story .glass-term{cursor:pointer;-webkit-user-select:none;user-select:none}
-/* "tap anywhere": plain text at the foot of the window (a real button underneath, for the keyboard) */
-.story-tap{display:block;margin:clamp(24px,4vh,36px) 0 0 auto;padding:4px 0;border:0;background:none;color:var(--muted);font:500 15px/1.2 Kanit;cursor:pointer;animation:tap-pulse 1.6s ease-in-out infinite}
-.story-tap::after{content:" ›";color:var(--orange)}
-.story-tap[hidden]{display:none}
-@keyframes tap-pulse{50%{opacity:.45}}
+/* "tap anywhere": plain text in the window's bottom padding, so showing it never makes the window grow (a real button, for the keyboard);
+   it fades up once a text is typed, then breathes and its arrow nudges */
+.story .tg-body{position:relative;padding-bottom:calc(clamp(20px,3.6vw,40px) + 30px)}
+.story-tap{position:absolute;right:clamp(20px,3.6vw,40px);bottom:clamp(12px,2vw,18px);padding:4px 0;border:0;background:none;color:var(--muted);
+  font:500 15px/1.2 Kanit;cursor:pointer;opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .6s var(--ease),transform .6s var(--ease),visibility 0s .6s}
+.story-tap.show{opacity:1;visibility:visible;transform:none;transition-delay:0s;animation:tap-breathe 2.4s ease-in-out .7s infinite}
+.story-tap::after{content:"›";display:inline-block;margin-left:6px;color:var(--orange);animation:tap-nudge 1.2s ease-in-out infinite}
+html:not(.js) .story-tap{display:none}
+@keyframes tap-breathe{50%{opacity:.5}}
+@keyframes tap-nudge{50%{transform:translateX(4px)}}
 .js .story-step:not(.on){display:none}
 .js .story .glass-term:not(.on){visibility:hidden}
 .story .glass-term.on{animation:story-pop .75s cubic-bezier(.3,1.6,.5,1) backwards}
 @keyframes story-pop{from{opacity:0;transform:scale(.5)}}
+/* window controls: macOS lights; hovering the group shows ×, −, + like the real thing; each has a larger invisible hit area */
+.tg-ctl{position:relative;z-index:1;display:flex;gap:8px}
+.tg-ctl button{position:relative;display:grid;place-items:center;width:12px;height:12px;padding:0;border:0;border-radius:50%;background:#ff5f57;color:rgba(40,0,0,.65);font:700 10px/1 system-ui,sans-serif;cursor:pointer}
+.tg-ctl button::before{content:"";position:absolute;inset:-7px -4px}
+.tg-ctl .tg-min{background:#febc2e;color:rgba(60,35,0,.65)}
+.tg-ctl .tg-max{background:#28c840;color:rgba(0,45,0,.65)}
+.tg-ctl:is(:hover,:focus-within) .tg-close::after{content:"×"}
+.tg-ctl:is(:hover,:focus-within) .tg-min::after{content:"−"}
+.tg-ctl:is(:hover,:focus-within) .tg-max::after{content:"+"}
+html:not(.js) .tg-ctl button{pointer-events:none}
+/* fold: everything below the title bar collapses (grid rows 1fr -> 0fr), and the bar opens it again */
+.tg-fold{display:grid;grid-template-rows:1fr;transition:grid-template-rows .45s var(--ease)}
+.tg-fold>*{min-height:0;overflow:hidden}
+.folded .tg-fold{grid-template-rows:0fr}
+.folded :is(.tg-bar,.bar){cursor:pointer}
+.closing{animation:tg-close .3s var(--ease) forwards;pointer-events:none}
+.opening{animation:tg-open .5s cubic-bezier(.3,1.5,.5,1)}
+@keyframes tg-close{to{opacity:0;transform:scale(.9) translateY(12px)}}
+@keyframes tg-open{from{opacity:0;transform:scale(.9) translateY(12px)}}
+/* a closed window leaves a small pill that brings it back */
+.tg-reopen{display:inline-flex;align-items:center;gap:10px;padding:10px 18px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(26,19,16,.7);
+  color:var(--text);font:500 14px/1.2 ui-monospace,Menlo,Consolas,"IBM Plex Sans Thai",monospace;cursor:pointer;animation:fade-up .5s var(--ease);transition:border-color .25s}
+.tg-reopen:hover{border-color:var(--orange)}
+.tg-reopen i{width:9px;height:9px;border-radius:50%;background:#28c840;box-shadow:-13px 0 0 #febc2e,-26px 0 0 #ff5f57;margin-left:26px}
+.tg-reopen[hidden]{display:none}
+[data-title][hidden]{display:none}
 /* shards: copies of the window, each clipped to one piece of the break (no blur on them, for speed) */
 .shards{position:fixed;z-index:45;pointer-events:none}
 .shards .glass-term{position:absolute;inset:0;width:auto;height:100%;-webkit-backdrop-filter:none;backdrop-filter:none;background-color:rgba(38,29,24,.8);visibility:visible}
@@ -423,21 +459,27 @@ html:not(.js) .story-step+.story-step{margin-top:48px}
 .goal-cmd{font:700 clamp(17px,4.6vw,58px)/1.35 ui-monospace,Menlo,Consolas,monospace;letter-spacing:-.02em;overflow-wrap:anywhere}
 .goal-cmd .prompt{color:var(--orange)}
 .goal-cmd .tc{width:.55em;height:1em;margin-right:-.55em;vertical-align:-.15em}
-.terminal{margin-top:56px;max-width:860px;border-radius:16px;overflow:hidden;background:#090706;border:1px solid var(--line)}
-.terminal .bar{position:relative;display:flex;gap:7px;padding:13px 16px;border-bottom:1px solid var(--line)}
-.terminal .bar i{width:11px;height:11px;border-radius:50%;background:#3a302a}
-.terminal .bar i:first-child{background:var(--orange)}
+.terminal{border-radius:16px;overflow:hidden;background:#090706;border:1px solid var(--line)}
+.terminal .bar{position:relative;display:flex;align-items:center;height:42px;padding:0 16px;border-bottom:1px solid var(--line)}
 .terminal .bar h2{position:absolute;inset:0;display:grid;place-items:center;margin:0;font:600 12px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.16em;color:var(--muted);pointer-events:none}
-.sop-body{padding:22px 24px 26px;font:15.5px/1.95 "IBM Plex Sans Thai",system-ui,sans-serif;color:#e9ded6;cursor:text}
+/* the statement window fills the screen, a gap from every edge (the top one leaves room for the menu button) */
+.sop{--gap:clamp(10px,1.6vw,22px);display:flex;flex-direction:column;margin:56px var(--gap) 0;height:calc(100svh - 76px - var(--gap));scroll-margin-top:76px;
+  box-shadow:0 30px 80px -30px rgba(0,0,0,.8);transition:height .45s var(--ease)}
+.sop.folded{height:44px}
+.sop .tg-fold{flex:1;min-height:0}
+.sop-body{height:100%;overflow:auto;overscroll-behavior:auto;padding:24px clamp(16px,3vw,44px) 30px;font:clamp(15px,1.15vw,18px)/1.95 "IBM Plex Sans Thai",system-ui,sans-serif;color:#e9ded6;cursor:text;
+  scrollbar-width:thin;scrollbar-color:rgba(255,106,19,.5) transparent}
+.sop-body:focus-visible{outline-offset:-4px}
+.sop-body>p{max-width:72em}
 .sop-body p+p{margin-top:1em}
 .sop-body .cmd{font-family:ui-monospace,Menlo,Consolas,"IBM Plex Sans Thai",monospace}
 .sop-body .cmd::before{content:"$ ";color:var(--orange)}
 .sop-body .tc{width:.6em;height:1.1em;margin-right:-.6em;vertical-align:-.2em}
-@media (max-width:600px){.sop-body{padding:18px 16px 22px;font-size:15px}}
+.sop+.tg-reopen{margin:56px 0 0 clamp(10px,1.6vw,22px)}
 .caret{display:inline-block;width:9px;height:1.1em;background:var(--orange);vertical-align:-.2em;margin-left:2px;animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
 /* the intro's three texts again, each in its own glass terminal; they type in as they scroll into view (main.js) */
-.goal-terms{display:grid;gap:22px;margin-top:40px}
+.goal-terms{display:grid;justify-items:start;gap:22px;margin-top:56px}
 .goal-terms .glass-term{width:min(860px,100%)}
 .goal-terms .tg-body{padding:clamp(18px,3vw,28px)}
 .goal-terms .tg-cmd{margin-bottom:12px}

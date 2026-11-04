@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=11">
-<script src="assets/main.js?v=11" defer></script>
+<link rel="stylesheet" href="assets/style.css?v=12">
+<script src="assets/main.js?v=12" defer></script>
 </head>
 <body>
 <header class="site-header">
@@ -36,7 +36,7 @@
      without JS all of it simply shows above the page -->
 <section class="story wrap" aria-label="เรื่องของผม">
   <div class="glass-term">
-    <div class="tg-bar" aria-hidden="true"><i></i><i></i><i></i><span>arlif — zsh</span></div>
+    <div class="tg-bar" aria-hidden="true"><i></i><i></i><i></i><span class="tg-title">arlif — zsh</span></div>
     <div class="tg-body">
       <div class="story-step" tabindex="-1">
         <p class="tg-cmd" data-type="14" aria-hidden="true">cat hobby.txt</p>
@@ -56,22 +56,25 @@
         <h2 data-type="28">แล้วเพราะอะไรต้องวิศวะคอมที่นี่?</h2>
         <p class="story-text" data-type="9">หลักสูตรในแต่ละปีมีความเข้มข้นมากที่จะสามารถสร้าง วิศวกร ด้านคอมพิวเตอร์ ได้อย่างมีประสิทธิภาพและช่วยแก้ไขปัญหาต่างๆในสังคมได้ รวมทั้งเทคโนโลยีต่างๆที่มีในมหาวิทยาลัยนี้ยังเหมาะสมและเพียงพอกับการสร้างศักยภาพในเด็กที่มีความฝันในการเรียนวิศวะคอมที่มจธ.นั้นเป็นจริงได้</p>
       </div>
-      <button class="story-tap" type="button" hidden>กดตรงไหนก็ได้</button>
+      <button class="story-tap" type="button">กดตรงไหนก็ได้เพื่อไปต่อ</button>
     </div>
   </div>
 </section>
 <p class="story-cue" aria-hidden="true" hidden>เลื่อนลงเพื่ออ่านต่อ ↓</p>
 <div class="goal-outro" hidden><p>ทั้งหมดนี่คือความตั้งใจของผม</p></div>
 
-<main class="page wrap">
+<main class="page">
+  <div class="wrap">
   <nav class="crumb fade-up" aria-label="ตำแหน่งหน้า"><a href="index.html">หน้าแรก</a><span>/</span>เป้าหมาย</nav>
   <!-- the command types itself, waits, erases and types again (main.js) -->
   <h1 class="page-title goal-cmd" tabindex="-1"><span class="prompt" aria-hidden="true">$ </span><span class="goal-typed">cat goal.html/your_goal.txt</span></h1>
+  </div>
 
   <!-- statement of purpose: types itself quickly once it scrolls into view; a click shows all of it at once (main.js) -->
-  <section class="terminal sop" aria-labelledby="sop-t">
-    <div class="bar"><i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i><h2 id="sop-t">STATEMENT OF PURPOSE</h2></div>
-    <div class="sop-body">
+  <section class="terminal sop" aria-labelledby="sop-t" data-title="STATEMENT OF PURPOSE">
+    <div class="bar"><span class="tg-ctl"><button type="button" class="tg-close" aria-label="ปิดหน้าต่าง"></button><button type="button" class="tg-min" aria-label="ย่อหน้าต่าง"></button><button type="button" class="tg-max" aria-label="ขยายหน้าต่าง"></button></span><h2 id="sop-t">STATEMENT OF PURPOSE</h2></div>
+    <div class="tg-fold">
+    <div class="sop-body" tabindex="0">
       <p class="cmd" data-type="40" aria-hidden="true">cat statement_of_purpose.txt</p>
       <p data-type=".95">ผม นายอาลีฟ เกษมสวัสดิ์ ชื่นชอบในด้านคอมพิวเตอร์มาตั้งแต่ยังเด็กและมีงานอดิเรกส่วนใหญ่คือเล่นเกม ความสนใจดังกล่าวไม่ได้เกิดจากแค่เพียงใช้งานคอมพิวเตอร์หรือแค่เล่นเกมธรรมดา แต่เริ่มเกิดจากการสงสัยว่าคอมพิวเตอร์นั้นทำงานได้ไง?</p>
       <p data-type=".95">จุดเริ่มต้นสำคัญเกิดขึ้นเมื่อผมมีโอกาสประกอบคอมพิวเตอร์ครั้งแรกด้วยตนเองจึงเกิดความสนใจใน Hardware จากที่ได้ศึกษาทดลองปฏิบัติ ทำให้ผมได้สืบค้นความรู้ด้าน Software อีกด้วย โดยเฉพาะการเขียนโค้ดที่ทำให้ผมสนใจการสร้างเกม ซึ่งการสนใจด้าน Hardware และ Software จะเป็นจุดเริ่มต้นสำคัญที่ผมจะสนใจในด้านวิศวกรรมในอนาคต เนื่องด้วยผมศึกษาความรู้เกี่ยวกับการพัฒนาเกมมากขึ้น ผมจึงตั้งคำถามว่า “หากเกมที่เราเล่นอยู่ทุกวัน เราเป็นผู้สร้างขึ้นเองจะเป็นอย่างไร” คำถามนี้ได้กลายเป็นแรงบันดาลใจที่ผลักดันให้ผมเริ่มสร้างเกมจากแพลตฟอร์ม Roblox ก่อนจะต่อยอดสู่การสร้างเกมบน Unity โดยตลอดการสร้างเกมผมก็ได้ศึกษาการเขียนโค้ดอย่างจริงจัง และลงมือสร้างเกมตั้งแต่การ Design, Coding, Testing, การแก้ไข Bug ต่างๆ, Publish และการทำโปรโมทด้วยตนเองบนแพลตฟอร์มต่างๆเช่น Tiktok และ Youtube เป็นต้น จนสามารถสร้างฐานผู้เล่นให้กับเกมที่ผมตั้งใจสร้างขึ้นและยังพบกับปัญหาต่างๆที่จำเป็นต้องแก้ไขหลายอย่าง ประสบการณ์ดังกล่าวทำให้ผมเรียนรู้ว่าการพัฒนาเกมที่ดีไม่ได้อาศัยความสามารถในการเขียนโค้ดอย่างเดียวแต่ต้องอาศัยการคิดวิเคราะห์แบบ Logical Thinking ที่สามารถแบ่งหน้าที่ความสำคัญในส่วนต่างๆเป็นลำดับได้อย่างละเอียด ต่อมาผมยังศึกษาความรู้เพิ่มเติมเกี่ยวกับภาษาโปรแกรม เช่น Python, C, C++, Lua, JavaScript, HTML, CSS และ TypeScript รวมทั้งศึกษาเกี่ยวกับเครื่องมือต่างๆอย่าง Git และลึกลงไปถึงหลักการประมวลผลของคอมพิวเตอร์อย่าง Binary Code, โครงสร้างการทำงานของคอมพิวเตอร์ และ องค์ประกอบของ Hardware กับ Software ทั้งหมดนี้เพื่อเข้าใจในรากฐานของคอมพิวเตอร์อย่างลึกซึ้ง ทั้งนี้ผมเห็นว่าวิศวกรรมคอมพิวเตอร์นั้นตรงตามความชอบในคอมพิวเตอร์อย่างมาก นอกจากนี้ผมยังมีประสบการณ์สร้างสื่อวิดีโอในแพลตฟอร์ม YouTube เป็นเวลามากกว่าหลายปีทำให้ผมมีทักษะและความรู้ในการตัดต่อ, การทำกราฟฟิค, เทคนิคการทำโปรโมท และ การพูดบรรยายอย่างมืออาชีพ ซึ่งความรู้และประสบการณ์เหล่านี้ช่วยพัฒนาทักษะด้านความคิดสร้างสรรค์, การสื่อสาร และ การทำงานอย่างเป็นระบบ สามารถสื่อได้ว่าผมมีการ Self Learning อยู่ตลอดเวลา</p>
@@ -81,37 +84,40 @@
       <p data-type=".95">สิ่งที่สำคัญคือมหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรีคณะวิศวกรรมศาสตร์สาขาวิศวกรรมคอมพิวเตอร์สามารถพัฒนาให้สามารถไปถึงสายงานดังกล่าวได้ทั้งหมดเนื่องจากปัจจัยสำคัญคือทางมหาวิทยาลัยนั้นมีศักยภาพที่จะส่งข้าพเจ้าไปทำงานสายงานดังกล่าวได้อย่างมีทักษะความรู้กับการทำงานเป็นทีมภายใต้แรงกดดันอย่างมืออาชีพ</p>
       <p class="cmd" aria-hidden="true"></p>
     </div>
+    </div>
   </section>
 
+  <div class="wrap">
   <!-- the story's three texts again, each in a glass terminal that types in as it scrolls into view (main.js) -->
   <section class="goal-terms" aria-label="เรื่องของผม">
-    <div class="glass-term">
-      <div class="tg-bar" aria-hidden="true"><i></i><i></i><i></i><span>arlif — zsh</span></div>
-      <div class="tg-body">
+    <div class="glass-term" data-title="story.txt">
+      <div class="tg-bar"><span class="tg-ctl"><button type="button" class="tg-close" aria-label="ปิดหน้าต่าง"></button><button type="button" class="tg-min" aria-label="ย่อหน้าต่าง"></button><button type="button" class="tg-max" aria-label="ขยายหน้าต่าง"></button></span><span class="tg-title">story.txt — zsh</span></div>
+      <div class="tg-fold"><div><div class="tg-body">
         <p class="tg-cmd" data-type="22" aria-hidden="true">cat story.txt</p>
         <p class="story-text" data-type="5">ผมที่มีความชื่นชอบด้านคอมพิวเตอร์แต่เด็ก เนื่องจากการประกอบคอมเครื่องแรกเป็นของตนเองทำให้มีความสนใจด้าน Hardware ไปจนได้ศึกษาด้าน Software ด้วย และ เริ่มสนใจการเขียนโค้ดที่เกี่ยวข้องกับการสร้างเกม ทำให้ได้เริ่มสร้างเกมด้วยตนเองจาก Roblox Studio พร้อมโปรโมทเอง จนสามารถสร้างฐานผู้เล่นและทำให้เห็นถึงปัญหาต่างๆแต่ผมก็ผ่านมาได้ และ นั่นแสดงความ Self Learning ของตัวผมเอง</p>
-      </div>
+      </div></div></div>
     </div>
-    <div class="glass-term">
-      <div class="tg-bar" aria-hidden="true"><i></i><i></i><i></i><span>arlif — zsh</span></div>
-      <div class="tg-body">
+    <div class="glass-term" data-title="why-kmutt.txt">
+      <div class="tg-bar"><span class="tg-ctl"><button type="button" class="tg-close" aria-label="ปิดหน้าต่าง"></button><button type="button" class="tg-min" aria-label="ย่อหน้าต่าง"></button><button type="button" class="tg-max" aria-label="ขยายหน้าต่าง"></button></span><span class="tg-title">why-kmutt.txt — zsh</span></div>
+      <div class="tg-fold"><div><div class="tg-body">
         <p class="tg-cmd" data-type="22" aria-hidden="true">cat why-kmutt.txt</p>
         <h2 data-type="28">แล้วทำไมต้องที่ มจธ.?</h2>
         <p class="story-text" data-type="5">เป็นเหมือนมหาลัยในฝันที่ผมตั้งใจจะเข้าเพราะมีโอกาสหลายครั้งที่ได้เข้าร่วมกิจกรรมต่างๆภายในมหาวิทยาลัยแห่งนี้ เช่น Open House และ การแข่งขัน รวมทั้ง บรรยากาศ&amp;สภาพแวดล้อมที่นี่ยังเหมาะสมอย่างมาก ด้วยเหตุผลดังกล่าวจึงเป็นสิ่งที่เรียกว่า “ความผูกพัน” ที่แน่นมากให้ผมตั้งใจและมุ่งมั่นที่ได้อย่างมาก</p>
-      </div>
+      </div></div></div>
     </div>
-    <div class="glass-term">
-      <div class="tg-bar" aria-hidden="true"><i></i><i></i><i></i><span>arlif — zsh</span></div>
-      <div class="tg-body">
+    <div class="glass-term" data-title="why-cpe.txt">
+      <div class="tg-bar"><span class="tg-ctl"><button type="button" class="tg-close" aria-label="ปิดหน้าต่าง"></button><button type="button" class="tg-min" aria-label="ย่อหน้าต่าง"></button><button type="button" class="tg-max" aria-label="ขยายหน้าต่าง"></button></span><span class="tg-title">why-cpe.txt — zsh</span></div>
+      <div class="tg-fold"><div><div class="tg-body">
         <p class="tg-cmd" data-type="22" aria-hidden="true">cat why-cpe.txt</p>
         <h2 data-type="28">แล้วเพราะอะไรต้องวิศวะคอมที่นี่?</h2>
         <p class="story-text" data-type="5">หลักสูตรในแต่ละปีมีความเข้มข้นมากที่จะสามารถสร้าง วิศวกร ด้านคอมพิวเตอร์ ได้อย่างมีประสิทธิภาพและช่วยแก้ไขปัญหาต่างๆในสังคมได้ รวมทั้งเทคโนโลยีต่างๆที่มีในมหาวิทยาลัยนี้ยังเหมาะสมและเพียงพอกับการสร้างศักยภาพในเด็กที่มีความฝันในการเรียนวิศวะคอมที่มจธ.นั้นเป็นจริงได้</p>
-      </div>
+      </div></div></div>
     </div>
   </section>
 
   <img class="kmutt-logo" src="assets/kmutt-logo.png" alt="ตรามหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี" width="112" height="112">
   <p class="kmutt" aria-hidden="true">KMUTT</p>
+  </div>
 </main>
 
 <footer class="site-footer">

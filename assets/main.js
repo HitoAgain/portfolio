@@ -17,6 +17,13 @@ menuBtn.addEventListener('click', () => {
 });
 addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('menu-open')) menuBtn.click(); });
 addEventListener('click', e => { if (document.body.classList.contains('menu-open') && !e.target.closest('.links, .menu-btn')) menuBtn.click(); });
+// picking a page: the panel slides away first, then the page changes (a jump with the menu still open felt rough)
+$$('.links a').forEach(a => a.addEventListener('click', e => {
+  if (!document.body.classList.contains('menu-open') || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  e.preventDefault();
+  menuBtn.click();
+  if (a.getAttribute('aria-current') !== 'page') setTimeout(() => { location.href = a.href; }, reduce ? 0 : 280);
+}));
 
 // ---- Scroll reveal (fires a 'reveal' event so pages can hook in)
 const io = new IntersectionObserver(es => es.forEach(e => {
@@ -203,8 +210,8 @@ const prepType = el => {
 };
 const showTyped = (el, n) => { $('.tt', el).textContent = el.chars.slice(0, n).join(''); $('.tr', el).textContent = el.chars.slice(n).join(''); };
 // types el at data-type ms per character (several per frame when that is faster than the screen); the caret moves along
-// within scope; skip() true = show the rest at once
-const typeLine = async (el, scope, skip = () => false) => {
+// within scope; skip() true = show the rest at once; step() runs after every frame of typing
+const typeLine = async (el, scope, skip = () => false, step = () => {}) => {
   const ms = +el.dataset.type || 30, t0 = performance.now();
   $$('.cur', scope).forEach(x => x.classList.remove('cur'));
   el.classList.add('cur');
@@ -212,7 +219,9 @@ const typeLine = async (el, scope, skip = () => false) => {
     await frame();
     n = skip() || reduce ? el.chars.length : Math.min(el.chars.length, Math.floor((performance.now() - t0) / ms) + 1);
     showTyped(el, n);
+    step();
   }
+  step();
 };
 
 const story = $('.story');
@@ -234,7 +243,7 @@ if (story) goalReady = new Promise(done => {
     for (const el of $$('[data-type]', step)) await type(el);
     ready = true;
     if (step === steps[0]) return; // "ชอบเล่นเกม" moves on by itself
-    tap.hidden = false;
+    tap.classList.add('show');
     // long text on a short screen: say there is more below until the hint at the foot is in view
     const seen = new IntersectionObserver(([e]) => { cue.hidden = e.isIntersecting; if (e.isIntersecting) seen.disconnect(); }, { threshold: 1 });
     seen.observe(tap);
@@ -242,7 +251,8 @@ if (story) goalReady = new Promise(done => {
   const advance = at => {
     if (!ready) return;
     ready = false;
-    tap.hidden = cue.hidden = true;
+    tap.classList.remove('show');
+    cue.hidden = true;
     if (cur === steps.length - 1) return finish();
     next(steps[cur], steps[++cur], at);
   };
@@ -341,20 +351,28 @@ if (goalCmd) {
   })();
 }
 
-// ---- Statement of purpose: once the terminal scrolls into view, the command and then the whole statement type in fast;
-//      a click on it shows the rest at once
+// ---- Statement of purpose: once the window scrolls into view, the command and then the whole statement type in fast.
+//      The text scrolls inside the window and follows the caret, like a terminal, until the reader scrolls it themselves;
+//      a click on the text shows the rest at once
 const sop = $('.sop');
 if (sop) {
-  const lines = $$('.sop-body p', sop);
+  const body = $('.sop-body', sop), lines = $$('p', body);
   lines.forEach(prepType);
-  let rush = false;
-  sop.addEventListener('click', () => { rush = true; });
+  let rush = false, follow = true;
+  body.addEventListener('click', () => { rush = true; });
+  ['wheel', 'touchmove', 'keydown'].forEach(t => body.addEventListener(t, () => { follow = false; }, { passive: true }));
+  const keepCaret = () => {
+    const c = $('.cur .tc', body);
+    if (!follow || !c) return;
+    const r = c.getBoundingClientRect(), b = body.getBoundingClientRect();
+    if (r.bottom > b.bottom - 28) body.scrollTop += r.bottom - b.bottom + 28;
+  };
   const start = new IntersectionObserver(async ([e]) => {
     if (!e.isIntersecting) return;
     start.disconnect();
     await goalReady;
-    for (const el of lines) await typeLine(el, sop, () => rush);
-  }, { rootMargin: '0px 0px -20% 0px' }); // a tall box: start once its top is well inside the screen
+    for (const el of lines) await typeLine(el, sop, () => rush, keepCaret);
+  }, { rootMargin: '0px 0px -25% 0px' });
   start.observe(sop);
 }
 
@@ -363,7 +381,7 @@ $$('.goal-terms .glass-term').forEach(box => {
   const lines = $$('[data-type]', box);
   lines.forEach(prepType);
   let rush = false;
-  box.addEventListener('click', () => { rush = true; });
+  $('.tg-body', box).addEventListener('click', () => { rush = true; });
   const start = new IntersectionObserver(async ([e]) => {
     if (!e.isIntersecting) return;
     start.disconnect();
@@ -371,4 +389,37 @@ $$('.goal-terms .glass-term').forEach(box => {
     for (const el of lines) await typeLine(el, box, () => rush);
   }, { rootMargin: '0px 0px -15% 0px' });
   start.observe(box);
+});
+
+// ---- Window controls on the goal page's terminals: red closes the window (a small pill brings it back),
+//      yellow folds it to its title bar (the bar, or yellow/green, opens it again), green opens it again
+$$('.tg-ctl').forEach(ctl => {
+  const win = ctl.closest('[data-title]'), bar = ctl.parentElement, min = $('.tg-min', ctl);
+  const pill = document.createElement('button');
+  pill.type = 'button'; pill.className = 'tg-reopen'; pill.hidden = true;
+  pill.innerHTML = '<i aria-hidden="true"></i><span></span>';
+  $('span', pill).textContent = `เปิด ${win.dataset.title} อีกครั้ง`;
+  win.after(pill);
+  const fold = on => {
+    win.classList.toggle('folded', on);
+    min.setAttribute('aria-label', on ? 'กางหน้าต่าง' : 'ย่อหน้าต่าง');
+    min.setAttribute('aria-expanded', !on);
+  };
+  const close = async () => {
+    win.classList.add('closing');
+    await sleep(300);
+    win.hidden = true; win.classList.remove('closing');
+    pill.hidden = false; pill.focus({ preventScroll: true });
+  };
+  const open = () => {
+    pill.hidden = true; win.hidden = false; fold(false);
+    win.classList.add('opening');
+    setTimeout(() => win.classList.remove('opening'), 500);
+    min.focus({ preventScroll: true });
+  };
+  $('.tg-close', ctl).addEventListener('click', close);
+  min.addEventListener('click', () => fold(!win.classList.contains('folded')));
+  $('.tg-max', ctl).addEventListener('click', () => fold(false));
+  bar.addEventListener('click', e => { if (win.classList.contains('folded') && !e.target.closest('.tg-ctl')) fold(false); });
+  pill.addEventListener('click', open);
 });
