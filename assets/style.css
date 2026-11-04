@@ -208,30 +208,25 @@ h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;margin:96px 0 32px}
 @keyframes ink{to{fill-opacity:1}}
 .js .skill-title.rv:not(.on) path{animation-play-state:paused}
 .skill-cat{margin:44px 0 16px;font-size:clamp(18px,2vw,22px);font-weight:600;color:var(--muted)}
-.skill-grid{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px}
-.tile{position:relative;height:180px;display:flex;align-items:center;justify-content:center;padding:20px;border-radius:24px;overflow:hidden;
-  background:linear-gradient(90deg,var(--c1),var(--c2));border:1px solid var(--line);transition:border-color .3s,transform .4s var(--ease)}
+/* small horizontal chips: icon + name; featured ones wear a crown on top and link to their works */
+.skill-grid{list-style:none;display:flex;flex-wrap:wrap;gap:22px 12px;padding-top:12px}
+.tile{position:relative;display:flex;align-items:center;gap:10px;padding:9px 16px 9px 11px;border-radius:14px;
+  background:linear-gradient(90deg,var(--c1),var(--c2));border:1px solid var(--line);transition:border-color .3s,transform .3s var(--ease)}
 .tile[data-cat=lang]{--c1:rgba(124,45,18,.5);--c2:rgba(154,52,18,.5)}
 .tile[data-cat=tool]{--c1:rgba(120,53,15,.5);--c2:rgba(146,64,14,.5)}
 .tile[data-cat=app]{--c1:rgba(127,29,29,.5);--c2:rgba(153,27,27,.5)}
-.tile::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(13,10,8,.2),transparent);pointer-events:none}
-.tile>*{position:relative;z-index:1}
-.tile-body{display:flex;flex-direction:column;align-items:center;gap:20px;transition:transform .4s var(--ease)}
-.tile img{width:72px;height:72px}
+.tile-body{display:flex;align-items:center;gap:10px}
+.tile img{width:30px;height:30px}
 .tile img.mono{filter:brightness(0) invert(1)}
-.tile h4{margin:0;font-size:15px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;text-align:center}
-.tile:hover{border-color:rgba(255,106,19,.5)}
-/* featured skills: crown + "see works" button on hover */
-.crown{position:absolute;top:16px;right:16px;z-index:1;width:28px;height:28px;color:var(--orange);opacity:0;transform:scale(.4) rotate(-25deg);
-  transition:opacity .3s,transform .5s cubic-bezier(.3,1.6,.5,1)}
-.see-works{position:absolute;left:50%;bottom:18px;z-index:1;padding:9px 16px;border:0;border-radius:99px;white-space:nowrap;cursor:pointer;
-  background:var(--orange);color:#1a0b02;font:600 14px/1 "IBM Plex Sans Thai";opacity:0;transform:translate(-50%,10px);transition:opacity .3s,transform .4s var(--ease),background .25s}
+.tile h4{margin:0;font-size:14px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+.tile:hover{border-color:rgba(255,106,19,.5);transform:translateY(-2px)}
+.crown{position:absolute;top:-19px;left:50%;width:26px;height:26px;color:var(--orange);transform:translateX(-50%) rotate(-10deg);
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,.55));transition:transform .4s cubic-bezier(.3,1.6,.5,1)}
+.star{border-color:rgba(255,106,19,.55)}
+.star:hover .crown,.star:focus-within .crown{transform:translateX(-50%) translateY(-3px) rotate(8deg)}
+.see-works{margin-left:4px;padding:6px 12px;border:0;border-radius:99px;white-space:nowrap;cursor:pointer;
+  background:var(--orange);color:#1a0b02;font:600 13px/1 "IBM Plex Sans Thai";transition:background .25s}
 .see-works:hover{background:var(--orange-2)}
-.star:hover,.star:focus-within{border-color:var(--orange)}
-.star:hover .crown,.star:focus-within .crown{opacity:1;transform:none}
-.star:hover .see-works,.star:focus-within .see-works{opacity:1;transform:translate(-50%,0)}
-.star:hover .tile-body,.star:focus-within .tile-body{transform:translateY(-16px)}
-@media (hover:none){.crown{opacity:1;transform:none}.see-works{opacity:1;transform:translate(-50%,0)}.star .tile-body{transform:translateY(-16px)}}
 
 /* works for a featured skill: opened by its button, zoom + fade in */
 .works{padding:40px 0 20px}
@@ -372,24 +367,82 @@ html:has(.goal-intro)::view-transition-new(root){animation:none}
 /* the headline rises as the circle closes */
 .goal-intro~main .line>span,.goal-intro~main .fade-up{animation-delay:calc(var(--d,0) * 130ms + 2.7s)}
 
+/* goal story: a frosted-glass macOS terminal types one text at a time; a question button at the end shatters the glass,
+   the shards fly back together and the next text types in (main.js) */
+.story{min-height:100svh;display:grid;place-items:center;padding:clamp(110px,16vh,150px) 0 clamp(64px,10vh,96px)}
+.glass-term{width:min(940px,100%);border-radius:16px;overflow:hidden;
+  background:linear-gradient(155deg,rgba(255,255,255,.11),rgba(255,255,255,.025) 60%),rgba(26,19,16,.4);border:1px solid rgba(255,255,255,.16);
+  -webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%);
+  box-shadow:0 40px 90px -30px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.2)}
+.tg-bar{position:relative;display:flex;gap:8px;align-items:center;padding:13px 16px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08)}
+.tg-bar i{width:12px;height:12px;border-radius:50%;background:#ff5f57}
+.tg-bar i:nth-child(2){background:#febc2e}.tg-bar i:nth-child(3){background:#28c840}
+.tg-bar span{position:absolute;inset:0;display:grid;place-items:center;font:500 13px/1 ui-monospace,Menlo,Consolas,monospace;color:var(--muted)}
+.tg-body{padding:clamp(20px,3.6vw,40px)}
+.story-step:focus,.page-title:focus{outline:none}
+html:not(.js) .story-step+.story-step{margin-top:48px}
+.tg-cmd{margin-bottom:18px;font:15px/1.6 ui-monospace,Menlo,Consolas,"IBM Plex Sans Thai",monospace;color:var(--muted)}
+.tg-cmd::before{content:"arlif@kmutt ~ % ";color:var(--orange)}
+.story-hook{font:800 clamp(52px,11vw,130px)/1.2 Kanit;letter-spacing:-.02em}
+.story-step h2{margin:0 0 .5em;font-size:clamp(24px,3.6vw,42px);color:var(--orange)}
+.story-text{font:500 clamp(20px,2.7vw,30px)/1.75 Kanit;text-wrap:pretty}
+/* typing: the untyped rest stays laid out but invisible, so the window never jumps; the caret takes no room */
+.tr{visibility:hidden}
+.tc{display:none;width:max(3px,.08em);height:.9em;margin-right:min(-3px,-.08em);vertical-align:-.1em;background:var(--orange);animation:blink 1s steps(1) infinite}
+.cur .tc{display:inline-block}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.js .story .glass-term{cursor:pointer;-webkit-user-select:none;user-select:none}
+/* "tap anywhere": plain text at the foot of the window (a real button underneath, for the keyboard) */
+.story-tap{display:block;margin:clamp(24px,4vh,36px) 0 0 auto;padding:4px 0;border:0;background:none;color:var(--muted);font:500 15px/1.2 Kanit;cursor:pointer;animation:tap-pulse 1.6s ease-in-out infinite}
+.story-tap::after{content:" ›";color:var(--orange)}
+.story-tap[hidden]{display:none}
+@keyframes tap-pulse{50%{opacity:.45}}
+.js .story-step:not(.on){display:none}
+.js .story .glass-term:not(.on){visibility:hidden}
+.story .glass-term.on{animation:story-pop .75s cubic-bezier(.3,1.6,.5,1) backwards}
+@keyframes story-pop{from{opacity:0;transform:scale(.5)}}
+/* shards: copies of the window, each clipped to one piece of the break (no blur on them, for speed) */
+.shards{position:fixed;z-index:45;pointer-events:none}
+.shards .glass-term{position:absolute;inset:0;width:auto;height:100%;-webkit-backdrop-filter:none;backdrop-filter:none;background-color:rgba(38,29,24,.8);visibility:visible}
+.shards *{animation:none!important}
+.story-cue{position:fixed;left:50%;bottom:22px;z-index:40;translate:-50% 0;padding:9px 18px;border-radius:999px;border:1px solid var(--line);background:rgba(22,17,14,.94);
+  color:var(--text);font:600 15px/1.2 Kanit;white-space:nowrap;box-shadow:0 10px 30px rgba(0,0,0,.6);pointer-events:none;animation:bob 2.6s ease-in-out infinite}
+/* while the story runs the page waits; once it is done the story goes away */
+.story-on main,.story-on .site-footer,.story-done .story{display:none}
+/* outro: the white circle opens over the story with one line, then closes on the goal page */
+.goal-outro{position:fixed;inset:0;z-index:70;display:grid;place-content:center;padding:0 16px;text-align:center;color:#1a0b02;pointer-events:none}
+.goal-outro[hidden]{display:none}
+.goal-outro::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--text);clip-path:circle(0 at 50% 50%);animation:circle-open .7s cubic-bezier(.7,0,.3,1) forwards}
+.goal-outro p{font:800 clamp(34px,6vw,64px)/1.2 Kanit;animation:fade-up .6s var(--ease) .45s backwards}
+.goal-outro.close{animation:circle-close .6s cubic-bezier(.7,0,.3,1) forwards}
+/* the headline rises as the outro circle closes */
+.story-done .goal-intro~main :is(.line>span,.fade-up){animation-delay:calc(var(--d,0) * 130ms + 1.7s)}
+
 /* goal */
-.terminal{margin-top:56px;max-width:720px;border-radius:16px;overflow:hidden;background:#090706;border:1px solid var(--line)}
-.terminal .bar{display:flex;gap:7px;padding:13px 16px;border-bottom:1px solid var(--line)}
+/* headline: a terminal command that types, waits, erases and types again */
+.goal-cmd{font:700 clamp(17px,4.6vw,58px)/1.35 ui-monospace,Menlo,Consolas,monospace;letter-spacing:-.02em;overflow-wrap:anywhere}
+.goal-cmd .prompt{color:var(--orange)}
+.goal-cmd .tc{width:.55em;height:1em;margin-right:-.55em;vertical-align:-.15em}
+.terminal{margin-top:56px;max-width:860px;border-radius:16px;overflow:hidden;background:#090706;border:1px solid var(--line)}
+.terminal .bar{position:relative;display:flex;gap:7px;padding:13px 16px;border-bottom:1px solid var(--line)}
 .terminal .bar i{width:11px;height:11px;border-radius:50%;background:#3a302a}
 .terminal .bar i:first-child{background:var(--orange)}
-.terminal code{display:block;padding:20px 22px;min-height:13.5em;font:15px/1.9 ui-monospace,Consolas,"IBM Plex Sans Thai",monospace;color:#e9ded6;white-space:pre-wrap}
-.terminal .cmd::before{content:"$ ";color:var(--orange)}
-.terminal .out{color:var(--muted)}
-.terminal .out.hl{color:var(--orange-2)}
+.terminal .bar h2{position:absolute;inset:0;display:grid;place-items:center;margin:0;font:600 12px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.16em;color:var(--muted);pointer-events:none}
+.sop-body{padding:22px 24px 26px;font:15.5px/1.95 "IBM Plex Sans Thai",system-ui,sans-serif;color:#e9ded6;cursor:text}
+.sop-body p+p{margin-top:1em}
+.sop-body .cmd{font-family:ui-monospace,Menlo,Consolas,"IBM Plex Sans Thai",monospace}
+.sop-body .cmd::before{content:"$ ";color:var(--orange)}
+.sop-body .tc{width:.6em;height:1.1em;margin-right:-.6em;vertical-align:-.2em}
+@media (max-width:600px){.sop-body{padding:18px 16px 22px;font-size:15px}}
 .caret{display:inline-block;width:9px;height:1.1em;background:var(--orange);vertical-align:-.2em;margin-left:2px;animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
-.reasons{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.reason{padding:26px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line);transition:border-color .3s,transform .4s var(--ease)}
-.reason:hover{border-color:rgba(255,106,19,.45);transform:translateY(-4px)}
-.reason span{font:700 14px/1 Kanit;color:var(--orange)}
-.reason h3{font-size:21px;font-weight:600;margin:14px 0 6px}
-.reason p{color:var(--muted);font-size:15px}
-@media (max-width:860px){.reasons{grid-template-columns:1fr}}
+/* the intro's three texts again, each in its own glass terminal; they type in as they scroll into view (main.js) */
+.goal-terms{display:grid;gap:22px;margin-top:40px}
+.goal-terms .glass-term{width:min(860px,100%)}
+.goal-terms .tg-body{padding:clamp(18px,3vw,28px)}
+.goal-terms .tg-cmd{margin-bottom:12px}
+.goal-terms h2{margin:0 0 .45em;font-size:clamp(20px,2.4vw,26px);color:var(--orange)}
+.goal-terms .story-text{font:500 clamp(16px,1.7vw,19px)/1.85 "IBM Plex Sans Thai",system-ui,sans-serif}
 .kmutt-logo{display:block;width:112px;height:112px;margin:96px auto 0}
 .kmutt{margin-top:24px;text-align:center;font:800 clamp(84px,21vw,280px)/.9 Kanit;letter-spacing:-.04em;user-select:none;
   -webkit-text-stroke:2px rgba(255,106,19,.55);color:transparent;
@@ -419,5 +472,6 @@ dialog::backdrop{background:rgba(0,0,0,.88);backdrop-filter:blur(6px)}
   .line>span,.fade-up,.js .rv{opacity:1;transform:none}
   .skill-title path{stroke-dashoffset:0;fill-opacity:1}
   .goal-intro{display:none}
+  .goal-outro::before{clip-path:none}
   .menu-hint path{stroke-dashoffset:0}
 }
