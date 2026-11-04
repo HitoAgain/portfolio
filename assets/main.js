@@ -147,12 +147,28 @@ if (lb) {
   $$('[data-zoom]').forEach(el => {
     el.tabIndex = 0;
     el.setAttribute('role', 'button');
-    const open = () => { const s = $('img', el); img.src = s.src; img.alt = s.alt; cap.textContent = el.dataset.zoom; lb.showModal(); };
+    // a figure zooms its own photo; a button (certificate cards) names its picture in data-src
+    const open = () => { const s = el.dataset.src ? { src: el.dataset.src, alt: el.dataset.alt || '' } : $('img', el); img.src = s.src; img.alt = s.alt; cap.textContent = el.dataset.zoom; lb.showModal(); };
     el.addEventListener('click', open);
     el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
   });
   lb.addEventListener('click', e => { if (e.target === lb || e.target.closest('button')) lb.close(); });
 }
+
+// ---- Works: category tabs show one category (or all); the cards of the shown ones pop in again
+const tabs = $$('.cat-tabs [data-filter]');
+tabs.forEach(t => t.addEventListener('click', () => {
+  const f = t.dataset.filter;
+  tabs.forEach(x => x.setAttribute('aria-pressed', x === t));
+  $$('.aw-cat').forEach(sec => {
+    sec.hidden = f !== 'all' && sec.dataset.cat !== f;
+    if (sec.hidden) return;
+    $$('.aw-slot, .cat-head', sec).forEach((el, i) => {
+      io.unobserve(el); el.classList.remove('rv', 'on'); el.style.transitionDelay = '';
+      el.classList.remove('pop'); el.offsetWidth; el.style.animationDelay = i * 70 + 'ms'; el.classList.add('pop');
+    });
+  });
+}));
 
 // ---- Featured skills: "ดูผลงาน" opens that skill's works below and scrolls to them
 const works = $('#works');

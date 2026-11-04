@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=6">
-<script src="assets/main.js?v=6" defer></script>
+<link rel="stylesheet" href="assets/style.css?v=7">
+<script src="assets/main.js?v=7" defer></script>
 </head>
 <body>
 <header class="site-header">
@@ -30,7 +30,19 @@
   <!-- "ผลงาน" writes itself (Kanit ExtraBold outlined, like SKILL) big in the middle with sci-fi glitches, then glides into place (main.js) -->
   <h1 class="page-title skill-title aw-title" aria-label="ผลงาน"><svg viewBox="-1 -60 298 66" aria-hidden="true"><path style="--i:0" d="M4 0V-44.6Q4 -48.4 6 -51.2Q8 -54 12.1 -54H29.4L30.1 -40.8H25.7Q22.6 -40.8 22.6 -37.5V-25.5L29.4 -37.5H36.1L42.9 -25.5V-54H61.5V0H43.2L32.7 -19L22.3 0Z"/><path style="--i:1" d="M86.3 1Q81.1 1 76.8 -0.8Q72.6 -2.5 70 -6.4Q67.5 -10.3 67.5 -16.6Q67.5 -25.4 73 -29.9Q78.6 -34.4 89.1 -34.4H101.8V-35.7Q101.8 -40 91.5 -40Q87 -40 82.1 -39.2Q77.2 -38.5 72.8 -37.1V-51.3Q77.2 -53 83.7 -54Q90.1 -55 96 -55Q109.1 -55 116 -49.4Q122.8 -43.7 122.8 -32.2V0H101.8V-21H94.7Q92 -21 90.5 -20.1Q89.1 -19.2 89.1 -16.6Q89.1 -14.3 90.2 -13.4Q91.4 -12.5 93.6 -12.5Q94.8 -12.5 95.8 -12.6Q96.8 -12.7 97.9 -13V-0.6Q95.9 0.1 93 0.6Q90.1 1 86.3 1Z"/><path style="--i:2" d="M154.8 1Q151.5 1 147.3 0.5Q143.1 -0.1 140.2 -1.1L125.8 -37.5H146.2L155.5 -13.9Q162.5 -15.6 162.5 -28.4Q162.5 -34 160.4 -36.2Q158.2 -38.4 153.6 -38.4H149.9V-54H158.3Q170.8 -54 177.7 -47.7Q184.5 -41.3 184.5 -28.5Q184.5 -18.2 180.8 -11.7Q177 -5.1 170.4 -2.1Q163.7 1 154.8 1Z"/><path style="--i:3" d="M207.7 0V-30.1Q207.7 -34.5 205.8 -36.4Q204 -38.3 199.5 -38.3Q195.9 -38.3 192.6 -37.5Q189.2 -36.7 186.5 -35.6V-51.2Q189.5 -52.8 194.3 -53.9Q199.1 -55 204 -55Q216.6 -55 222.3 -49.4Q228.1 -43.7 228.1 -32.7V0Z"/><path style="--i:4" d="M254.8 1Q246.6 1 241.3 -3.8Q236.1 -8.6 236.1 -17.7V-54H257.6V-20.6Q257.6 -14.8 263.5 -14.8Q265.5 -14.8 267.6 -15.7Q269.8 -16.5 270.8 -17.7V-54H292.3V0H272.4L271.7 -3.7Q268.7 -1.7 264.4 -0.4Q260 1 254.8 1Z"/></svg></h1>
 
-  <div class="aw-grid">
+  <!-- หมวดหมู่: กดเพื่อกรอง (main.js); ไม่มี JS ก็เห็นครบทุกหมวด -->
+  <div class="cat-tabs" role="group" aria-label="เลือกหมวดหมู่">
+    <button type="button" data-filter="all" aria-pressed="true">ทั้งหมด</button>
+    <button type="button" data-filter="contest" aria-pressed="false">แข่งขัน</button>
+    <button type="button" data-filter="workshop" aria-pressed="false">เวิร์คช็อป</button>
+    <button type="button" data-filter="activity" aria-pressed="false">กิจกรรม</button>
+    <button type="button" data-filter="diy" aria-pressed="false" class="rainbow-tab"><span>ทำด้วยตัวเอง</span></button>
+  </div>
+
+  <section class="aw-cat" id="cat-contest" data-cat="contest" aria-labelledby="h-contest">
+    <h2 class="cat-head rv" id="h-contest">แข่งขัน <small>3</small></h2>
+    <div class="aw-grid">
+
     <div class="aw-slot rv">
     <article class="aw-card" data-tier="silver" data-tilt>
       <div class="aw-photo"><img src="assets/eco-bin.webp" alt="ถังขยะอัจฉริยะ ECO2LOCAL" width="1086" height="1448"></div>
@@ -69,40 +81,86 @@
       </div>
     </article>
     </div>
-  </div>
+    </div>
+  </section>
 
-  <h2 class="rv">เกียรติบัตร</h2>
-  <div class="certs">
-    <figure class="cert rv" data-zoom="รางวัลชมเชย · การประกวดโครงงานวิทยาศาสตร์ ม.ปลาย · คณะวิทยาศาสตร์ มจธ.">
-      <div class="frame"><img src="assets/cert-kmutt-honorable.webp" alt="เกียรติบัตรรางวัลชมเชย การประกวดโครงงานวิทยาศาสตร์-คณิตศาสตร์หรือโครงงานสิ่งประดิษฐ์ ระดับมัธยมศึกษาตอนปลาย คณะวิทยาศาสตร์ มจธ." width="1600" height="1138"></div>
-      <figcaption><b>รางวัลชมเชย</b><small>ประกวดโครงงานวิทยาศาสตร์ ม.ปลาย · คณะวิทยาศาสตร์ มจธ. · 6 ก.ย. 2568</small></figcaption>
-    </figure>
-    <figure class="cert rv" data-zoom="รางวัลชนะเลิศ · การประกวดโครงงานวิทยาศาสตร์ ประเภทสิ่งประดิษฐ์ · โรงเรียนวัดพุทธบูชา">
-      <div class="frame"><img src="assets/cert-wpb-science.webp" alt="เกียรติบัตรรางวัลชนะเลิศ การประกวดโครงงานวิทยาศาสตร์ ประเภทสิ่งประดิษฐ์ เนื่องในวันวิทยาศาสตร์ 2568 โรงเรียนวัดพุทธบูชา" width="1239" height="877" loading="lazy"></div>
-      <figcaption><b>รางวัลชนะเลิศ · โครงงานวิทยาศาสตร์ ประเภทสิ่งประดิษฐ์</b><small>วันวิทยาศาสตร์ 2568 · โรงเรียนวัดพุทธบูชา · 18 ส.ค. 2568</small></figcaption>
-    </figure>
-    <figure class="cert rv" data-zoom="รางวัลชนะเลิศ ด้านสิ่งแวดล้อม · การประกวดนวัตกรรมระดับมัธยมศึกษา · โรงเรียนวัดพุทธบูชา">
-      <div class="frame"><img src="assets/cert-wpb-innovation.webp" alt="เกียรติบัตรรางวัลชนะเลิศ ด้านสิ่งแวดล้อม การประกวดนวัตกรรมระดับชั้นมัธยมศึกษา ประจำปี 2568 โรงเรียนวัดพุทธบูชา" width="1255" height="884" loading="lazy"></div>
-      <figcaption><b>รางวัลชนะเลิศ · นวัตกรรมด้านสิ่งแวดล้อม</b><small>ประกวดนวัตกรรมระดับมัธยมศึกษา · โรงเรียนวัดพุทธบูชา · 18 ส.ค. 2568</small></figcaption>
-    </figure>
-    <figure class="cert rv" data-zoom="โครงการมหาวิทยาลัยพี่เลี้ยง ระยะที่ 1 · คณะวิทยาศาสตร์ มจธ.">
-      <div class="frame"><img src="assets/cert-kmutt-mentor.webp" alt="ประกาศนียบัตรเข้าร่วมโครงการมหาวิทยาลัยพี่เลี้ยง ระยะที่ 1 คณะวิทยาศาสตร์ มจธ." width="1040" height="720" loading="lazy"></div>
-      <figcaption><b>โครงการมหาวิทยาลัยพี่เลี้ยง ระยะที่ 1</b><small>คณะวิทยาศาสตร์ มจธ. · 6 ก.ย. 2568</small></figcaption>
-    </figure>
-    <figure class="cert rv" data-zoom="K-Engineering World Tour and Workshop 2025 · สจล. · 3 สิงหาคม 2568">
-      <div class="frame"><img src="assets/cert-kmitl-kengineering.webp" alt="เกียรติบัตรเข้าร่วมกิจกรรม K-Engineering World Tour and Workshop 2025 คณะวิศวกรรมศาสตร์ สจล." width="1600" height="1131" loading="lazy"></div>
-      <figcaption><b>K-Engineering World Tour and Workshop 2025</b><small>คณะวิศวกรรมศาสตร์ สจล. · 3 ส.ค. 2568</small></figcaption>
-    </figure>
-    <figure class="cert rv" data-zoom="BU Open House 2025 · Next-Gen Full-Stack · มหาวิทยาลัยกรุงเทพ">
-      <div class="frame"><img src="assets/cert-bu-fullstack.webp" alt="เกียรติบัตร BU Open House 2025 หัวข้อ Next-Gen Full-Stack: Integrating AI into Modern Web Apps มหาวิทยาลัยกรุงเทพ" width="1600" height="1132" loading="lazy"></div>
-      <figcaption><b>Next-Gen Full-Stack: Integrating AI into Modern Web Apps</b><small>BU Open House 2025 · มหาวิทยาลัยกรุงเทพ · 29–30 ส.ค. 2568</small></figcaption>
-    </figure>
-    <figure class="cert rv" data-zoom="BU Open House 2025 · เส้นทางอาชีพนักบัญชี · มหาวิทยาลัยกรุงเทพ">
-      <div class="frame"><img src="assets/cert-bu-accounting.webp" alt="เกียรติบัตร BU Open House 2025 หัวข้อเส้นทางอาชีพนักบัญชี มหาวิทยาลัยกรุงเทพ" width="1600" height="1132" loading="lazy"></div>
-      <figcaption><b>เส้นทางอาชีพนักบัญชี</b><small>BU Open House 2025 · มหาวิทยาลัยกรุงเทพ · 29–30 ส.ค. 2568</small></figcaption>
-    </figure>
-    <!-- เพิ่มเกียรติบัตรใบใหม่: คัดลอก <figure class="cert"> ด้านบน แล้วเปลี่ยนรูปใน assets/ และข้อความ -->
-  </div>
+  <section class="aw-cat" id="cat-workshop" data-cat="workshop" aria-labelledby="h-workshop">
+    <h2 class="cat-head rv" id="h-workshop">เวิร์คช็อป <small>3</small></h2>
+    <div class="aw-grid">
+    <div class="aw-slot rv">
+    <article class="aw-card" data-tier="plain" data-tilt>
+      <div class="aw-photo doc"><img src="assets/cert-kmitl-kengineering.webp" alt="เกียรติบัตรเข้าร่วมกิจกรรม K-Engineering World Tour and Workshop 2025 คณะวิศวกรรมศาสตร์ สจล." width="1600" height="1131" loading="lazy"></div>
+      <div class="aw-body">
+        <p class="aw-tags"><span class="badge flat">เวิร์คช็อป</span></p>
+        <h2>K-Engineering World Tour and Workshop 2025</h2>
+        <p class="aw-tease">คณะวิศวกรรมศาสตร์ สจล.</p>
+        <p class="aw-stat">สจล. · 3 ส.ค. 2568</p>
+        <div class="aw-foot"><button class="aw-open" type="button" data-zoom="K-Engineering World Tour and Workshop 2025 · สจล. · 3 สิงหาคม 2568" data-src="assets/cert-kmitl-kengineering.webp" data-alt="เกียรติบัตรเข้าร่วมกิจกรรม K-Engineering World Tour and Workshop 2025 คณะวิศวกรรมศาสตร์ สจล.">ดูเกียรติบัตร <span>→</span></button><small>เกียรติบัตร</small></div>
+      </div>
+    </article>
+    </div>
+    <div class="aw-slot rv">
+    <article class="aw-card" data-tier="plain" data-tilt>
+      <div class="aw-photo doc"><img src="assets/cert-bu-fullstack.webp" alt="เกียรติบัตร BU Open House 2025 หัวข้อ Next-Gen Full-Stack: Integrating AI into Modern Web Apps มหาวิทยาลัยกรุงเทพ" width="1600" height="1132" loading="lazy"></div>
+      <div class="aw-body">
+        <p class="aw-tags"><span class="badge flat">เวิร์คช็อป</span></p>
+        <h2>Next-Gen Full-Stack: Integrating AI into Modern Web Apps</h2>
+        <p class="aw-tease">BU Open House 2025 · มหาวิทยาลัยกรุงเทพ</p>
+        <p class="aw-stat">ม.กรุงเทพ · 29–30 ส.ค. 2568</p>
+        <div class="aw-foot"><button class="aw-open" type="button" data-zoom="BU Open House 2025 · Next-Gen Full-Stack · มหาวิทยาลัยกรุงเทพ" data-src="assets/cert-bu-fullstack.webp" data-alt="เกียรติบัตร BU Open House 2025 หัวข้อ Next-Gen Full-Stack: Integrating AI into Modern Web Apps มหาวิทยาลัยกรุงเทพ">ดูเกียรติบัตร <span>→</span></button><small>เกียรติบัตร</small></div>
+      </div>
+    </article>
+    </div>
+    <div class="aw-slot rv">
+    <article class="aw-card" data-tier="plain" data-tilt>
+      <div class="aw-photo doc"><img src="assets/cert-bu-accounting.webp" alt="เกียรติบัตร BU Open House 2025 หัวข้อเส้นทางอาชีพนักบัญชี มหาวิทยาลัยกรุงเทพ" width="1600" height="1132" loading="lazy"></div>
+      <div class="aw-body">
+        <p class="aw-tags"><span class="badge flat">เวิร์คช็อป</span></p>
+        <h2>เส้นทางอาชีพนักบัญชี</h2>
+        <p class="aw-tease">BU Open House 2025 · มหาวิทยาลัยกรุงเทพ</p>
+        <p class="aw-stat">ม.กรุงเทพ · 29–30 ส.ค. 2568</p>
+        <div class="aw-foot"><button class="aw-open" type="button" data-zoom="BU Open House 2025 · เส้นทางอาชีพนักบัญชี · มหาวิทยาลัยกรุงเทพ" data-src="assets/cert-bu-accounting.webp" data-alt="เกียรติบัตร BU Open House 2025 หัวข้อเส้นทางอาชีพนักบัญชี มหาวิทยาลัยกรุงเทพ">ดูเกียรติบัตร <span>→</span></button><small>เกียรติบัตร</small></div>
+      </div>
+    </article>
+    </div>
+    </div>
+  </section>
+
+  <section class="aw-cat" id="cat-activity" data-cat="activity" aria-labelledby="h-activity">
+    <h2 class="cat-head rv" id="h-activity">กิจกรรม <small>1</small></h2>
+    <div class="aw-grid">
+    <div class="aw-slot rv">
+    <article class="aw-card" data-tier="plain" data-tilt>
+      <div class="aw-photo doc"><img src="assets/cert-kmutt-mentor.webp" alt="ประกาศนียบัตรเข้าร่วมโครงการมหาวิทยาลัยพี่เลี้ยง ระยะที่ 1 คณะวิทยาศาสตร์ มจธ." width="1040" height="720" loading="lazy"></div>
+      <div class="aw-body">
+        <p class="aw-tags"><span class="badge flat">กิจกรรม</span></p>
+        <h2>โครงการมหาวิทยาลัยพี่เลี้ยง ระยะที่ 1</h2>
+        <p class="aw-tease">คณะวิทยาศาสตร์ มจธ.</p>
+        <p class="aw-stat">มจธ. · 6 ก.ย. 2568</p>
+        <div class="aw-foot"><button class="aw-open" type="button" data-zoom="โครงการมหาวิทยาลัยพี่เลี้ยง ระยะที่ 1 · คณะวิทยาศาสตร์ มจธ." data-src="assets/cert-kmutt-mentor.webp" data-alt="ประกาศนียบัตรเข้าร่วมโครงการมหาวิทยาลัยพี่เลี้ยง ระยะที่ 1 คณะวิทยาศาสตร์ มจธ.">ดูเกียรติบัตร <span>→</span></button><small>เกียรติบัตร</small></div>
+      </div>
+    </article>
+    </div>
+    </div>
+  </section>
+
+  <section class="aw-cat diy" id="cat-diy" data-cat="diy" aria-labelledby="h-diy">
+    <h2 class="cat-head rv" id="h-diy"><span class="rainbow-text">ทำด้วยตัวเอง</span> <small>1</small></h2>
+    <div class="aw-grid">
+    <div class="aw-slot rv">
+    <article class="aw-card" data-tier="rainbow" data-tilt>
+      <div class="aw-photo"><img src="assets/portfolio-site.webp" alt="หน้าแรกของเว็บไซต์ Portfolio นี้" width="1200" height="900" loading="lazy"></div>
+      <div class="aw-body">
+        <p class="aw-tags"><span class="badge rainbow">ทำด้วยตัวเอง</span><span>เว็บไซต์</span></p>
+        <h2>เว็บไซต์ Portfolio นี้</h2>
+        <p class="aw-tease">เว็บที่คุณกำลังดูอยู่ เขียนด้วย HTML, CSS และ JavaScript ล้วน ร่วมกับ Claude Code</p>
+        <p class="aw-stat">HTML · CSS · JavaScript</p>
+        <div class="aw-foot"><a class="aw-open" href="https://github.com/HitoAgain/portfolio" target="_blank" rel="noopener">ดูโค้ดบน GitHub <span>↗</span></a><small>โค้ดเปิดให้ดูได้</small></div>
+      </div>
+    </article>
+    </div>
+    </div>
+  </section>
 </main>
 
 <footer class="site-footer">
@@ -206,11 +264,6 @@
   <button class="aw-close" type="button" aria-label="ปิด">×</button>
 </dialog>
 
-<dialog id="lb" aria-label="ภาพขยาย">
-  <img src="assets/kmutt-award.webp" alt="">
-  <button type="button" aria-label="ปิด">×</button>
-  <p></p>
-</dialog>
 <dialog id="lb" aria-label="ภาพขยาย">
   <img src="assets/kmutt-award.webp" alt="">
   <button type="button" aria-label="ปิด">×</button>

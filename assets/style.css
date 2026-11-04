@@ -322,16 +322,39 @@ body:has(.aw-detail[open]){overflow:hidden}
 .aw-certs .dots{position:static;grid-area:2/1;margin-top:12px}
 @media (max-width:600px){.aw-sheet{padding:18px}.aw-close{top:8px;right:8px}}
 
-/* certificates */
-.certs{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;margin-top:56px}
-.cert{border-radius:var(--radius);overflow:hidden;background:var(--surface);border:1px solid var(--line);cursor:zoom-in;transition:border-color .3s}
-.cert:hover{border-color:rgba(255,106,19,.45)}
-.cert .frame{aspect-ratio:4/3;overflow:hidden}
-.cert .frame img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease)}
-.cert:hover .frame img,.cert:focus-visible .frame img{transform:scale(1.04)}
-.cert figcaption{padding:18px 22px}
-.cert b{display:block;font:600 18px/1.3 Kanit}
-.cert small{color:var(--muted);font-size:14px}
+/* works categories: tab row filters the sections (main.js) */
+.cat-tabs{display:flex;flex-wrap:wrap;gap:10px;margin-top:48px}
+.cat-tabs button{padding:10px 20px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:600 16px/1.2 Kanit;cursor:pointer;transition:color .25s,border-color .25s,background-color .25s}
+.cat-tabs button:hover{color:var(--text);border-color:rgba(255,106,19,.5)}
+.cat-tabs button[aria-pressed=true]{background:var(--orange);border-color:var(--orange);color:#1a0b02}
+.aw-cat .aw-grid{margin-top:0}
+.cat-head{display:flex;align-items:baseline;gap:12px;margin:72px 0 28px}
+.cat-head small{font:600 15px/1 Kanit;color:var(--muted)}
+.pop{animation:zoom-in .7s var(--ease) both}
+/* certificate cards: show the whole certificate instead of cropping it */
+.aw-photo.doc{padding:14px;background:#efe9e3}
+.aw-photo.doc img{object-fit:contain}
+
+/* ---------- "ทำด้วยตัวเอง": rainbow that turns around the frame and glows ---------- */
+@property --spin{syntax:"<angle>";inherits:true;initial-value:0deg}
+:root{--rainbow:conic-gradient(from var(--spin),#ff3d6e,#ff9f1c,#ffe14d,#3dff8f,#2ee6ff,#4d7cff,#b84dff,#ff3d6e)}
+@keyframes spin{to{--spin:360deg}}
+@keyframes hue{to{background-position:200% 0}}
+[data-tier=rainbow]{--frame:var(--rainbow);border-width:2px;animation:spin 4s linear infinite}
+/* the glow: the same rainbow, blurred, behind the card */
+.aw-slot:has([data-tier=rainbow]){isolation:isolate}
+.aw-slot:has([data-tier=rainbow])::before{content:"";position:absolute;inset:4px;z-index:-1;border-radius:22px;background:var(--rainbow);filter:blur(24px);opacity:.5;animation:spin 4s linear infinite;transition:opacity .4s,filter .4s}
+.aw-slot:has([data-tier=rainbow]):hover::before{opacity:.85;filter:blur(32px)}
+.aw-card[data-tier=rainbow] .aw-stat{color:#ffe14d}
+.rainbow-text{background:linear-gradient(90deg,#ff3d6e,#ff9f1c,#ffe14d,#3dff8f,#2ee6ff,#b84dff,#ff3d6e) 0 0/200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:hue 3s linear infinite;filter:drop-shadow(0 0 12px rgba(255,159,28,.45))}
+.aw-tags .rainbow{background:linear-gradient(90deg,#ff3d6e,#ff9f1c,#ffe14d,#3dff8f,#2ee6ff,#b84dff,#ff3d6e) 0 0/200% 100%;color:#1a0b02;animation:hue 3s linear infinite}
+.aw-card[data-tier=rainbow] .aw-open{background:rgba(255,255,255,.08);color:var(--text)}
+.aw-card[data-tier=rainbow]:hover .aw-open{background:linear-gradient(90deg,#ff3d6e,#ff9f1c,#ffe14d,#3dff8f,#2ee6ff,#b84dff) 0 0/200% 100%;color:#1a0b02;animation:hue 2s linear infinite}
+.cat-tabs .rainbow-tab{position:relative;border:2px solid transparent;background:linear-gradient(var(--surface),var(--surface)) padding-box,var(--rainbow) border-box;animation:spin 4s linear infinite}
+.cat-tabs .rainbow-tab span{background:linear-gradient(90deg,#ff3d6e,#ff9f1c,#ffe14d,#3dff8f,#2ee6ff,#b84dff,#ff3d6e) 0 0/200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:hue 3s linear infinite}
+.cat-tabs .rainbow-tab[aria-pressed=true]{background:var(--rainbow) border-box;box-shadow:0 0 22px rgba(255,159,28,.5)}
+.cat-tabs .rainbow-tab[aria-pressed=true] span{background:none;color:#1a0b02}
 
 /* goal intro: a circle opens to fill the screen, the KMUTT crest pops in with the question, then the circle closes on the page */
 /* the overlay is opaque from the first frame so neither the previous page nor this one shows around the circle */
