@@ -36,14 +36,6 @@ const io = new IntersectionObserver(es => es.forEach(e => {
 }), { threshold: .15 });
 $$('.rv').forEach((el, i) => { el.style.transitionDelay = (i % 3) * 90 + 'ms'; io.observe(el); });
 
-// ---- Scroll-linked: KMUTT fill
-const big = $('.kmutt');
-if (big) {
-  const onScroll = () => { const r = big.getBoundingClientRect(); big.style.setProperty('--fill', Math.max(0, Math.min(100, (innerHeight - r.top) / (r.height + 40) * 100)) + '%'); };
-  addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-}
-
 // ---- About: the education button swaps the card face to the three school crests, and back
 const idCard = $('.id-card');
 if (idCard) $$('.id-flip', idCard).forEach(b => b.addEventListener('click', () => {
@@ -122,7 +114,7 @@ const morph = (from, to, update) => {
   t.ready.catch(() => {}); // a skipped transition (fast double click) still runs update; nothing to report
   t.finished.finally(() => to.style.viewTransitionName = '');
 };
-$$('[data-open]').forEach(b => {
+$$('.aw-open[data-open]').forEach(b => {
   const d = $('#' + b.dataset.open), cover = $('.aw-photo img', b.closest('.aw-card')), photo = $('.aw-gallery img', d);
   const close = () => morph(photo, cover, () => d.close());
   b.addEventListener('click', () => morph(cover, photo, () => { d.showModal(); $('.aw-sheet', d).scrollTop = 0; }));
@@ -130,20 +122,30 @@ $$('[data-open]').forEach(b => {
   d.addEventListener('cancel', e => { e.preventDefault(); close(); });
 });
 
-// ---- Pointer effects (mouse only)
+// ---- Pointer effects (mouse only); pointer events can come faster than the screen draws, so each writes once per frame
 if (finePointer && !reduce) {
   const heroImgs = $$('.hero-photo img');
+  let hx = 0, hy = 0, hraf = 0;
   if (heroImgs.length) addEventListener('pointermove', e => {
-    heroImgs.forEach(img => img.style.translate = `${(e.clientX / innerWidth - .5) * -18}px ${(e.clientY / innerHeight - .5) * -12}px`);
+    hx = e.clientX; hy = e.clientY;
+    hraf ||= requestAnimationFrame(() => {
+      hraf = 0;
+      heroImgs.forEach(img => img.style.translate = `${(hx / innerWidth - .5) * -18}px ${(hy / innerHeight - .5) * -12}px`);
+    });
   }, { passive: true });
 
   $$('[data-tilt]').forEach(el => {
+    let ev = null, raf = 0;
     el.addEventListener('pointermove', e => {
-      const b = el.getBoundingClientRect(), x = (e.clientX - b.left) / b.width - .5, y = (e.clientY - b.top) / b.height - .5;
-      el.style.transform = `perspective(1000px) rotateY(${x * 10}deg) rotateX(${-y * 10}deg)`;
-      el.style.setProperty('--mx', (x + .5) * 100 + '%'); el.style.setProperty('--my', (y + .5) * 100 + '%');
+      ev = e;
+      raf ||= requestAnimationFrame(() => {
+        raf = 0;
+        const b = el.getBoundingClientRect(), x = (ev.clientX - b.left) / b.width - .5, y = (ev.clientY - b.top) / b.height - .5;
+        el.style.transform = `perspective(1000px) rotateY(${x * 10}deg) rotateX(${-y * 10}deg)`;
+        el.style.setProperty('--mx', (x + .5) * 100 + '%'); el.style.setProperty('--my', (y + .5) * 100 + '%');
+      });
     });
-    el.addEventListener('pointerleave', () => el.style.transform = '');
+    el.addEventListener('pointerleave', () => { cancelAnimationFrame(raf); raf = 0; el.style.transform = ''; });
   });
 }
 
@@ -195,10 +197,6 @@ if (works) {
   }, { rootMargin: '0px 0px -15% 0px' }).observe(works); // works starts right at the fold, so ignore the bottom edge
 }
 
-// ---- Goal story: after the intro a glass terminal types "ชอบเล่นเกม", then the paragraphs one at a time. Each question
-//      button (shown once it is scrolled to) shatters the glass from where it was clicked; the shards fly back together
-//      and the next text types in. The last question opens the white circle and lets the goal page in.
-//      goalReady resolves once the goal page itself is uncovered.
 // ---- Typing (goal page): a typed line keeps its full text for screen readers; on screen it is the typed part, a caret,
 //      and the untyped rest, which stays laid out but invisible so nothing moves while it types
 const frame = () => new Promise(requestAnimationFrame);
@@ -210,8 +208,8 @@ const prepType = el => {
 };
 const showTyped = (el, n) => { $('.tt', el).textContent = el.chars.slice(0, n).join(''); $('.tr', el).textContent = el.chars.slice(n).join(''); };
 // types el at data-type ms per character (several per frame when that is faster than the screen); the caret moves along
-// within scope; skip() true = show the rest at once; step() runs after every frame of typing
-const typeLine = async (el, scope, skip = () => false, step = () => {}) => {
+// within scope; skip() true = show the rest at once
+const typeLine = async (el, scope, skip = () => false) => {
   const ms = +el.dataset.type || 30, t0 = performance.now();
   $$('.cur', scope).forEach(x => x.classList.remove('cur'));
   el.classList.add('cur');
@@ -219,11 +217,61 @@ const typeLine = async (el, scope, skip = () => false, step = () => {}) => {
     await frame();
     n = skip() || reduce ? el.chars.length : Math.min(el.chars.length, Math.floor((performance.now() - t0) / ms) + 1);
     showTyped(el, n);
-    step();
   }
-  step();
 };
 
+// ---- Glass shatter (goal page): copies of the window, each clipped to one piece of a break around the impact point, fly
+//      apart; swap() changes the window's content while they are apart; then they fly back together as the new window.
+//      speed < 1 = quicker. Only transforms and opacity animate, so it all runs on the GPU.
+const pieces = (w, h, cx, cy) => {
+  const N = 7, rad = [Math.min(w, h) * .18, Math.max(w, h) * .45, 6000], base = Math.random() * 6.3, out = [];
+  const ang = [...Array(N)].map((_, i) => base + (i + (Math.random() - .5) * .6) * 2 * Math.PI / N);
+  const pts = rad.map((r, k) => ang.map(t => { const rr = k < 2 ? r * (.7 + Math.random() * .6) : r; return [cx + Math.cos(t) * rr, cy + Math.sin(t) * rr]; }));
+  for (let i = 0; i < N; i++) {
+    const j = (i + 1) % N;
+    out.push({ ring: 0, pts: [[cx, cy], pts[0][i], pts[0][j]] });
+    for (let k = 1; k < 3; k++) out.push({ ring: k, pts: [pts[k - 1][i], pts[k][i], pts[k][j], pts[k - 1][j]] });
+  }
+  return out;
+};
+const shatter = async (win, swap, at, speed = 1) => {
+  if (reduce) return swap();
+  const copy = () => { const c = win.cloneNode(true); c.removeAttribute('style'); c.removeAttribute('id'); $$('[id]', c).forEach(x => x.removeAttribute('id')); return c; };
+  const put = (box, r) => Object.assign(box.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px' });
+  const a = win.getBoundingClientRect();
+  const cx = (at ? at.x : a.left + a.width / 2) - a.left, cy = (at ? at.y : a.top + a.height / 2) - a.top;
+  const box = document.createElement('div'), proto = copy();
+  box.className = 'shards'; box.inert = true; put(box, a);
+  const flights = pieces(a.width, a.height, cx, cy).map(({ ring, pts }) => {
+    const s = proto.cloneNode(true);
+    s.style.clipPath = `polygon(${pts.map(([x, y]) => `${x}px ${y}px`).join(',')})`;
+    // fly away from the impact, from the middle of the piece's visible part
+    const vis = pts.map(([x, y]) => [Math.max(0, Math.min(a.width, x)), Math.max(0, Math.min(a.height, y))]);
+    const mx = vis.reduce((t, p) => t + p[0], 0) / vis.length, my = vis.reduce((t, p) => t + p[1], 0) / vis.length;
+    const d = Math.hypot(mx - cx, my - cy) || 1, far = [50, 120, 200][ring] + Math.random() * 70;
+    s.style.transformOrigin = `${mx}px ${my}px`;
+    box.append(s);
+    return { s, ring, to: `translate(${(mx - cx) / d * far}px, ${(my - cy) / d * far + 30}px) rotate(${(Math.random() - .5) * (40 + ring * 30)}deg) scale(.94)` };
+  });
+  document.body.append(box);
+  win.style.visibility = 'hidden';
+  await Promise.all(flights.map(f => f.s.animate([{ transform: 'none' }, { transform: f.to, opacity: .7 }],
+    { duration: 420 * speed, delay: f.ring * 35 * speed, easing: 'cubic-bezier(.15,.85,.3,1)', fill: 'forwards' }).finished));
+  // while the pieces are apart: change the window, then send the pieces to its new place and size
+  swap();
+  const b = win.getBoundingClientRect(), html = copy().innerHTML;
+  put(box, b);
+  flights.forEach(f => { f.s.innerHTML = html; });
+  const back = { duration: 520 * speed, easing: 'cubic-bezier(.55,0,.25,1.12)', fill: 'forwards' };
+  box.animate([{ transform: `translate(${a.left - b.left}px, ${a.top - b.top}px)` }, { transform: 'none' }], back);
+  await Promise.all(flights.map(f => f.s.animate([{ transform: f.to, opacity: .7 }, { transform: 'none', opacity: 1 }], { ...back, delay: (2 - f.ring) * 35 * speed }).finished));
+  box.remove();
+  win.style.visibility = '';
+};
+
+// ---- Goal story: after the intro a glass terminal types "ชอบเล่นเกม", then the paragraphs one at a time. A click anywhere
+//      on the window shatters the glass from where it was clicked; the shards fly back together and the next text types in.
+//      After the last one the white circle opens and lets the goal page in. goalReady resolves once the page is uncovered.
 const story = $('.story');
 let goalReady = $('.goal-intro') ? sleep(2700) : Promise.resolve();
 if (story) goalReady = new Promise(done => {
@@ -235,12 +283,11 @@ if (story) goalReady = new Promise(done => {
   $$('[data-type]', story).forEach(prepType);
   const tap = $('.story-tap', story); // "กดตรงไหนก็ได้": a click anywhere on the window moves on (the hint itself is the keyboard's way)
   let cur = 0, ready = false, rush = false;
-  const type = el => typeLine(el, story, () => rush);
   const reveal = async (step, focus) => {
     step.classList.add('on');
     if (focus) step.focus({ preventScroll: true }); // keyboard and screen-reader users land on the new text
     rush = false;
-    for (const el of $$('[data-type]', step)) await type(el);
+    for (const el of $$('[data-type]', step)) await typeLine(el, story, () => rush);
     ready = true;
     if (step === steps[0]) return; // "ชอบเล่นเกม" moves on by itself
     tap.classList.add('show');
@@ -248,69 +295,6 @@ if (story) goalReady = new Promise(done => {
     const seen = new IntersectionObserver(([e]) => { cue.hidden = e.isIntersecting; if (e.isIntersecting) seen.disconnect(); }, { threshold: 1 });
     seen.observe(tap);
   };
-  const advance = at => {
-    if (!ready) return;
-    ready = false;
-    tap.classList.remove('show');
-    cue.hidden = true;
-    if (cur === steps.length - 1) return finish();
-    next(steps[cur], steps[++cur], at);
-  };
-  win.addEventListener('click', e => {
-    if (!ready) { rush = true; return; } // still typing: show the whole text first
-    advance(e.detail ? { x: e.clientX, y: e.clientY } : null); // keyboard (Enter on the hint): break from the middle
-  });
-
-  // break the window (w × h) into rings of pieces around the impact point (cx, cy): triangles at the centre, then two rings of quads
-  const pieces = (w, h, cx, cy) => {
-    const N = 9, rad = [Math.min(w, h) * .16, Math.max(w, h) * .42, 6000], base = Math.random() * 6.3, out = [];
-    const ang = [...Array(N)].map((_, i) => base + (i + (Math.random() - .5) * .6) * 2 * Math.PI / N);
-    const pts = rad.map((r, k) => ang.map(t => { const rr = k < 2 ? r * (.7 + Math.random() * .6) : r; return [cx + Math.cos(t) * rr, cy + Math.sin(t) * rr]; }));
-    for (let i = 0; i < N; i++) {
-      const j = (i + 1) % N;
-      out.push({ ring: 0, pts: [[cx, cy], pts[0][i], pts[0][j]] });
-      for (let k = 1; k < 3; k++) out.push({ ring: k, pts: [pts[k - 1][i], pts[k][i], pts[k][j], pts[k - 1][j]] });
-    }
-    return out;
-  };
-  const shatter = async (from, to, at) => {
-    const a = win.getBoundingClientRect();
-    const cx = (at ? at.x : a.left + a.width / 2) - a.left, cy = (at ? at.y : a.top + a.height / 2) - a.top;
-    const box = document.createElement('div');
-    box.className = 'shards'; box.inert = true;
-    Object.assign(box.style, { left: a.left + 'px', top: a.top + 'px', width: a.width + 'px', height: a.height + 'px' });
-    const flights = pieces(a.width, a.height, cx, cy).map(({ ring, pts }) => {
-      const s = win.cloneNode(true);
-      s.style.clipPath = `polygon(${pts.map(([x, y]) => `${x}px ${y}px`).join(',')})`;
-      // fly away from the impact, from the middle of the piece's visible part
-      const vis = pts.map(([x, y]) => [Math.max(0, Math.min(a.width, x)), Math.max(0, Math.min(a.height, y))]);
-      const mx = vis.reduce((t, p) => t + p[0], 0) / vis.length, my = vis.reduce((t, p) => t + p[1], 0) / vis.length;
-      const d = Math.hypot(mx - cx, my - cy) || 1, far = [50, 120, 200][ring] + Math.random() * 70;
-      s.style.transformOrigin = `${mx}px ${my}px`;
-      box.append(s);
-      return { s, ring, to: `translate(${(mx - cx) / d * far}px, ${(my - cy) / d * far + 30}px) rotate(${(Math.random() - .5) * (40 + ring * 30)}deg) scale(.94)` };
-    });
-    document.body.append(box);
-    win.style.visibility = 'hidden';
-    await Promise.all(flights.map(f => f.s.animate([{ transform: 'none', filter: 'brightness(1.8)' }, { transform: f.to, opacity: .7 }],
-      { duration: 420, delay: f.ring * 35, easing: 'cubic-bezier(.15,.85,.3,1)', fill: 'forwards' }).finished));
-    // while the pieces are apart: put the next text in, untyped, and send the pieces to the window's new place and size
-    from.classList.remove('on'); to.classList.add('on'); top0();
-    const b = win.getBoundingClientRect();
-    Object.assign(box.style, { left: b.left + 'px', top: b.top + 'px', width: b.width + 'px', height: b.height + 'px' });
-    flights.forEach(f => { f.s.innerHTML = win.innerHTML; });
-    const back = { duration: 520, easing: 'cubic-bezier(.55,0,.25,1.12)', fill: 'forwards' };
-    box.animate([{ transform: `translate(${a.left - b.left}px, ${a.top - b.top}px)` }, { transform: 'none' }], back);
-    await Promise.all(flights.map(f => f.s.animate([{ transform: f.to, opacity: .7 }, { transform: 'none', opacity: 1 }], { ...back, delay: (2 - f.ring) * 35 }).finished));
-    box.remove();
-    win.style.visibility = '';
-  };
-  const next = async (from, to, at) => {
-    if (reduce) { from.classList.remove('on'); top0(); }
-    else await shatter(from, to, at);
-    reveal(to, true);
-  };
-
   const finish = async () => {
     outro.hidden = false;
     await sleep(800);
@@ -323,6 +307,20 @@ if (story) goalReady = new Promise(done => {
     $('.page-title').focus({ preventScroll: true });
     done();
   };
+  const advance = async at => {
+    if (!ready) return;
+    ready = false;
+    tap.classList.remove('show');
+    cue.hidden = true;
+    if (cur === steps.length - 1) return finish();
+    const from = steps[cur], to = steps[++cur];
+    await shatter(win, () => { from.classList.remove('on'); to.classList.add('on'); top0(); }, at);
+    reveal(to, true);
+  };
+  win.addEventListener('click', e => {
+    if (!ready) { rush = true; return; } // still typing: show the whole text first
+    advance(e.detail ? { x: e.clientX, y: e.clientY } : null); // keyboard (Enter on the hint): break from the middle
+  });
   (async () => {
     await sleep(2600); // the intro circle is closing
     win.classList.add('on');
@@ -351,75 +349,216 @@ if (goalCmd) {
   })();
 }
 
-// ---- Statement of purpose: once the window scrolls into view, the command and then the whole statement type in fast.
-//      The text scrolls inside the window and follows the caret, like a terminal, until the reader scrolls it themselves;
-//      a click on the text shows the rest at once
-const sop = $('.sop');
-if (sop) {
-  const body = $('.sop-body', sop), lines = $$('p', body);
-  lines.forEach(prepType);
-  let rush = false, follow = true;
-  body.addEventListener('click', () => { rush = true; });
-  ['wheel', 'touchmove', 'keydown'].forEach(t => body.addEventListener(t, () => { follow = false; }, { passive: true }));
-  const keepCaret = () => {
-    const c = $('.cur .tc', body);
-    if (!follow || !c) return;
-    const r = c.getBoundingClientRect(), b = body.getBoundingClientRect();
-    if (r.bottom > b.bottom - 28) body.scrollTop += r.bottom - b.bottom + 28;
+// ---- Goal desktop: a dock of four apps (the statement of purpose and the story's three texts). A dock icon opens its
+//      window (it grows out of the icon), brings it to the front, or, if it already is in front, sends it back down.
+//      Each window: red closes it, yellow sends it to the dock, green (or a double click on the title bar) makes it wide;
+//      its title bar drags it around on wide screens; Esc sends it to the dock. Its content starts the first time it opens.
+const desk = $('.desk');
+if (desk) {
+  const wins = $$('.win', desk), dock = $('.dock', desk), hint = $('.dock-hint', dock), head = $('.desk-head', desk);
+  const btnOf = w => $(`.dock-app[data-launch="${w.dataset.app}"]`, dock);
+  const winOf = b => $(`.win[data-app="${b.dataset.launch}"]`, desk);
+  const narrow = () => desk.clientWidth < 720;
+  const DOCK = 128; // room kept free above the bottom of the desk for the dock
+  const state = new Map(wins.map(w => [w, 'closed']));
+  let zTop = 10;
+  wins.forEach(w => { w.hidden = true; w.tabIndex = -1; });
+
+  // where each window first opens: [0 = left … 1 = right, rows below the headline, width]
+  const spots = { sop: [.5, 0, 1000], story: [.04, 30, 600], kmutt: [.96, 74, 600], cpe: [.5, 118, 600] };
+  const topLine = () => head.offsetTop + head.offsetHeight + 14;
+  const place = w => {
+    const W = desk.clientWidth, [ax, dy, ww] = spots[w.dataset.app];
+    const width = narrow() ? W - 20 : Math.min(ww, W - 48);
+    const left = narrow() ? 10 : Math.round(24 + ax * (W - width - 48));
+    // phones: full width, each new window a little lower so the title bars underneath stay visible
+    const below = narrow() ? 30 * wins.filter(x => x !== w && !x.hidden).length : dy;
+    Object.assign(w.style, { left: left + 'px', top: topLine() + below + 'px', width: width + 'px' });
+    w.placed = true;
   };
-  const start = new IntersectionObserver(async ([e]) => {
-    if (!e.isIntersecting) return;
-    start.disconnect();
-    await goalReady;
-    for (const el of lines) await typeLine(el, sop, () => rush, keepCaret);
-  }, { rootMargin: '0px 0px -25% 0px' });
-  start.observe(sop);
+  // the desk grows to hold its lowest open window above the dock
+  const grow = () => {
+    let need = 0;
+    wins.forEach(w => { if (!w.hidden) need = Math.max(need, w.offsetTop + w.offsetHeight + DOCK); });
+    desk.style.minHeight = need ? `max(100svh, ${need}px)` : '';
+  };
+  desk.grow = grow;
+  const front = w => { w.style.zIndex = ++zTop; wins.forEach(x => x.classList.toggle('front', x === w)); };
+  const sync = w => {
+    const b = btnOf(w), s = state.get(w);
+    b.classList.toggle('running', s !== 'closed');
+    b.classList.toggle('min', s === 'min');
+    b.setAttribute('aria-expanded', s === 'open');
+  };
+  // the window shrinks into / grows out of its dock icon
+  const genie = (w, toDock) => {
+    if (reduce) return Promise.resolve();
+    const r = w.getBoundingClientRect(), i = $('.dock-icon', btnOf(w)).getBoundingClientRect();
+    const t = `translate(${i.left + i.width / 2 - (r.left + r.width / 2)}px, ${i.top + i.height / 2 - (r.top + r.height / 2)}px) scale(${Math.max(.05, i.width / r.width)})`;
+    const k = [{ transform: t, opacity: 0 }, { transform: 'none', opacity: 1 }];
+    return w.animate(toDock ? k.reverse() : k, toDock ? { duration: 360, easing: 'cubic-bezier(.5,0,.75,0)' } : { duration: 460, easing: 'cubic-bezier(.2,.9,.3,1.06)' }).finished;
+  };
+  const open = async w => {
+    if (w.busy) return;
+    w.busy = true;
+    const was = state.get(w), b = btnOf(w);
+    w.hidden = false;
+    if (!w.placed) place(w);
+    front(w);
+    state.set(w, 'open'); sync(w); grow();
+    if (was === 'closed') { b.classList.remove('launch'); void b.offsetWidth; b.classList.add('launch'); }
+    hint.classList.add('gone');
+    w.focus({ preventScroll: true });
+    await genie(w, false);
+    w.busy = false;
+    w.onOpen?.();
+  };
+  const minimize = async w => {
+    if (w.busy || state.get(w) !== 'open') return;
+    w.busy = true;
+    state.set(w, 'min'); sync(w);
+    await genie(w, true);
+    w.hidden = true; w.busy = false; grow();
+    btnOf(w).focus({ preventScroll: true });
+  };
+  const close = async w => {
+    if (w.busy) return;
+    w.busy = true;
+    state.set(w, 'closed'); sync(w);
+    if (!reduce) await w.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(.92)' }], { duration: 220, easing: 'ease-in' }).finished;
+    w.hidden = true; w.busy = false; grow();
+    btnOf(w).focus({ preventScroll: true });
+  };
+  // wide <-> back to its own size; the change is animated as one transform (FLIP), so text is not re-laid out every frame
+  const maximize = w => {
+    const first = w.getBoundingClientRect();
+    if (w.classList.toggle('max')) {
+      w.before = { left: w.style.left, top: w.style.top, width: w.style.width };
+      Object.assign(w.style, { left: '12px', top: topLine() + 'px', width: desk.clientWidth - 24 + 'px' });
+    } else Object.assign(w.style, w.before || {});
+    $('.tg-max', w).setAttribute('aria-label', w.classList.contains('max') ? 'คืนขนาดหน้าต่าง' : 'ขยายหน้าต่าง');
+    grow(); front(w);
+    const last = w.getBoundingClientRect();
+    if (!reduce) w.animate([{ transformOrigin: '0 0', transform: `translate(${first.left - last.left}px, ${first.top - last.top}px) scale(${first.width / last.width}, ${first.height / last.height})` },
+      { transformOrigin: '0 0', transform: 'none' }], { duration: 340, easing: 'cubic-bezier(.2,.8,.2,1)' });
+  };
+
+  wins.forEach(w => {
+    const bar = $('.win-bar', w);
+    $('.tg-close', w).addEventListener('click', e => { e.stopPropagation(); close(w); });
+    $('.tg-min', w).addEventListener('click', e => { e.stopPropagation(); minimize(w); });
+    $('.tg-max', w).addEventListener('click', e => { e.stopPropagation(); maximize(w); });
+    w.addEventListener('pointerdown', () => { if (!w.classList.contains('front')) front(w); });
+    w.addEventListener('keydown', e => { if (e.key === 'Escape') { e.stopPropagation(); minimize(w); } });
+    bar.addEventListener('dblclick', e => { if (!e.target.closest('.tg-ctl')) maximize(w); });
+    // drag by the title bar: the window follows as a transform, and its place is written once, when it is let go
+    bar.addEventListener('pointerdown', e => {
+      if (e.target.closest('.tg-ctl') || e.pointerType === 'touch' || e.button || narrow()) return;
+      const sx = e.clientX, sy = e.clientY, x0 = w.offsetLeft, y0 = w.offsetTop, W = desk.clientWidth, ww = w.offsetWidth;
+      let dx = 0, dy = 0, raf = 0;
+      bar.setPointerCapture(e.pointerId);
+      w.classList.add('dragging');
+      const move = ev => {
+        dx = Math.max(100 - x0 - ww, Math.min(W - 100 - x0, ev.clientX - sx)); // keep a part of it on the desk
+        dy = Math.max(70 - y0, ev.clientY - sy);                                  // and its bar below the menu button
+        raf ||= requestAnimationFrame(() => { raf = 0; w.style.transform = `translate(${dx}px, ${dy}px)`; });
+      };
+      const up = () => {
+        bar.removeEventListener('pointermove', move);
+        cancelAnimationFrame(raf);
+        Object.assign(w.style, { transform: '', left: x0 + dx + 'px', top: y0 + dy + 'px' });
+        w.classList.remove('dragging');
+        if (dx || dy) w.classList.remove('max');
+        grow();
+      };
+      bar.addEventListener('pointermove', move);
+      bar.addEventListener('pointerup', up, { once: true });
+      bar.addEventListener('pointercancel', up, { once: true });
+    });
+  });
+
+  $$('.dock-app', dock).forEach(b => b.addEventListener('click', () => {
+    const w = winOf(b);
+    if (state.get(w) !== 'open') open(w);
+    else if (w.classList.contains('front')) minimize(w);
+    else { front(w); w.focus({ preventScroll: true }); }
+  }));
+  // a narrower screen: windows that no longer fit are pulled back in
+  addEventListener('resize', () => wins.forEach(w => {
+    if (!w.placed) return;
+    const W = desk.clientWidth;
+    if (narrow()) Object.assign(w.style, { left: '10px', width: W - 20 + 'px' });
+    else if (w.offsetLeft + w.offsetWidth > W - 10) w.style.left = Math.max(10, W - w.offsetWidth - 10) + 'px';
+  }), { passive: true });
+
+  // the dock magnifies the icons near the pointer (mouse only), like macOS; read on pointer moves, written once per frame
+  if (finePointer && !reduce) {
+    const shelf = $('ul', dock), apps = $$('.dock-app', dock);
+    let px = null, raf = 0;
+    const paint = () => {
+      raf = 0;
+      apps.forEach(b => {
+        const r = b.getBoundingClientRect(), d = px === null ? 1e9 : Math.abs(px - (r.left + r.width / 2));
+        const s = 1 + .4 * Math.max(0, 1 - d / 120);
+        $('.dock-icon', b).style.transform = s > 1.001 ? `translateY(${-(s - 1) * 30}px) scale(${s})` : '';
+      });
+    };
+    shelf.addEventListener('pointermove', e => { px = e.clientX; raf ||= requestAnimationFrame(paint); });
+    shelf.addEventListener('pointerleave', () => { px = null; raf ||= requestAnimationFrame(paint); });
+  }
+  goalReady.then(() => setTimeout(() => dock.classList.add('in'), reduce ? 0 : 250));
 }
 
-// ---- Goal page: the story's three texts in glass terminals, each typing in once it scrolls into view (a click finishes it)
-$$('.goal-terms .glass-term').forEach(box => {
-  const lines = $$('[data-type]', box);
-  lines.forEach(prepType);
-  let rush = false;
-  $('.tg-body', box).addEventListener('click', () => { rush = true; });
-  const start = new IntersectionObserver(async ([e]) => {
-    if (!e.isIntersecting) return;
-    start.disconnect();
-    await goalReady;
-    for (const el of lines) await typeLine(el, box, () => rush);
-  }, { rootMargin: '0px 0px -15% 0px' });
-  start.observe(box);
-});
+// ---- Statement of purpose (a desktop window): one part at a time. The command types, then a part types in fast; once it
+//      is done "กดเพื่อไปต่อ" fades in, and a click anywhere on the text breaks the glass quickly into the next part.
+//      A click while it types shows the part at once; after the last part it starts again.
+const sopWin = $('.sop');
+if (sopWin) {
+  const body = $('.sop-body', sopWin), steps = $$('.sop-step', body), tap = $('.win-tap', body), meta = $('.win-meta', sopWin), cmd = $('.cmd', body);
+  $$('[data-type]', body).forEach(prepType);
+  let k = 0, ready = false, rush = false, started = false;
+  const label = () => { meta.textContent = `${k + 1} / ${steps.length}`; };
+  const show = async () => {
+    steps[k].classList.add('on'); label();
+    rush = false;
+    for (const el of $$('[data-type]', steps[k])) await typeLine(el, body, () => rush);
+    ready = true;
+    tap.textContent = k === steps.length - 1 ? 'กดเพื่ออ่านอีกครั้ง' : 'กดเพื่อไปต่อ';
+    tap.classList.add('show');
+  };
+  sopWin.onOpen = async () => {
+    if (started) return;
+    started = true;
+    label();
+    await typeLine(cmd, body, () => rush);
+    show();
+  };
+  body.addEventListener('click', async e => {
+    if (!started) return;
+    if (!ready) { rush = true; return; }
+    ready = false;
+    tap.classList.remove('show');
+    await shatter(sopWin, () => {
+      steps[k].classList.remove('on');
+      k = (k + 1) % steps.length;
+      $$('[data-type]', steps[k]).forEach(el => showTyped(el, 0));
+      steps[k].classList.add('on'); label();
+      $$('.cur', body).forEach(x => x.classList.remove('cur'));
+      desk?.grow?.();
+    }, e.detail ? { x: e.clientX, y: e.clientY } : null, .6);
+    show();
+  });
+}
 
-// ---- Window controls on the goal page's terminals: red closes the window (a small pill brings it back),
-//      yellow folds it to its title bar (the bar, or yellow/green, opens it again), green opens it again
-$$('.tg-ctl').forEach(ctl => {
-  const win = ctl.closest('[data-title]'), bar = ctl.parentElement, min = $('.tg-min', ctl);
-  const pill = document.createElement('button');
-  pill.type = 'button'; pill.className = 'tg-reopen'; pill.hidden = true;
-  pill.innerHTML = '<i aria-hidden="true"></i><span></span>';
-  $('span', pill).textContent = `เปิด ${win.dataset.title} อีกครั้ง`;
-  win.after(pill);
-  const fold = on => {
-    win.classList.toggle('folded', on);
-    min.setAttribute('aria-label', on ? 'กางหน้าต่าง' : 'ย่อหน้าต่าง');
-    min.setAttribute('aria-expanded', !on);
+// ---- The story's three texts as desktop windows: they type in the first time they are opened (a click finishes it)
+$$('.desk .glass-term').forEach(w => {
+  const lines = $$('[data-type]', w);
+  lines.forEach(prepType);
+  let rush = false, started = false;
+  $('.tg-body', w).addEventListener('click', () => { rush = true; });
+  w.onOpen = async () => {
+    if (started) return;
+    started = true;
+    for (const el of lines) await typeLine(el, w, () => rush);
   };
-  const close = async () => {
-    win.classList.add('closing');
-    await sleep(300);
-    win.hidden = true; win.classList.remove('closing');
-    pill.hidden = false; pill.focus({ preventScroll: true });
-  };
-  const open = () => {
-    pill.hidden = true; win.hidden = false; fold(false);
-    win.classList.add('opening');
-    setTimeout(() => win.classList.remove('opening'), 500);
-    min.focus({ preventScroll: true });
-  };
-  $('.tg-close', ctl).addEventListener('click', close);
-  min.addEventListener('click', () => fold(!win.classList.contains('folded')));
-  $('.tg-max', ctl).addEventListener('click', () => fold(false));
-  bar.addEventListener('click', e => { if (win.classList.contains('folded') && !e.target.closest('.tg-ctl')) fold(false); });
-  pill.addEventListener('click', open);
 });

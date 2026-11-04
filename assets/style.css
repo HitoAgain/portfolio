@@ -340,18 +340,24 @@ body:has(.aw-detail[open]){overflow:hidden}
 :root{--rainbow:conic-gradient(from var(--spin),#ff3d6e,#ff9f1c,#ffe14d,#3dff8f,#2ee6ff,#4d7cff,#b84dff,#ff3d6e)}
 @keyframes spin{to{--spin:360deg}}
 @keyframes hue{to{background-position:200% 0}}
-[data-tier=rainbow]{--frame:var(--rainbow);border-width:2px;animation:spin 4s linear infinite}
+[data-tier=rainbow]{isolation:isolate;overflow:hidden;border:0;padding:12px;background:none}
+[data-tier=rainbow]::before{content:"";position:absolute;z-index:-2;left:50%;top:50%;width:220%;aspect-ratio:1;translate:-50% -50%;
+  background:conic-gradient(#ff3d6e,#ff9f1c,#ffe14d,#3dff8f,#2ee6ff,#4d7cff,#b84dff,#ff3d6e);animation:turn 4s linear infinite;will-change:transform}
+[data-tier=rainbow]::after{content:"";position:absolute;z-index:-1;inset:2px;border-radius:20px;background:var(--surface)}
+@keyframes turn{to{rotate:360deg}}
 /* the glow: the same rainbow, blurred, behind the card */
 .aw-slot:has([data-tier=rainbow]){isolation:isolate}
-.aw-slot:has([data-tier=rainbow])::before{content:"";position:absolute;inset:4px;z-index:-1;border-radius:22px;background:var(--rainbow);filter:blur(24px);opacity:.5;animation:spin 4s linear infinite;transition:opacity .4s,filter .4s}
-.aw-slot:has([data-tier=rainbow]):hover::before{opacity:.85;filter:blur(32px)}
+.aw-slot:has([data-tier=rainbow])::before{content:"";position:absolute;inset:4px;z-index:-1;border-radius:22px;background:var(--rainbow);filter:blur(24px);opacity:.5;animation:glow 3.2s ease-in-out infinite;transition:opacity .4s}
+.aw-slot:has([data-tier=rainbow]):hover::before{animation-play-state:paused;opacity:.85}
+@keyframes glow{50%{opacity:.75}}
 .aw-card[data-tier=rainbow] .aw-stat{color:#ffe14d}
 .rainbow-text{background:linear-gradient(90deg,#ff3d6e,#ff9f1c,#ffe14d,#3dff8f,#2ee6ff,#b84dff,#ff3d6e) 0 0/200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
-  animation:hue 3s linear infinite;filter:drop-shadow(0 0 12px rgba(255,159,28,.45))}
+  animation:hue 3s linear infinite}
 .aw-tags .rainbow{background:linear-gradient(90deg,#ff3d6e,#ff9f1c,#ffe14d,#3dff8f,#2ee6ff,#b84dff,#ff3d6e) 0 0/200% 100%;color:#1a0b02;animation:hue 3s linear infinite}
 .aw-card[data-tier=rainbow] .aw-open{background:rgba(255,255,255,.08);color:var(--text)}
 .aw-card[data-tier=rainbow]:hover .aw-open{background:linear-gradient(90deg,#ff3d6e,#ff9f1c,#ffe14d,#3dff8f,#2ee6ff,#b84dff) 0 0/200% 100%;color:#1a0b02;animation:hue 2s linear infinite}
-.cat-tabs .rainbow-tab{position:relative;border:2px solid transparent;background:linear-gradient(var(--surface),var(--surface)) padding-box,var(--rainbow) border-box;animation:spin 4s linear infinite}
+.cat-tabs .rainbow-tab{position:relative;border:2px solid transparent;background:linear-gradient(var(--surface),var(--surface)) padding-box,var(--rainbow) border-box}
+.cat-tabs .rainbow-tab:is(:hover,[aria-pressed=true]){animation:spin 4s linear infinite}
 .cat-tabs .rainbow-tab span{background:linear-gradient(90deg,#ff3d6e,#ff9f1c,#ffe14d,#3dff8f,#2ee6ff,#b84dff,#ff3d6e) 0 0/200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:hue 3s linear infinite}
 .cat-tabs .rainbow-tab[aria-pressed=true]{background:var(--rainbow) border-box;box-shadow:0 0 22px rgba(255,159,28,.5)}
 .cat-tabs .rainbow-tab[aria-pressed=true] span{background:none;color:#1a0b02}
@@ -377,7 +383,7 @@ html:has(.goal-intro)::view-transition-new(root){animation:none}
 .story{min-height:100svh;display:grid;place-items:center;padding:clamp(110px,16vh,150px) 0 clamp(64px,10vh,96px)}
 .glass-term{width:min(940px,100%);border-radius:16px;overflow:hidden;
   background:linear-gradient(155deg,rgba(255,255,255,.11),rgba(255,255,255,.025) 60%),rgba(26,19,16,.4);border:1px solid rgba(255,255,255,.16);
-  -webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%);
+  -webkit-backdrop-filter:blur(16px) saturate(150%);backdrop-filter:blur(16px) saturate(150%);
   box-shadow:0 40px 90px -30px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.2)}
 .tg-bar{position:relative;display:flex;gap:8px;align-items:center;padding:13px 16px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08)}
 .tg-bar i{width:12px;height:12px;border-radius:50%;background:#ff5f57}
@@ -400,46 +406,32 @@ html:not(.js) .story-step+.story-step{margin-top:48px}
 /* "tap anywhere": plain text in the window's bottom padding, so showing it never makes the window grow (a real button, for the keyboard);
    it fades up once a text is typed, then breathes and its arrow nudges */
 .story .tg-body{position:relative;padding-bottom:calc(clamp(20px,3.6vw,40px) + 30px)}
-.story-tap{position:absolute;right:clamp(20px,3.6vw,40px);bottom:clamp(12px,2vw,18px);padding:4px 0;border:0;background:none;color:var(--muted);
+.win-tap,.story-tap{position:absolute;right:clamp(20px,3.6vw,40px);bottom:clamp(12px,2vw,18px);padding:4px 0;border:0;background:none;color:var(--muted);
   font:500 15px/1.2 Kanit;cursor:pointer;opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .6s var(--ease),transform .6s var(--ease),visibility 0s .6s}
-.story-tap.show{opacity:1;visibility:visible;transform:none;transition-delay:0s;animation:tap-breathe 2.4s ease-in-out .7s infinite}
-.story-tap::after{content:"›";display:inline-block;margin-left:6px;color:var(--orange);animation:tap-nudge 1.2s ease-in-out infinite}
-html:not(.js) .story-tap{display:none}
+.win-tap.show,.story-tap.show{opacity:1;visibility:visible;transform:none;transition-delay:0s;animation:tap-breathe 2.4s ease-in-out .7s infinite}
+.win-tap::after,.story-tap::after{content:"›";display:inline-block;margin-left:6px;color:var(--orange);animation:tap-nudge 1.2s ease-in-out infinite}
+html:not(.js) :is(.story-tap,.win-tap){display:none}
 @keyframes tap-breathe{50%{opacity:.5}}
 @keyframes tap-nudge{50%{transform:translateX(4px)}}
 .js .story-step:not(.on){display:none}
 .js .story .glass-term:not(.on){visibility:hidden}
 .story .glass-term.on{animation:story-pop .75s cubic-bezier(.3,1.6,.5,1) backwards}
 @keyframes story-pop{from{opacity:0;transform:scale(.5)}}
-/* window controls: macOS lights; hovering the group shows ×, −, + like the real thing; each has a larger invisible hit area */
-.tg-ctl{position:relative;z-index:1;display:flex;gap:8px}
-.tg-ctl button{position:relative;display:grid;place-items:center;width:12px;height:12px;padding:0;border:0;border-radius:50%;background:#ff5f57;color:rgba(40,0,0,.65);font:700 10px/1 system-ui,sans-serif;cursor:pointer}
-.tg-ctl button::before{content:"";position:absolute;inset:-7px -4px}
-.tg-ctl .tg-min{background:#febc2e;color:rgba(60,35,0,.65)}
-.tg-ctl .tg-max{background:#28c840;color:rgba(0,45,0,.65)}
-.tg-ctl:is(:hover,:focus-within) .tg-close::after{content:"×"}
-.tg-ctl:is(:hover,:focus-within) .tg-min::after{content:"−"}
-.tg-ctl:is(:hover,:focus-within) .tg-max::after{content:"+"}
+/* window controls: macOS lights, a little bigger than usual and always showing ×, −, + so they read clearly; larger invisible hit area */
+.tg-ctl{position:relative;z-index:1;display:flex;gap:9px}
+.tg-ctl button{position:relative;display:grid;place-items:center;width:14px;height:14px;padding:0;border:0;border-radius:50%;background:#ff5f57;color:rgba(70,0,0,.75);
+  font:800 11px/1 system-ui,sans-serif;cursor:pointer;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.25);transition:transform .15s,filter .15s}
+.tg-ctl button::before{content:"";position:absolute;inset:-8px -5px}
+.tg-ctl button:hover{transform:scale(1.15);filter:brightness(1.08)}
+.tg-ctl .tg-close::after{content:"×";margin-top:-1px}
+.tg-ctl .tg-min{background:#febc2e;color:rgba(90,50,0,.8)}.tg-ctl .tg-min::after{content:"−";margin-top:-1px}
+.tg-ctl .tg-max{background:#28c840;color:rgba(0,60,0,.8)}.tg-ctl .tg-max::after{content:"+";margin-top:-1px}
+.max .tg-ctl .tg-max::after{content:"–"}
 html:not(.js) .tg-ctl button{pointer-events:none}
-/* fold: everything below the title bar collapses (grid rows 1fr -> 0fr), and the bar opens it again */
-.tg-fold{display:grid;grid-template-rows:1fr;transition:grid-template-rows .45s var(--ease)}
-.tg-fold>*{min-height:0;overflow:hidden}
-.folded .tg-fold{grid-template-rows:0fr}
-.folded :is(.tg-bar,.bar){cursor:pointer}
-.closing{animation:tg-close .3s var(--ease) forwards;pointer-events:none}
-.opening{animation:tg-open .5s cubic-bezier(.3,1.5,.5,1)}
-@keyframes tg-close{to{opacity:0;transform:scale(.9) translateY(12px)}}
-@keyframes tg-open{from{opacity:0;transform:scale(.9) translateY(12px)}}
-/* a closed window leaves a small pill that brings it back */
-.tg-reopen{display:inline-flex;align-items:center;gap:10px;padding:10px 18px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(26,19,16,.7);
-  color:var(--text);font:500 14px/1.2 ui-monospace,Menlo,Consolas,"IBM Plex Sans Thai",monospace;cursor:pointer;animation:fade-up .5s var(--ease);transition:border-color .25s}
-.tg-reopen:hover{border-color:var(--orange)}
-.tg-reopen i{width:9px;height:9px;border-radius:50%;background:#28c840;box-shadow:-13px 0 0 #febc2e,-26px 0 0 #ff5f57;margin-left:26px}
-.tg-reopen[hidden]{display:none}
-[data-title][hidden]{display:none}
 /* shards: copies of the window, each clipped to one piece of the break (no blur on them, for speed) */
 .shards{position:fixed;z-index:45;pointer-events:none}
-.shards .glass-term{position:absolute;inset:0;width:auto;height:100%;-webkit-backdrop-filter:none;backdrop-filter:none;background-color:rgba(38,29,24,.8);visibility:visible}
+.shards>*{position:absolute!important;inset:0!important;width:auto!important;height:100%!important;margin:0!important;visibility:visible!important;transform:none;will-change:transform;box-shadow:none!important}
+.shards .glass-term{-webkit-backdrop-filter:none;backdrop-filter:none;background-color:rgba(38,29,24,.85)}
 .shards *{animation:none!important}
 .story-cue{position:fixed;left:50%;bottom:22px;z-index:40;translate:-50% 0;padding:9px 18px;border-radius:999px;border:1px solid var(--line);background:rgba(22,17,14,.94);
   color:var(--text);font:600 15px/1.2 Kanit;white-space:nowrap;box-shadow:0 10px 30px rgba(0,0,0,.6);pointer-events:none;animation:bob 2.6s ease-in-out infinite}
@@ -462,33 +454,64 @@ html:not(.js) .tg-ctl button{pointer-events:none}
 .terminal{border-radius:16px;overflow:hidden;background:#090706;border:1px solid var(--line)}
 .terminal .bar{position:relative;display:flex;align-items:center;height:42px;padding:0 16px;border-bottom:1px solid var(--line)}
 .terminal .bar h2{position:absolute;inset:0;display:grid;place-items:center;margin:0;font:600 12px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.16em;color:var(--muted);pointer-events:none}
-/* the statement window fills the screen, a gap from every edge (the top one leaves room for the menu button) */
-.sop{--gap:clamp(10px,1.6vw,22px);display:flex;flex-direction:column;margin:56px var(--gap) 0;height:calc(100svh - 76px - var(--gap));scroll-margin-top:76px;
-  box-shadow:0 30px 80px -30px rgba(0,0,0,.8);transition:height .45s var(--ease)}
-.sop.folded{height:44px}
-.sop .tg-fold{flex:1;min-height:0}
-.sop-body{height:100%;overflow:auto;overscroll-behavior:auto;padding:24px clamp(16px,3vw,44px) 30px;font:clamp(15px,1.15vw,18px)/1.95 "IBM Plex Sans Thai",system-ui,sans-serif;color:#e9ded6;cursor:text;
-  scrollbar-width:thin;scrollbar-color:rgba(255,106,19,.5) transparent}
-.sop-body:focus-visible{outline-offset:-4px}
-.sop-body>p{max-width:72em}
-.sop-body p+p{margin-top:1em}
-.sop-body .cmd{font-family:ui-monospace,Menlo,Consolas,"IBM Plex Sans Thai",monospace}
+
+/* ---------- Goal desktop: windows open from a dock ---------- */
+/* the background lights hold still here, so the glass windows are not re-blurring a moving picture every frame */
+.goal-page .aurora i{animation:none}
+.desk-page{padding:0;min-height:0}
+.desk{position:relative;isolation:isolate;display:flex;flex-direction:column;min-height:100svh;padding-top:clamp(104px,15vh,150px)}
+.desk-head{position:relative;z-index:1}
+.desk-wall{position:absolute;inset:0;z-index:-1;display:grid;place-content:center;justify-items:center;gap:8px;pointer-events:none;user-select:none}
+.desk-wall img{width:clamp(64px,8vw,96px);height:auto;opacity:.5}
+.desk-wall p{font:800 clamp(84px,19vw,260px)/.9 Kanit;letter-spacing:-.04em;color:transparent;-webkit-text-stroke:2px rgba(255,106,19,.28)}
+/* windows */
+.win{position:relative;margin:24px auto 0;width:min(1000px,calc(100% - 32px));box-shadow:0 26px 60px -22px rgba(0,0,0,.85)}
+.js .desk .win{position:absolute;z-index:10;margin:0;outline:none}
+.win[hidden]{display:none}
+.win.front{box-shadow:0 34px 80px -20px rgba(0,0,0,.92),0 0 0 1px rgba(255,106,19,.28)}
+.js .win-bar{cursor:grab;-webkit-user-select:none;user-select:none}
+.dragging .win-bar{cursor:grabbing}
+.dragging{will-change:transform}
+.win-meta{position:relative;margin-left:auto;font:600 12px/1 ui-monospace,Menlo,Consolas,monospace;color:var(--muted)}
+.glass-term.win .tg-body{padding:clamp(18px,3vw,30px)}
+.glass-term.win .tg-cmd{margin-bottom:12px}
+.glass-term.win h2{margin:0 0 .45em;font-size:clamp(20px,2.4vw,26px);color:var(--orange)}
+.glass-term.win .story-text{font:500 clamp(16px,1.6vw,19px)/1.85 "IBM Plex Sans Thai",system-ui,sans-serif}
+/* the statement: one part at a time, a click moves on */
+.sop-body{position:relative;padding:22px clamp(16px,3vw,40px) 58px;font:clamp(15px,1.2vw,18px)/1.95 "IBM Plex Sans Thai",system-ui,sans-serif;color:#e9ded6}
+.js .sop-body{cursor:pointer;-webkit-user-select:none;user-select:none}
+.sop-body .cmd{margin-bottom:12px;font-family:ui-monospace,Menlo,Consolas,"IBM Plex Sans Thai",monospace}
 .sop-body .cmd::before{content:"$ ";color:var(--orange)}
 .sop-body .tc{width:.6em;height:1.1em;margin-right:-.6em;vertical-align:-.2em}
-.sop+.tg-reopen{margin:56px 0 0 clamp(10px,1.6vw,22px)}
-.caret{display:inline-block;width:9px;height:1.1em;background:var(--orange);vertical-align:-.2em;margin-left:2px;animation:blink 1s steps(1) infinite}
-@keyframes blink{50%{opacity:0}}
-/* the intro's three texts again, each in its own glass terminal; they type in as they scroll into view (main.js) */
-.goal-terms{display:grid;justify-items:start;gap:22px;margin-top:56px}
-.goal-terms .glass-term{width:min(860px,100%)}
-.goal-terms .tg-body{padding:clamp(18px,3vw,28px)}
-.goal-terms .tg-cmd{margin-bottom:12px}
-.goal-terms h2{margin:0 0 .45em;font-size:clamp(20px,2.4vw,26px);color:var(--orange)}
-.goal-terms .story-text{font:500 clamp(16px,1.7vw,19px)/1.85 "IBM Plex Sans Thai",system-ui,sans-serif}
-.kmutt-logo{display:block;width:112px;height:112px;margin:96px auto 0}
-.kmutt{margin-top:24px;text-align:center;font:800 clamp(84px,21vw,280px)/.9 Kanit;letter-spacing:-.04em;user-select:none;
-  -webkit-text-stroke:2px rgba(255,106,19,.55);color:transparent;
-  background:linear-gradient(90deg,var(--orange) 0 var(--fill,0%),transparent var(--fill,0%));-webkit-background-clip:text;background-clip:text}
+.sop-step>p{max-width:72em}
+html:not(.js) .sop-step+.sop-step{margin-top:1em}
+.js .sop-step:not(.on){display:none}
+/* dock: glass shelf, sticks to the bottom of the screen while the desktop is in view */
+.dock{position:sticky;bottom:14px;z-index:30;align-self:center;margin-top:auto;padding-top:56px}
+html:not(.js) .dock{display:none}
+.dock ul{display:flex;align-items:flex-end;gap:14px;padding:9px 12px;list-style:none;border-radius:22px;border:1px solid rgba(255,255,255,.16);
+  background:rgba(30,22,18,.5);-webkit-backdrop-filter:blur(16px) saturate(150%);backdrop-filter:blur(16px) saturate(150%);box-shadow:0 18px 40px -12px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.14)}
+.js .dock:not(.in){opacity:0;visibility:hidden;transform:translateY(40px)}
+.dock{transition:opacity .6s var(--ease),transform .7s cubic-bezier(.3,1.4,.5,1)}
+.dock-app{position:relative;display:block;padding:0;border:0;background:none;cursor:pointer;border-radius:13px}
+.dock-icon{display:block;width:52px;height:52px;border-radius:13px;overflow:hidden;transform-origin:50% 100%;transition:transform .14s ease-out;box-shadow:0 6px 14px -6px rgba(0,0,0,.7)}
+.dock-icon svg,.dock-icon img{display:block;width:100%;height:100%}
+.dock-icon img{padding:6px;background:#fff7f0;object-fit:contain}
+.dock.in .dock-app{animation:dock-hello .7s cubic-bezier(.3,1.6,.5,1) backwards;animation-delay:calc(var(--i) * 90ms + 250ms)}
+@keyframes dock-hello{from{opacity:0;translate:0 26px}}
+.dock-app.launch .dock-icon{animation:dock-bounce .9s ease-out}
+@keyframes dock-bounce{25%{translate:0 -20px}50%{translate:0 0}70%{translate:0 -8px}85%{translate:0 0}}
+/* running apps get a dot; a minimized one's dot is orange */
+.dock-app::after{content:"";position:absolute;left:50%;bottom:-7px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--text);opacity:0;transition:opacity .3s,background-color .3s}
+.dock-app.running::after{opacity:.95}
+.dock-app.min::after{background:var(--orange)}
+.dock-name{position:absolute;left:50%;bottom:calc(100% + 30px);translate:-50% 6px;padding:6px 11px;border-radius:8px;border:1px solid var(--line);background:rgba(20,15,12,.94);
+  font:500 13px/1 Kanit;color:var(--text);white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s,translate .2s}
+.dock-app:is(:hover,:focus-visible) .dock-name{opacity:1;translate:-50% 0}
+.dock-hint{position:absolute;left:50%;top:14px;translate:-50% 0;margin:0;font:500 14px/1.2 Kanit;color:var(--muted);white-space:nowrap;transition:opacity .4s;animation:bob 2.6s ease-in-out infinite}
+.dock-hint::after{content:" ↓";color:var(--orange)}
+.dock-hint.gone{opacity:0}
+@media (max-width:600px){.dock ul{gap:12px;padding:8px 10px}.dock-icon{width:48px;height:48px}}
 
 /* ---------- Page entrance: content fades in ---------- */
 main,.site-footer{animation:page-in .8s var(--ease) .3s backwards}

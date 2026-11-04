@@ -8,10 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=12">
-<script src="assets/main.js?v=12" defer></script>
+<link rel="stylesheet" href="assets/style.css?v=13">
+<script src="assets/main.js?v=13" defer></script>
 </head>
-<body>
+<body class="goal-page">
 <header class="site-header">
   <nav aria-label="เมนูหลัก">
     <button class="menu-btn" type="button" aria-label="เปิดเมนู" aria-expanded="false" aria-controls="menu"><i></i><i></i></button>
@@ -63,61 +63,69 @@
 <p class="story-cue" aria-hidden="true" hidden>เลื่อนลงเพื่ออ่านต่อ ↓</p>
 <div class="goal-outro" hidden><p>ทั้งหมดนี่คือความตั้งใจของผม</p></div>
 
-<main class="page">
-  <div class="wrap">
+<main class="page desk-page">
+  <!-- desktop: once the story is over, the dock offers four apps; each opens a window that can be dragged (wide screens),
+       sent back to the dock, closed and opened again, or made wide (main.js). Without JS the windows simply stack. -->
+  <section class="desk" aria-label="เดสก์ท็อป">
+    <div class="desk-head wrap">
   <nav class="crumb fade-up" aria-label="ตำแหน่งหน้า"><a href="index.html">หน้าแรก</a><span>/</span>เป้าหมาย</nav>
   <!-- the command types itself, waits, erases and types again (main.js) -->
   <h1 class="page-title goal-cmd" tabindex="-1"><span class="prompt" aria-hidden="true">$ </span><span class="goal-typed">cat goal.html/your_goal.txt</span></h1>
-  </div>
-
-  <!-- statement of purpose: types itself quickly once it scrolls into view; a click shows all of it at once (main.js) -->
-  <section class="terminal sop" aria-labelledby="sop-t" data-title="STATEMENT OF PURPOSE">
-    <div class="bar"><span class="tg-ctl"><button type="button" class="tg-close" aria-label="ปิดหน้าต่าง"></button><button type="button" class="tg-min" aria-label="ย่อหน้าต่าง"></button><button type="button" class="tg-max" aria-label="ขยายหน้าต่าง"></button></span><h2 id="sop-t">STATEMENT OF PURPOSE</h2></div>
-    <div class="tg-fold">
-    <div class="sop-body" tabindex="0">
-      <p class="cmd" data-type="40" aria-hidden="true">cat statement_of_purpose.txt</p>
-      <p data-type=".95">ผม นายอาลีฟ เกษมสวัสดิ์ ชื่นชอบในด้านคอมพิวเตอร์มาตั้งแต่ยังเด็กและมีงานอดิเรกส่วนใหญ่คือเล่นเกม ความสนใจดังกล่าวไม่ได้เกิดจากแค่เพียงใช้งานคอมพิวเตอร์หรือแค่เล่นเกมธรรมดา แต่เริ่มเกิดจากการสงสัยว่าคอมพิวเตอร์นั้นทำงานได้ไง?</p>
-      <p data-type=".95">จุดเริ่มต้นสำคัญเกิดขึ้นเมื่อผมมีโอกาสประกอบคอมพิวเตอร์ครั้งแรกด้วยตนเองจึงเกิดความสนใจใน Hardware จากที่ได้ศึกษาทดลองปฏิบัติ ทำให้ผมได้สืบค้นความรู้ด้าน Software อีกด้วย โดยเฉพาะการเขียนโค้ดที่ทำให้ผมสนใจการสร้างเกม ซึ่งการสนใจด้าน Hardware และ Software จะเป็นจุดเริ่มต้นสำคัญที่ผมจะสนใจในด้านวิศวกรรมในอนาคต เนื่องด้วยผมศึกษาความรู้เกี่ยวกับการพัฒนาเกมมากขึ้น ผมจึงตั้งคำถามว่า “หากเกมที่เราเล่นอยู่ทุกวัน เราเป็นผู้สร้างขึ้นเองจะเป็นอย่างไร” คำถามนี้ได้กลายเป็นแรงบันดาลใจที่ผลักดันให้ผมเริ่มสร้างเกมจากแพลตฟอร์ม Roblox ก่อนจะต่อยอดสู่การสร้างเกมบน Unity โดยตลอดการสร้างเกมผมก็ได้ศึกษาการเขียนโค้ดอย่างจริงจัง และลงมือสร้างเกมตั้งแต่การ Design, Coding, Testing, การแก้ไข Bug ต่างๆ, Publish และการทำโปรโมทด้วยตนเองบนแพลตฟอร์มต่างๆเช่น Tiktok และ Youtube เป็นต้น จนสามารถสร้างฐานผู้เล่นให้กับเกมที่ผมตั้งใจสร้างขึ้นและยังพบกับปัญหาต่างๆที่จำเป็นต้องแก้ไขหลายอย่าง ประสบการณ์ดังกล่าวทำให้ผมเรียนรู้ว่าการพัฒนาเกมที่ดีไม่ได้อาศัยความสามารถในการเขียนโค้ดอย่างเดียวแต่ต้องอาศัยการคิดวิเคราะห์แบบ Logical Thinking ที่สามารถแบ่งหน้าที่ความสำคัญในส่วนต่างๆเป็นลำดับได้อย่างละเอียด ต่อมาผมยังศึกษาความรู้เพิ่มเติมเกี่ยวกับภาษาโปรแกรม เช่น Python, C, C++, Lua, JavaScript, HTML, CSS และ TypeScript รวมทั้งศึกษาเกี่ยวกับเครื่องมือต่างๆอย่าง Git และลึกลงไปถึงหลักการประมวลผลของคอมพิวเตอร์อย่าง Binary Code, โครงสร้างการทำงานของคอมพิวเตอร์ และ องค์ประกอบของ Hardware กับ Software ทั้งหมดนี้เพื่อเข้าใจในรากฐานของคอมพิวเตอร์อย่างลึกซึ้ง ทั้งนี้ผมเห็นว่าวิศวกรรมคอมพิวเตอร์นั้นตรงตามความชอบในคอมพิวเตอร์อย่างมาก นอกจากนี้ผมยังมีประสบการณ์สร้างสื่อวิดีโอในแพลตฟอร์ม YouTube เป็นเวลามากกว่าหลายปีทำให้ผมมีทักษะและความรู้ในการตัดต่อ, การทำกราฟฟิค, เทคนิคการทำโปรโมท และ การพูดบรรยายอย่างมืออาชีพ ซึ่งความรู้และประสบการณ์เหล่านี้ช่วยพัฒนาทักษะด้านความคิดสร้างสรรค์, การสื่อสาร และ การทำงานอย่างเป็นระบบ สามารถสื่อได้ว่าผมมีการ Self Learning อยู่ตลอดเวลา</p>
-      <p data-type=".95">ด้วยประสบการณ์ทั้งหมดกับสิ่งที่ผมชื่นชอบไม่ใช่แค่คอมพิวเตอร์แต่เป็น แนวคิดเชิงวิศวกรรม ที่ให้ความสำคัญกับ การตั้งคำถาม, การค้นหาความจริงผ่านการลงมือทำ, การใช้ความรู้รองรับแนวคิดและพิสูจน์ผลลัพธ์อย่างเป็นระบบ ซึ่งผมยึดถือหลักการดังกล่าวในการเรียนรู้และพัฒนาตนเองกับการมุ่งมั่นด้านคอมพิวเตอร์มาตลอดพร้อมทั้งเป็นจุดเริ่มต้นให้ผมมีโอกาสเข้าร่วมการแข่งขันด้านโครงงานวิทยาศาสตร์ที่จัดขึ้นในมหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรีซึ่งผมทำโครงงานที่มีชื่อว่า“ทุ่นลอยน้ำสร้างกระแสไฟฟ้า”หลักการทำงานคือลูกตุ้มข้างในทุ่นจะแกว่งไปชนเพียโซอิเล็กทิกส์ที่สร้างกระแสไฟฟ้าเมื่อถูกกระแทกจากลูกตุ้มทำงานร่วมกับอุปกรณ์ IoT และ นำแนวคิดเชิงวิศวกรรมมาประยุกต์ใช้และได้ผลลัพธ์ตรงตามเป้าหมาย ผมได้เรียนรู้ทักษะต่างๆเช่น การแก้ไขปัญหา, การนำเสนอแบบมืออาชีพ, การวางแผนการทำงานกันเป็นทีมที่แบ่งหน้าที่อย่างชัดเจนซึ่งผมรับผิดชอบในการประดิษฐ์ที่จำเป็นต้องเขียนโค้ด และ ความรู้ใหม่ๆที่ได้จากอาจารย์หรือเพื่อนทีมอื่นอย่างเห็นได้ชัดคือ จุดเด่นจุดด้อยที่ควรปรับปรุงพัฒนา, ความคิดเห็นที่มีประโยชน์จากอาจารย์ ซึ่งผมตั้งใจรับฟังข้อเสนอแนะและคำติชมต่างๆพร้อมนำกลับมาพัฒนาผลงานในปัจจุบันกับอนาคตอย่างดีที่สุด</p>
-      <p data-type=".95">ผมตั้งเป้าหมายจะเข้าศึกษาต่อที่มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี คณะวิศวกรรมศาสตร์ สาขาวิศวกรรมคอมพิวเตอร์ เนื่องจากความพร้อมด้านเทคโนโลยีและหลักสูตรในแต่ละปีมีความเข้มข้นและทันสมัยทั้ง การปูพื้นฐานสร้างความเข้าใจในวิศวกรรม, การปฏิบัติจริง, การทำโครงงานหรือนวัตกรรม และ การแก้ไขปัญหาที่เกิดขึ้น นอกเหนือจากหลักสูตรการสอนสภาพแวดล้อมที่นี่ยังสำคัญอย่างมากเช่น สังคมภายในมหาวิทยาลัยที่เป็นมิตรและมุ่งเน้นการศึกษาพร้อมแลกเปลี่ยนความรู้, สถานที่ตั้งมีธรรมชาติและบรรยากาศที่เหมาะสมกับสถานศึกษา และ อาคารต่างๆที่ไม่ไกลจากกัน ผมยังได้สัมผัสบรรยากาศภายในมหาวิทยาลัยอย่างใกล้ชิดจากกิจกรรมต่างๆที่ได้เข้าร่วมเช่น Open House และ การแข่งขัน เป็นต้น ผมยิ่งมั่นใจว่ามหาวิทยาลัยแห่งนี้มีการเรียนรู้ที่เข้มข้นในด้านวิศวกรรมพร้อมส่งเสริมและสร้างศักยภาพได้อย่างมีประสิทธิภาพและเชื่อว่ามหาวิทยาลัยสามารถสร้างผู้เรียนที่ทำประโยชน์ตามความต้องการในสังคมด้วยความรู้ทั้งหมดที่ได้มาจากมหาวิทยาลัยและได้ทำงานตรงสายที่ตั้งไว้อย่างแน่นอน</p>
-      <p data-type=".95">ผมสนใจในสายงาน ที่เกี่ยวข้องกับคอมพิวเตอร์เช่น Full-Stack Developer, Software Engineer และ Cyber Security เป็นต้น รวมทั้งยังชื่นชอบในปัญญาประดิษฐ์(AI)ทั้งแบบที่เป็น Generative ธรรมดา, AI Agent และ ระดับอุตสาหกรรมใหญ่ ซึ่งผมเชื่อว่าพื้นฐานความรู้และทักษะต่างๆจากมหาวิทยาลัยนั้นจะสามารถนำไปต่อยอดในสายงานดังกล่าวได้อย่างมีประสิทธิภาพสูงสุด</p>
-      <p data-type=".95">สิ่งที่สำคัญคือมหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรีคณะวิศวกรรมศาสตร์สาขาวิศวกรรมคอมพิวเตอร์สามารถพัฒนาให้สามารถไปถึงสายงานดังกล่าวได้ทั้งหมดเนื่องจากปัจจัยสำคัญคือทางมหาวิทยาลัยนั้นมีศักยภาพที่จะส่งข้าพเจ้าไปทำงานสายงานดังกล่าวได้อย่างมีทักษะความรู้กับการทำงานเป็นทีมภายใต้แรงกดดันอย่างมืออาชีพ</p>
-      <p class="cmd" aria-hidden="true"></p>
     </div>
-    </div>
-  </section>
+    <div class="desk-wall" aria-hidden="true"><img src="assets/kmutt-logo.png" alt="" width="96" height="96"><p>KMUTT</p></div>
 
-  <div class="wrap">
-  <!-- the story's three texts again, each in a glass terminal that types in as it scrolls into view (main.js) -->
-  <section class="goal-terms" aria-label="เรื่องของผม">
-    <div class="glass-term" data-title="story.txt">
-      <div class="tg-bar"><span class="tg-ctl"><button type="button" class="tg-close" aria-label="ปิดหน้าต่าง"></button><button type="button" class="tg-min" aria-label="ย่อหน้าต่าง"></button><button type="button" class="tg-max" aria-label="ขยายหน้าต่าง"></button></span><span class="tg-title">story.txt — zsh</span></div>
-      <div class="tg-fold"><div><div class="tg-body">
+    <section class="win terminal sop" data-app="sop" aria-labelledby="sop-t">
+      <div class="win-bar bar"><span class="tg-ctl"><button type="button" class="tg-close" aria-label="ปิดหน้าต่าง"></button><button type="button" class="tg-min" aria-label="ย่อหน้าต่างลง Dock"></button><button type="button" class="tg-max" aria-label="ขยายหน้าต่าง"></button></span><h2 id="sop-t">STATEMENT OF PURPOSE</h2><span class="win-meta" aria-hidden="true"></span></div>
+      <div class="sop-body">
+        <p class="cmd" data-type="20" aria-hidden="true">cat statement_of_purpose.txt</p>
+        <div class="sop-step"><p data-type="5">ผม นายอาลีฟ เกษมสวัสดิ์ ชื่นชอบในด้านคอมพิวเตอร์มาตั้งแต่ยังเด็กและมีงานอดิเรกส่วนใหญ่คือเล่นเกม ความสนใจดังกล่าวไม่ได้เกิดจากแค่เพียงใช้งานคอมพิวเตอร์หรือแค่เล่นเกมธรรมดา แต่เริ่มเกิดจากการสงสัยว่าคอมพิวเตอร์นั้นทำงานได้ไง?</p></div>
+        <div class="sop-step"><p data-type="5">จุดเริ่มต้นสำคัญเกิดขึ้นเมื่อผมมีโอกาสประกอบคอมพิวเตอร์ครั้งแรกด้วยตนเองจึงเกิดความสนใจใน Hardware จากที่ได้ศึกษาทดลองปฏิบัติ ทำให้ผมได้สืบค้นความรู้ด้าน Software อีกด้วย โดยเฉพาะการเขียนโค้ดที่ทำให้ผมสนใจการสร้างเกม ซึ่งการสนใจด้าน Hardware และ Software จะเป็นจุดเริ่มต้นสำคัญที่ผมจะสนใจในด้านวิศวกรรมในอนาคต เนื่องด้วยผมศึกษาความรู้เกี่ยวกับการพัฒนาเกมมากขึ้น ผมจึงตั้งคำถามว่า “หากเกมที่เราเล่นอยู่ทุกวัน เราเป็นผู้สร้างขึ้นเองจะเป็นอย่างไร” คำถามนี้ได้กลายเป็นแรงบันดาลใจที่ผลักดันให้ผมเริ่มสร้างเกมจากแพลตฟอร์ม</p></div>
+        <div class="sop-step"><p data-type="5">Roblox ก่อนจะต่อยอดสู่การสร้างเกมบน Unity โดยตลอดการสร้างเกมผมก็ได้ศึกษาการเขียนโค้ดอย่างจริงจัง และลงมือสร้างเกมตั้งแต่การ Design, Coding, Testing, การแก้ไข Bug ต่างๆ, Publish และการทำโปรโมทด้วยตนเองบนแพลตฟอร์มต่างๆเช่น Tiktok และ Youtube เป็นต้น จนสามารถสร้างฐานผู้เล่นให้กับเกมที่ผมตั้งใจสร้างขึ้นและยังพบกับปัญหาต่างๆที่จำเป็นต้องแก้ไขหลายอย่าง ประสบการณ์ดังกล่าวทำให้ผมเรียนรู้ว่าการพัฒนาเกมที่ดีไม่ได้อาศัยความสามารถในการเขียนโค้ดอย่างเดียวแต่ต้องอาศัยการคิดวิเคราะห์แบบ</p></div>
+        <div class="sop-step"><p data-type="5">Logical Thinking ที่สามารถแบ่งหน้าที่ความสำคัญในส่วนต่างๆเป็นลำดับได้อย่างละเอียด ต่อมาผมยังศึกษาความรู้เพิ่มเติมเกี่ยวกับภาษาโปรแกรม เช่น Python, C, C++, Lua, JavaScript, HTML, CSS และ TypeScript รวมทั้งศึกษาเกี่ยวกับเครื่องมือต่างๆอย่าง Git และลึกลงไปถึงหลักการประมวลผลของคอมพิวเตอร์อย่าง Binary Code, โครงสร้างการทำงานของคอมพิวเตอร์ และ องค์ประกอบของ Hardware กับ Software ทั้งหมดนี้เพื่อเข้าใจในรากฐานของคอมพิวเตอร์อย่างลึกซึ้ง</p></div>
+        <div class="sop-step"><p data-type="5">ทั้งนี้ผมเห็นว่าวิศวกรรมคอมพิวเตอร์นั้นตรงตามความชอบในคอมพิวเตอร์อย่างมาก นอกจากนี้ผมยังมีประสบการณ์สร้างสื่อวิดีโอในแพลตฟอร์ม YouTube เป็นเวลามากกว่าหลายปีทำให้ผมมีทักษะและความรู้ในการตัดต่อ, การทำกราฟฟิค, เทคนิคการทำโปรโมท และ การพูดบรรยายอย่างมืออาชีพ ซึ่งความรู้และประสบการณ์เหล่านี้ช่วยพัฒนาทักษะด้านความคิดสร้างสรรค์, การสื่อสาร และ การทำงานอย่างเป็นระบบ สามารถสื่อได้ว่าผมมีการ Self Learning อยู่ตลอดเวลา</p></div>
+        <div class="sop-step"><p data-type="5">ด้วยประสบการณ์ทั้งหมดกับสิ่งที่ผมชื่นชอบไม่ใช่แค่คอมพิวเตอร์แต่เป็น แนวคิดเชิงวิศวกรรม ที่ให้ความสำคัญกับ การตั้งคำถาม, การค้นหาความจริงผ่านการลงมือทำ, การใช้ความรู้รองรับแนวคิดและพิสูจน์ผลลัพธ์อย่างเป็นระบบ ซึ่งผมยึดถือหลักการดังกล่าวในการเรียนรู้และพัฒนาตนเองกับการมุ่งมั่นด้านคอมพิวเตอร์มาตลอดพร้อมทั้งเป็นจุดเริ่มต้นให้ผมมีโอกาสเข้าร่วมการแข่งขันด้านโครงงานวิทยาศาสตร์ที่จัดขึ้นในมหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรีซึ่งผมทำโครงงานที่มีชื่อว่า“ทุ่นลอยน้ำสร้างกระแสไฟฟ้า”หลักการทำงานคือลูกตุ้มข้างในทุ่นจะแกว่งไปชนเพียโซอิเล็กทิกส์ที่สร้างกระแสไฟฟ้าเมื่อถูกกระแทกจากลูกตุ้มทำงานร่วมกับอุปกรณ์</p></div>
+        <div class="sop-step"><p data-type="5">IoT และ นำแนวคิดเชิงวิศวกรรมมาประยุกต์ใช้และได้ผลลัพธ์ตรงตามเป้าหมาย ผมได้เรียนรู้ทักษะต่างๆเช่น การแก้ไขปัญหา, การนำเสนอแบบมืออาชีพ, การวางแผนการทำงานกันเป็นทีมที่แบ่งหน้าที่อย่างชัดเจนซึ่งผมรับผิดชอบในการประดิษฐ์ที่จำเป็นต้องเขียนโค้ด และ ความรู้ใหม่ๆที่ได้จากอาจารย์หรือเพื่อนทีมอื่นอย่างเห็นได้ชัดคือ จุดเด่นจุดด้อยที่ควรปรับปรุงพัฒนา, ความคิดเห็นที่มีประโยชน์จากอาจารย์ ซึ่งผมตั้งใจรับฟังข้อเสนอแนะและคำติชมต่างๆพร้อมนำกลับมาพัฒนาผลงานในปัจจุบันกับอนาคตอย่างดีที่สุด</p></div>
+        <div class="sop-step"><p data-type="5">ผมตั้งเป้าหมายจะเข้าศึกษาต่อที่มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี คณะวิศวกรรมศาสตร์ สาขาวิศวกรรมคอมพิวเตอร์ เนื่องจากความพร้อมด้านเทคโนโลยีและหลักสูตรในแต่ละปีมีความเข้มข้นและทันสมัยทั้ง การปูพื้นฐานสร้างความเข้าใจในวิศวกรรม, การปฏิบัติจริง, การทำโครงงานหรือนวัตกรรม และ การแก้ไขปัญหาที่เกิดขึ้น นอกเหนือจากหลักสูตรการสอนสภาพแวดล้อมที่นี่ยังสำคัญอย่างมากเช่น สังคมภายในมหาวิทยาลัยที่เป็นมิตรและมุ่งเน้นการศึกษาพร้อมแลกเปลี่ยนความรู้, สถานที่ตั้งมีธรรมชาติและบรรยากาศที่เหมาะสมกับสถานศึกษา</p></div>
+        <div class="sop-step"><p data-type="5">และ อาคารต่างๆที่ไม่ไกลจากกัน ผมยังได้สัมผัสบรรยากาศภายในมหาวิทยาลัยอย่างใกล้ชิดจากกิจกรรมต่างๆที่ได้เข้าร่วมเช่น Open House และ การแข่งขัน เป็นต้น ผมยิ่งมั่นใจว่ามหาวิทยาลัยแห่งนี้มีการเรียนรู้ที่เข้มข้นในด้านวิศวกรรมพร้อมส่งเสริมและสร้างศักยภาพได้อย่างมีประสิทธิภาพและเชื่อว่ามหาวิทยาลัยสามารถสร้างผู้เรียนที่ทำประโยชน์ตามความต้องการในสังคมด้วยความรู้ทั้งหมดที่ได้มาจากมหาวิทยาลัยและได้ทำงานตรงสายที่ตั้งไว้อย่างแน่นอน</p></div>
+        <div class="sop-step"><p data-type="5">ผมสนใจในสายงาน ที่เกี่ยวข้องกับคอมพิวเตอร์เช่น Full-Stack Developer, Software Engineer และ Cyber Security เป็นต้น รวมทั้งยังชื่นชอบในปัญญาประดิษฐ์(AI)ทั้งแบบที่เป็น Generative ธรรมดา, AI Agent และ ระดับอุตสาหกรรมใหญ่ ซึ่งผมเชื่อว่าพื้นฐานความรู้และทักษะต่างๆจากมหาวิทยาลัยนั้นจะสามารถนำไปต่อยอดในสายงานดังกล่าวได้อย่างมีประสิทธิภาพสูงสุด</p></div>
+        <div class="sop-step"><p data-type="5">สิ่งที่สำคัญคือมหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรีคณะวิศวกรรมศาสตร์สาขาวิศวกรรมคอมพิวเตอร์สามารถพัฒนาให้สามารถไปถึงสายงานดังกล่าวได้ทั้งหมดเนื่องจากปัจจัยสำคัญคือทางมหาวิทยาลัยนั้นมีศักยภาพที่จะส่งข้าพเจ้าไปทำงานสายงานดังกล่าวได้อย่างมีทักษะความรู้กับการทำงานเป็นทีมภายใต้แรงกดดันอย่างมืออาชีพ</p></div>
+        <button class="win-tap" type="button">กดเพื่อไปต่อ</button>
+      </div>
+    </section>
+    <section class="win glass-term" data-app="story" aria-label="story.txt">
+      <div class="win-bar tg-bar"><span class="tg-ctl"><button type="button" class="tg-close" aria-label="ปิดหน้าต่าง"></button><button type="button" class="tg-min" aria-label="ย่อหน้าต่างลง Dock"></button><button type="button" class="tg-max" aria-label="ขยายหน้าต่าง"></button></span><span class="tg-title">story.txt — zsh</span></div>
+      <div class="tg-body">
         <p class="tg-cmd" data-type="22" aria-hidden="true">cat story.txt</p>
         <p class="story-text" data-type="5">ผมที่มีความชื่นชอบด้านคอมพิวเตอร์แต่เด็ก เนื่องจากการประกอบคอมเครื่องแรกเป็นของตนเองทำให้มีความสนใจด้าน Hardware ไปจนได้ศึกษาด้าน Software ด้วย และ เริ่มสนใจการเขียนโค้ดที่เกี่ยวข้องกับการสร้างเกม ทำให้ได้เริ่มสร้างเกมด้วยตนเองจาก Roblox Studio พร้อมโปรโมทเอง จนสามารถสร้างฐานผู้เล่นและทำให้เห็นถึงปัญหาต่างๆแต่ผมก็ผ่านมาได้ และ นั่นแสดงความ Self Learning ของตัวผมเอง</p>
-      </div></div></div>
-    </div>
-    <div class="glass-term" data-title="why-kmutt.txt">
-      <div class="tg-bar"><span class="tg-ctl"><button type="button" class="tg-close" aria-label="ปิดหน้าต่าง"></button><button type="button" class="tg-min" aria-label="ย่อหน้าต่าง"></button><button type="button" class="tg-max" aria-label="ขยายหน้าต่าง"></button></span><span class="tg-title">why-kmutt.txt — zsh</span></div>
-      <div class="tg-fold"><div><div class="tg-body">
+      </div>
+    </section>
+    <section class="win glass-term" data-app="kmutt" aria-label="why-kmutt.txt">
+      <div class="win-bar tg-bar"><span class="tg-ctl"><button type="button" class="tg-close" aria-label="ปิดหน้าต่าง"></button><button type="button" class="tg-min" aria-label="ย่อหน้าต่างลง Dock"></button><button type="button" class="tg-max" aria-label="ขยายหน้าต่าง"></button></span><span class="tg-title">why-kmutt.txt — zsh</span></div>
+      <div class="tg-body">
         <p class="tg-cmd" data-type="22" aria-hidden="true">cat why-kmutt.txt</p>
         <h2 data-type="28">แล้วทำไมต้องที่ มจธ.?</h2>
         <p class="story-text" data-type="5">เป็นเหมือนมหาลัยในฝันที่ผมตั้งใจจะเข้าเพราะมีโอกาสหลายครั้งที่ได้เข้าร่วมกิจกรรมต่างๆภายในมหาวิทยาลัยแห่งนี้ เช่น Open House และ การแข่งขัน รวมทั้ง บรรยากาศ&amp;สภาพแวดล้อมที่นี่ยังเหมาะสมอย่างมาก ด้วยเหตุผลดังกล่าวจึงเป็นสิ่งที่เรียกว่า “ความผูกพัน” ที่แน่นมากให้ผมตั้งใจและมุ่งมั่นที่ได้อย่างมาก</p>
-      </div></div></div>
-    </div>
-    <div class="glass-term" data-title="why-cpe.txt">
-      <div class="tg-bar"><span class="tg-ctl"><button type="button" class="tg-close" aria-label="ปิดหน้าต่าง"></button><button type="button" class="tg-min" aria-label="ย่อหน้าต่าง"></button><button type="button" class="tg-max" aria-label="ขยายหน้าต่าง"></button></span><span class="tg-title">why-cpe.txt — zsh</span></div>
-      <div class="tg-fold"><div><div class="tg-body">
+      </div>
+    </section>
+    <section class="win glass-term" data-app="cpe" aria-label="why-cpe.txt">
+      <div class="win-bar tg-bar"><span class="tg-ctl"><button type="button" class="tg-close" aria-label="ปิดหน้าต่าง"></button><button type="button" class="tg-min" aria-label="ย่อหน้าต่างลง Dock"></button><button type="button" class="tg-max" aria-label="ขยายหน้าต่าง"></button></span><span class="tg-title">why-cpe.txt — zsh</span></div>
+      <div class="tg-body">
         <p class="tg-cmd" data-type="22" aria-hidden="true">cat why-cpe.txt</p>
         <h2 data-type="28">แล้วเพราะอะไรต้องวิศวะคอมที่นี่?</h2>
         <p class="story-text" data-type="5">หลักสูตรในแต่ละปีมีความเข้มข้นมากที่จะสามารถสร้าง วิศวกร ด้านคอมพิวเตอร์ ได้อย่างมีประสิทธิภาพและช่วยแก้ไขปัญหาต่างๆในสังคมได้ รวมทั้งเทคโนโลยีต่างๆที่มีในมหาวิทยาลัยนี้ยังเหมาะสมและเพียงพอกับการสร้างศักยภาพในเด็กที่มีความฝันในการเรียนวิศวะคอมที่มจธ.นั้นเป็นจริงได้</p>
-      </div></div></div>
-    </div>
-  </section>
+      </div>
+    </section>
 
-  <img class="kmutt-logo" src="assets/kmutt-logo.png" alt="ตรามหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี" width="112" height="112">
-  <p class="kmutt" aria-hidden="true">KMUTT</p>
-  </div>
+    <nav class="dock" aria-label="แอป">
+      <p class="dock-hint" aria-hidden="true">เลือกแอปเพื่อเปิด</p>
+      <ul>
+      <li><button class="dock-app" type="button" data-launch="sop" aria-expanded="false" style="--i:0"><span class="dock-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><rect width="48" height="48" rx="11" fill="#140e0b"/><rect x=".75" y=".75" width="46.5" height="46.5" rx="10.3" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1.5"/><rect x="6" y="8" width="36" height="5" rx="2.5" fill="rgba(255,255,255,.08)"/><circle cx="10" cy="10.5" r="1.4" fill="#ff5f57"/><circle cx="14.5" cy="10.5" r="1.4" fill="#febc2e"/><circle cx="19" cy="10.5" r="1.4" fill="#28c840"/><path d="M12 20l6 5-6 5" fill="none" stroke="#ff6a13" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 31h14M12 37h24" stroke="#f6efe9" stroke-width="2.6" stroke-linecap="round" opacity=".9"/></svg></span><span class="dock-name">Statement of Purpose</span></button></li>
+      <li><button class="dock-app" type="button" data-launch="story" aria-expanded="false" style="--i:1"><span class="dock-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><defs><linearGradient id="gi-story" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ec4899"/></linearGradient></defs><rect width="48" height="48" rx="11" fill="url(#gi-story)"/><path d="M15.5 17h17a7 7 0 0 1 6.8 8.7l-1.4 5.6a3.6 3.6 0 0 1-6.2 1.5L28.8 30h-9.6l-2.9 2.8a3.6 3.6 0 0 1-6.2-1.5l-1.4-5.6A7 7 0 0 1 15.5 17z" fill="#fff"/><path d="M17.5 21.5v5M15 24h5" stroke="#a855f7" stroke-width="2.2" stroke-linecap="round"/><circle cx="30.5" cy="22.5" r="1.7" fill="#ec4899"/><circle cx="33.5" cy="25.8" r="1.7" fill="#ec4899"/></svg></span><span class="dock-name">story.txt</span></button></li>
+      <li><button class="dock-app" type="button" data-launch="kmutt" aria-expanded="false" style="--i:2"><span class="dock-icon" aria-hidden="true"><img src="assets/kmutt-logo.png" alt="" width="48" height="48"></span><span class="dock-name">why-kmutt.txt</span></button></li>
+      <li><button class="dock-app" type="button" data-launch="cpe" aria-expanded="false" style="--i:3"><span class="dock-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><defs><linearGradient id="gi-cpe" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#06b6d4"/><stop offset="1" stop-color="#2563eb"/></linearGradient></defs><rect width="48" height="48" rx="11" fill="url(#gi-cpe)"/><path d="M19 11v5M24 11v5M29 11v5M19 32v5M24 32v5M29 32v5M11 19h5M11 24h5M11 29h5M32 19h5M32 24h5M32 29h5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><rect x="15.5" y="15.5" width="17" height="17" rx="3.5" fill="none" stroke="#fff" stroke-width="2.6"/><rect x="20.5" y="20.5" width="7" height="7" rx="1.5" fill="#fff"/></svg></span><span class="dock-name">why-cpe.txt</span></button></li>
+      </ul>
+    </nav>
+  </section>
 </main>
 
 <footer class="site-footer">
