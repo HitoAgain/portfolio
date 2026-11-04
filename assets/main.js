@@ -188,38 +188,107 @@ if (works) {
   }, { rootMargin: '0px 0px -15% 0px' }).observe(works); // works starts right at the fold, so ignore the bottom edge
 }
 
-// ---- Goal story: after the intro "ชอบเล่นเกม" pops into the first paragraph; each question button (shown once it is
-//      scrolled to) pops in the next paragraph; the last one opens the white circle and lets the goal page in.
+// ---- Goal story: after the intro a glass terminal types "ชอบเล่นเกม", then the paragraphs one at a time. Each question
+//      button (shown once it is scrolled to) shatters the glass from where it was clicked; the shards fly back together
+//      and the next text types in. The last question opens the white circle and lets the goal page in.
 //      goalReady resolves once the goal page itself is uncovered.
 const story = $('.story');
 let goalReady = $('.goal-intro') ? sleep(2700) : Promise.resolve();
 if (story) goalReady = new Promise(done => {
-  const steps = $$('.story-step', story), cue = $('.story-cue'), outro = $('.goal-outro');
+  const win = $('.glass-term', story), steps = $$('.story-step', story), cue = $('.story-cue'), outro = $('.goal-outro');
   const hold = ms => new Promise(r => setTimeout(r, ms)); // reading time: kept even with reduced motion
+  const frame = () => new Promise(requestAnimationFrame);
+  const top0 = () => scrollTo({ top: 0, behavior: 'instant' });
   document.body.classList.add('story-on');
-  const show = async (step, focus) => {
+
+  // each typed line: the full text for screen readers, then (hidden from them) typed part + caret + untyped rest
+  $$('[data-type]', story).forEach(el => {
+    const text = el.textContent.trim();
+    el.innerHTML = '<span class="sr-only"></span><span aria-hidden="true"><span class="tt"></span><span class="tc"></span><span class="tr"></span></span>';
+    $('.sr-only', el).textContent = $('.tr', el).textContent = text;
+    el.chars = graphemes(text);
+  });
+  let rush = false; // a click on the window while it types finishes the text at once
+  win.addEventListener('click', e => { if (!e.target.closest('.story-next')) rush = true; });
+  const type = async el => {
+    const g = el.chars, t = $('.tt', el), r = $('.tr', el), ms = +el.dataset.type, t0 = performance.now();
+    $$('.cur', story).forEach(x => x.classList.remove('cur'));
+    el.classList.add('cur');
+    for (let n = 0; n < g.length;) {
+      await frame();
+      n = rush || reduce ? g.length : Math.min(g.length, Math.floor((performance.now() - t0) / ms) + 1);
+      t.textContent = g.slice(0, n).join(''); r.textContent = g.slice(n).join('');
+    }
+  };
+  const reveal = async (step, focus) => {
     step.classList.add('on');
     if (focus) step.focus({ preventScroll: true }); // keyboard and screen-reader users land on the new text
+    rush = false;
+    for (const el of $$('[data-type]', step)) await type(el);
     const btn = $('.story-next', step);
     if (!btn) return;
-    await sleep(900);
     const seen = new IntersectionObserver(([e]) => {
       cue.hidden = e.isIntersecting;
       if (e.isIntersecting) { btn.classList.add('seen'); seen.disconnect(); }
     }, { threshold: 1 });
     seen.observe(btn);
   };
-  const leave = async step => {
-    step.classList.add('out');
-    await sleep(280);
-    step.classList.remove('on', 'out');
-    scrollTo({ top: 0, behavior: 'instant' });
+
+  // break the window (w × h) into rings of pieces around the impact point (cx, cy): triangles at the centre, then two rings of quads
+  const pieces = (w, h, cx, cy) => {
+    const N = 9, rad = [Math.min(w, h) * .16, Math.max(w, h) * .42, 6000], base = Math.random() * 6.3, out = [];
+    const ang = [...Array(N)].map((_, i) => base + (i + (Math.random() - .5) * .6) * 2 * Math.PI / N);
+    const pts = rad.map((r, k) => ang.map(t => { const rr = k < 2 ? r * (.7 + Math.random() * .6) : r; return [cx + Math.cos(t) * rr, cy + Math.sin(t) * rr]; }));
+    for (let i = 0; i < N; i++) {
+      const j = (i + 1) % N;
+      out.push({ ring: 0, pts: [[cx, cy], pts[0][i], pts[0][j]] });
+      for (let k = 1; k < 3; k++) out.push({ ring: k, pts: [pts[k - 1][i], pts[k][i], pts[k][j], pts[k - 1][j]] });
+    }
+    return out;
   };
+  const shatter = async (from, to, at) => {
+    const a = win.getBoundingClientRect();
+    const cx = (at ? at.x : a.left + a.width / 2) - a.left, cy = (at ? at.y : a.top + a.height / 2) - a.top;
+    const box = document.createElement('div');
+    box.className = 'shards'; box.inert = true;
+    Object.assign(box.style, { left: a.left + 'px', top: a.top + 'px', width: a.width + 'px', height: a.height + 'px' });
+    const flights = pieces(a.width, a.height, cx, cy).map(({ ring, pts }) => {
+      const s = win.cloneNode(true);
+      s.style.clipPath = `polygon(${pts.map(([x, y]) => `${x}px ${y}px`).join(',')})`;
+      // fly away from the impact, from the middle of the piece's visible part
+      const vis = pts.map(([x, y]) => [Math.max(0, Math.min(a.width, x)), Math.max(0, Math.min(a.height, y))]);
+      const mx = vis.reduce((t, p) => t + p[0], 0) / vis.length, my = vis.reduce((t, p) => t + p[1], 0) / vis.length;
+      const d = Math.hypot(mx - cx, my - cy) || 1, far = [50, 120, 200][ring] + Math.random() * 70;
+      s.style.transformOrigin = `${mx}px ${my}px`;
+      box.append(s);
+      return { s, ring, to: `translate(${(mx - cx) / d * far}px, ${(my - cy) / d * far + 30}px) rotate(${(Math.random() - .5) * (40 + ring * 30)}deg) scale(.94)` };
+    });
+    document.body.append(box);
+    win.style.visibility = 'hidden';
+    await Promise.all(flights.map(f => f.s.animate([{ transform: 'none', filter: 'brightness(1.8)' }, { transform: f.to, opacity: .7 }],
+      { duration: 420, delay: f.ring * 35, easing: 'cubic-bezier(.15,.85,.3,1)', fill: 'forwards' }).finished));
+    // while the pieces are apart: put the next text in, untyped, and send the pieces to the window's new place and size
+    from.classList.remove('on'); to.classList.add('on'); top0();
+    const b = win.getBoundingClientRect();
+    Object.assign(box.style, { left: b.left + 'px', top: b.top + 'px', width: b.width + 'px', height: b.height + 'px' });
+    flights.forEach(f => { f.s.innerHTML = win.innerHTML; });
+    const back = { duration: 520, easing: 'cubic-bezier(.55,0,.25,1.12)', fill: 'forwards' };
+    box.animate([{ transform: `translate(${a.left - b.left}px, ${a.top - b.top}px)` }, { transform: 'none' }], back);
+    await Promise.all(flights.map(f => f.s.animate([{ transform: f.to, opacity: .7 }, { transform: 'none', opacity: 1 }], { ...back, delay: (2 - f.ring) * 35 }).finished));
+    box.remove();
+    win.style.visibility = '';
+  };
+  const next = async (from, to, at) => {
+    if (reduce) { from.classList.remove('on'); top0(); }
+    else await shatter(from, to, at);
+    reveal(to, true);
+  };
+
   const finish = async () => {
     outro.hidden = false;
     await sleep(800);
     document.body.classList.replace('story-on', 'story-done');
-    scrollTo({ top: 0, behavior: 'instant' });
+    top0();
     await hold(1600);
     outro.classList.add('close');
     await sleep(600);
@@ -229,20 +298,20 @@ if (story) goalReady = new Promise(done => {
   };
   steps.forEach((step, i) => {
     const btn = $('.story-next', step);
-    if (btn) btn.addEventListener('click', async () => {
+    if (btn) btn.addEventListener('click', e => {
       btn.disabled = true; // one click is enough
       cue.hidden = true;
-      if (i === steps.length - 1) return finish();
-      await leave(step);
-      show(steps[i + 1], true);
+      if (i === steps.length - 1) finish();
+      else next(step, steps[i + 1], e.detail ? { x: e.clientX, y: e.clientY } : null); // keyboard: break from the middle
     });
   });
   (async () => {
     await sleep(2600); // the intro circle is closing
-    await show(steps[0]);
-    await hold(1800);
-    await leave(steps[0]);
-    show(steps[1]);
+    win.classList.add('on');
+    await sleep(350);
+    await reveal(steps[0]);
+    await hold(1500);
+    next(steps[0], steps[1]);
   })();
 });
 
