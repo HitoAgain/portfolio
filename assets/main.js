@@ -224,22 +224,32 @@ if (story) goalReady = new Promise(done => {
   document.body.classList.add('story-on');
 
   $$('[data-type]', story).forEach(prepType);
-  let rush = false; // a click on the window while it types finishes the text at once
-  win.addEventListener('click', e => { if (!e.target.closest('.story-next')) rush = true; });
+  const tap = $('.story-tap', story); // "กดตรงไหนก็ได้": a click anywhere on the window moves on (the hint itself is the keyboard's way)
+  let cur = 0, ready = false, rush = false;
   const type = el => typeLine(el, story, () => rush);
   const reveal = async (step, focus) => {
     step.classList.add('on');
     if (focus) step.focus({ preventScroll: true }); // keyboard and screen-reader users land on the new text
     rush = false;
     for (const el of $$('[data-type]', step)) await type(el);
-    const btn = $('.story-next', step);
-    if (!btn) return;
-    const seen = new IntersectionObserver(([e]) => {
-      cue.hidden = e.isIntersecting;
-      if (e.isIntersecting) { btn.classList.add('seen'); seen.disconnect(); }
-    }, { threshold: 1 });
-    seen.observe(btn);
+    ready = true;
+    if (step === steps[0]) return; // "ชอบเล่นเกม" moves on by itself
+    tap.hidden = false;
+    // long text on a short screen: say there is more below until the hint at the foot is in view
+    const seen = new IntersectionObserver(([e]) => { cue.hidden = e.isIntersecting; if (e.isIntersecting) seen.disconnect(); }, { threshold: 1 });
+    seen.observe(tap);
   };
+  const advance = at => {
+    if (!ready) return;
+    ready = false;
+    tap.hidden = cue.hidden = true;
+    if (cur === steps.length - 1) return finish();
+    next(steps[cur], steps[++cur], at);
+  };
+  win.addEventListener('click', e => {
+    if (!ready) { rush = true; return; } // still typing: show the whole text first
+    advance(e.detail ? { x: e.clientX, y: e.clientY } : null); // keyboard (Enter on the hint): break from the middle
+  });
 
   // break the window (w × h) into rings of pieces around the impact point (cx, cy): triangles at the centre, then two rings of quads
   const pieces = (w, h, cx, cy) => {
@@ -303,22 +313,13 @@ if (story) goalReady = new Promise(done => {
     $('.page-title').focus({ preventScroll: true });
     done();
   };
-  steps.forEach((step, i) => {
-    const btn = $('.story-next', step);
-    if (btn) btn.addEventListener('click', e => {
-      btn.disabled = true; // one click is enough
-      cue.hidden = true;
-      if (i === steps.length - 1) finish();
-      else next(step, steps[i + 1], e.detail ? { x: e.clientX, y: e.clientY } : null); // keyboard: break from the middle
-    });
-  });
   (async () => {
     await sleep(2600); // the intro circle is closing
     win.classList.add('on');
     await sleep(120);
-    await reveal(steps[0]); // "ชอบเล่นเกม": in quick, out quick
+    await reveal(steps[0]); // "ชอบเล่นเกม": in quick, out quick (or sooner, on a click)
     await hold(750);
-    next(steps[0], steps[1]);
+    if (cur === 0) advance(null);
   })();
 });
 
@@ -356,3 +357,18 @@ if (sop) {
   }, { rootMargin: '0px 0px -20% 0px' }); // a tall box: start once its top is well inside the screen
   start.observe(sop);
 }
+
+// ---- Goal page: the story's three texts in glass terminals, each typing in once it scrolls into view (a click finishes it)
+$$('.goal-terms .glass-term').forEach(box => {
+  const lines = $$('[data-type]', box);
+  lines.forEach(prepType);
+  let rush = false;
+  box.addEventListener('click', () => { rush = true; });
+  const start = new IntersectionObserver(async ([e]) => {
+    if (!e.isIntersecting) return;
+    start.disconnect();
+    await goalReady;
+    for (const el of lines) await typeLine(el, box, () => rush);
+  }, { rootMargin: '0px 0px -15% 0px' });
+  start.observe(box);
+});
