@@ -188,6 +188,64 @@ if (works) {
   }, { rootMargin: '0px 0px -15% 0px' }).observe(works); // works starts right at the fold, so ignore the bottom edge
 }
 
+// ---- Goal story: after the intro "ชอบเล่นเกม" pops into the first paragraph; each question button (shown once it is
+//      scrolled to) pops in the next paragraph; the last one opens the white circle and lets the goal page in.
+//      goalReady resolves once the goal page itself is uncovered.
+const story = $('.story');
+let goalReady = $('.goal-intro') ? sleep(2700) : Promise.resolve();
+if (story) goalReady = new Promise(done => {
+  const steps = $$('.story-step', story), cue = $('.story-cue'), outro = $('.goal-outro');
+  const hold = ms => new Promise(r => setTimeout(r, ms)); // reading time: kept even with reduced motion
+  document.body.classList.add('story-on');
+  const show = async (step, focus) => {
+    step.classList.add('on');
+    if (focus) step.focus({ preventScroll: true }); // keyboard and screen-reader users land on the new text
+    const btn = $('.story-next', step);
+    if (!btn) return;
+    await sleep(900);
+    const seen = new IntersectionObserver(([e]) => {
+      cue.hidden = e.isIntersecting;
+      if (e.isIntersecting) { btn.classList.add('seen'); seen.disconnect(); }
+    }, { threshold: 1 });
+    seen.observe(btn);
+  };
+  const leave = async step => {
+    step.classList.add('out');
+    await sleep(280);
+    step.classList.remove('on', 'out');
+    scrollTo({ top: 0, behavior: 'instant' });
+  };
+  const finish = async () => {
+    outro.hidden = false;
+    await sleep(800);
+    document.body.classList.replace('story-on', 'story-done');
+    scrollTo({ top: 0, behavior: 'instant' });
+    await hold(1600);
+    outro.classList.add('close');
+    await sleep(600);
+    outro.hidden = true;
+    $('.page-title').focus({ preventScroll: true });
+    done();
+  };
+  steps.forEach((step, i) => {
+    const btn = $('.story-next', step);
+    if (btn) btn.addEventListener('click', async () => {
+      btn.disabled = true; // one click is enough
+      cue.hidden = true;
+      if (i === steps.length - 1) return finish();
+      await leave(step);
+      show(steps[i + 1], true);
+    });
+  });
+  (async () => {
+    await sleep(2600); // the intro circle is closing
+    await show(steps[0]);
+    await hold(1800);
+    await leave(steps[0]);
+    show(steps[1]);
+  })();
+});
+
 // ---- Goal terminal: types commands, prints output
 const term = $('.terminal');
 if (term) {
@@ -199,7 +257,7 @@ if (term) {
     ['cmd', 'status'], ['out', 'กำลังเตรียมตัว...'], ['cmd', ''],
   ];
   term.addEventListener('reveal', async () => {
-    if ($('.goal-intro')) await sleep(2700); // wait for the circle intro to close
+    await goalReady; // wait until the intro (and the story) has uncovered the page
     for (const [cls, text] of script) {
       const row = document.createElement('div'), t = document.createTextNode('');
       row.className = cls;

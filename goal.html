@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=7">
-<script src="assets/main.js?v=7" defer></script>
+<link rel="stylesheet" href="assets/style.css?v=8">
+<script src="assets/main.js?v=8" defer></script>
 </head>
 <body>
 <header class="site-header">
@@ -31,9 +31,33 @@
   <p>ทำไมต้องที่นี่?</p>
 </div>
 
+<!-- story: after the intro, one big text at a time; each question button pops in the next one, the last opens the circle (main.js).
+     without JS all of it simply shows above the page -->
+<section class="story wrap" aria-label="เรื่องของผม">
+  <div class="story-step" tabindex="-1">
+    <p class="story-hook">ชอบเล่นเกม</p>
+  </div>
+  <div class="story-step" tabindex="-1">
+    <p>ผมที่มีความชื่นชอบด้านคอมพิวเตอร์แต่เด็ก เนื่องจากการประกอบคอมเครื่องแรกเป็นของตนเองทำให้มีความสนใจด้าน Hardware ไปจนได้ศึกษาด้าน Software ด้วย และ เริ่มสนใจการเขียนโค้ดที่เกี่ยวข้องกับการสร้างเกม ทำให้ได้เริ่มสร้างเกมด้วยตนเองจาก Roblox Studio พร้อมโปรโมทเอง จนสามารถสร้างฐานผู้เล่นและทำให้เห็นถึงปัญหาต่างๆแต่ผมก็ผ่านมาได้ และ นั่นแสดงความ Self Learning ของตัวผมเอง</p>
+    <button class="story-next" type="button">แล้วทำไมต้องที่ มจธ.?</button>
+  </div>
+  <div class="story-step" tabindex="-1">
+    <h2>แล้วทำไมต้องที่ มจธ.?</h2>
+    <p>เป็นเหมือนมหาลัยในฝันที่ผมตั้งใจจะเข้าเพราะมีโอกาสหลายครั้งที่ได้เข้าร่วมกิจกรรมต่างๆภายในมหาวิทยาลัยแห่งนี้ เช่น Open House และ การแข่งขัน รวมทั้ง บรรยากาศ&amp;สภาพแวดล้อมที่นี่ยังเหมาะสมอย่างมาก ด้วยเหตุผลดังกล่าวจึงเป็นสิ่งที่เรียกว่า “ความผูกพัน” ที่แน่นมากให้ผมตั้งใจและมุ่งมั่นที่ได้อย่างมาก</p>
+    <button class="story-next" type="button">แล้วเพราะอะไรต้องวิศวะคอมที่นี่?</button>
+  </div>
+  <div class="story-step" tabindex="-1">
+    <h2>แล้วเพราะอะไรต้องวิศวะคอมที่นี่?</h2>
+    <p>หลักสูตรในแต่ละปีมีความเข้มข้นมากที่จะสามารถสร้าง วิศวกร ด้านคอมพิวเตอร์ ได้อย่างมีประสิทธิภาพและช่วยแก้ไขปัญหาต่างๆในสังคมได้ รวมทั้งเทคโนโลยีต่างๆที่มีในมหาวิทยาลัยนี้ยังเหมาะสมและเพียงพอกับการสร้างศักยภาพในเด็กที่มีความฝันในการเรียนวิศวะคอมที่มจธ.นั้นเป็นจริงได้</p>
+    <button class="story-next" type="button">แล้วเป้าหมายของผมคืออะไร?</button>
+  </div>
+</section>
+<p class="story-cue" aria-hidden="true" hidden>เลื่อนลงเพื่ออ่านต่อ ↓</p>
+<div class="goal-outro" hidden><p>ทั้งหมดนี่คือความตั้งใจของผม</p></div>
+
 <main class="page wrap">
   <nav class="crumb fade-up" aria-label="ตำแหน่งหน้า"><a href="index.html">หน้าแรก</a><span>/</span>เป้าหมาย</nav>
-  <h1 class="page-title">
+  <h1 class="page-title" tabindex="-1">
     <span class="line"><span>วิศวกรรมคอมพิวเตอร์</span></span>
     <span class="line" style="--d:1"><span class="accent">ที่ มจธ.</span></span>
   </h1>
