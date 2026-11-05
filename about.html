@@ -11,8 +11,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=17">
-<script src="assets/main.js?v=17" defer></script>
+<link rel="stylesheet" href="assets/style.css?v=18">
+<script src="assets/main.js?v=18" defer></script>
 </head>
 <body>
 <header class="site-header">
@@ -31,39 +31,37 @@
 <main class="page">
   <div class="fold">
     <nav class="crumb" aria-label="ตำแหน่งหน้า"><a href="index.html">หน้าแรก</a><span>/</span>ประวัติ</nav>
-    <h1 class="page-title" data-intro aria-label="อาลีฟ เกษมสวัสดิ์ (Arlif Kaseamsawat)"><span class="name" aria-hidden="true"><span class="typed">อาลีฟ เกษมสวัสดิ์</span><span class="caret"></span></span></h1>
+    <h1 class="page-title" data-intro aria-label="About me (เกี่ยวกับผม)"><span class="name" aria-hidden="true"><span class="typed accent">About me</span><span class="caret"></span></span></h1>
 
     <div class="card-wrap">
       <article class="id-card" data-tilt aria-label="บัตรประวัติ">
         <header class="id-head"><p class="id-word"><span style="--i:0">K</span><span style="--i:1">A</span><span style="--i:2">S</span><span style="--i:3">E</span><span style="--i:4">A</span><span style="--i:5">M</span><span style="--i:6">S</span><span style="--i:7">A</span><span style="--i:8">W</span><span style="--i:9">A</span><span style="--i:10">T</span></p></header>
-        <!-- two faces share one spot; the buttons swap them (main.js) -->
         <div class="id-face id-front">
-          <!-- the photo, big, standing in the card: a giant outlined first name behind him, an orange stage light below,
-               and the head coming out over the card's top edge; hovering swaps to arms crossed -->
+          <!-- the photo: a frame behind him, a giant outlined first name over the frame, and him in front, his head out
+               over the frame's top; hovering swaps to arms crossed -->
           <figure class="me">
+            <div class="me-frame" aria-hidden="true"></div>
             <p class="me-word" aria-hidden="true">ARLIF</p>
             <img class="me-idle" src="assets/me-idle.webp" alt="อาลีฟ เกษมสวัสดิ์ ในชุดนักเรียน" width="273" height="430">
             <img class="me-hover" src="assets/me-hover.webp" alt="" width="273" height="430" aria-hidden="true">
             <a class="cloud" href="#skills"><span>SKILL ข้างล่าง ↓</span><i></i><i></i></a>
           </figure>
           <dl class="profile">
-            <div><dt>ชื่อ-นามสกุล</dt><dd>นายอาลีฟ เกษมสวัสดิ์</dd></div>
+            <div class="who"><dt>ชื่อ-นามสกุล</dt><dd><span class="sr-only">นายอาลีฟ เกษมสวัสดิ์ (Arlif Kaseamsawat)</span><span class="who-name" aria-hidden="true">นายอาลีฟ เกษมสวัสดิ์</span><span class="caret" aria-hidden="true"></span></dd></div>
             <div><dt>อายุ</dt><dd>17 ปี</dd></div>
             <div><dt>วันเกิด</dt><dd>9 กุมภาพันธ์ 2552</dd></div>
             <div><dt>สัญชาติ</dt><dd>ไทย</dd></div>
             <div><dt>แผนการเรียน</dt><dd>วิทย์-คณิต (STEM)</dd></div>
             <div><dt>อีเมล</dt><dd><a href="mailto:hitonewgen1234@gmail.com">hitonewgen1234@gmail.com</a></dd></div>
           </dl>
-          <button class="id-flip" type="button">การศึกษา <span aria-hidden="true">→</span></button>
-        </div>
-        <div class="id-face id-back">
-          <h2>การศึกษา</h2>
-          <ol class="crests">
-            <li style="--i:0"><img src="assets/wpb-logo.png" alt="ตราโรงเรียนวัดพุทธบูชา" width="88" height="88"><small>มัธยมศึกษาตอนต้น</small><h3>โรงเรียนวัดพุทธบูชา</h3></li>
-            <li style="--i:1"><img src="assets/wpb-logo.png" alt="ตราโรงเรียนวัดพุทธบูชา" width="88" height="88"><small>มัธยมศึกษาตอนปลาย</small><h3>โรงเรียนวัดพุทธบูชา</h3><p>วิทย์-คณิต (STEM)</p></li>
-            <li class="next" style="--i:2"><img src="assets/kmutt-logo.png" alt="ตรามหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี" width="88" height="88"><small>ก้าวต่อไป</small><h3>วิศวกรรมคอมพิวเตอร์ มจธ.</h3><p><a class="more" href="goal.html">ดูเป้าหมาย <span>→</span></a></p></li>
-          </ol>
-          <button class="id-flip" type="button"><span aria-hidden="true">←</span> ข้อมูลส่วนตัว</button>
+          <section class="edu" aria-labelledby="edu-t">
+            <h2 id="edu-t">การศึกษา</h2>
+            <ol class="crests">
+              <li style="--i:0"><img src="assets/wpb-logo.png" alt="ตราโรงเรียนวัดพุทธบูชา" width="88" height="88"><small>มัธยมศึกษาตอนต้น</small><h3>โรงเรียนวัดพุทธบูชา</h3></li>
+              <li style="--i:1"><img src="assets/wpb-logo.png" alt="ตราโรงเรียนวัดพุทธบูชา" width="88" height="88"><small>มัธยมศึกษาตอนปลาย</small><h3>โรงเรียนวัดพุทธบูชา</h3><p>วิทย์-คณิต (STEM)</p></li>
+              <li class="next" style="--i:2"><img src="assets/kmutt-logo.png" alt="ตรามหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี" width="88" height="88"><small>ก้าวต่อไป</small><h3>วิศวกรรมคอมพิวเตอร์ มจธ.</h3><p><a class="more" href="goal.html">ดูเป้าหมาย <span>→</span></a></p></li>
+            </ol>
+          </section>
         </div>
       </article>
     </div>

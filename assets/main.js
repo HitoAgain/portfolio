@@ -105,13 +105,6 @@ const io = new IntersectionObserver(es => es.forEach(e => {
 }), { threshold: .15 });
 $$('.rv').forEach((el, i) => { el.style.transitionDelay = (i % 3) * 90 + 'ms'; io.observe(el); });
 
-// ---- About: the education button swaps the card face to the three school crests, and back
-const idCard = $('.id-card');
-if (idCard) $$('.id-flip', idCard).forEach(b => b.addEventListener('click', () => {
-  const edu = idCard.classList.toggle('show-edu');
-  $(edu ? '.id-back .id-flip' : '.id-front .id-flip', idCard).focus(); // keep keyboard focus on the visible face
-}));
-
 // ---- Intros: FLIP the title from the middle of the screen into its place, then fade the rest of the page in one after another
 const settle = (el, cls, rest) => {
   const a = el.getBoundingClientRect();
@@ -134,24 +127,30 @@ $$('.cloud').forEach(a => a.addEventListener('click', e => {
   requestAnimationFrame(tick);
 }));
 
-// ---- About: the name types in Thai, retypes in English big in the middle, glides into place, then keeps switching
+// ---- About: the title types "About me" big in the middle, retypes it as "เกี่ยวกับผม", glides into place, then keeps
+//      switching. The name in the card switches between Thai and English the same way, two seconds out of step.
+//      English is orange.
+const isEn = t => /^[A-Za-z]/.test(t);
+const typeIn = async (out, text) => { out.classList.toggle('accent', isEn(text)); for (const g of graphemes(text)) { out.textContent += g; await sleep(55); } };
+const eraseOut = async out => { const gs = graphemes(out.textContent); while (gs.length) { gs.pop(); out.textContent = gs.join(''); await sleep(25); } };
+const switchForever = async (out, texts, i) => { for (;; i++) { await sleep(4000); await eraseOut(out); await sleep(250); await typeIn(out, texts[i % 2]); } };
 const intro = $('[data-intro]');
 if (intro && !reduce) (async () => {
-  const name = $('.name', intro), out = $('.typed', intro), names = ['อาลีฟ เกษมสวัสดิ์', 'Arlif Kaseamsawat'];
-  const type = async (text, en = false) => { out.classList.toggle('accent', en); for (const g of graphemes(text)) { out.textContent += g; await sleep(55); } };
-  const erase = async () => { const gs = graphemes(out.textContent); while (gs.length) { gs.pop(); out.textContent = gs.join(''); await sleep(25); } };
-  let i = 1; // intro skipped (settings): the Thai name is already there, so English comes next
+  const name = $('.name', intro), out = $('.typed', intro), titles = ['About me', 'เกี่ยวกับผม'];
+  let i = 1; // intro skipped (settings): "About me" is already there, so Thai comes next
   if (!noIntro) {
     document.body.classList.add('name-intro');
     out.textContent = '';
     await loaderDone; // the loading screen goes first
     await document.fonts.ready;
     await sleep(200);
-    await type(names[0]); await sleep(500); await erase(); await sleep(150); await type(names[1], true); await sleep(450);
+    await typeIn(out, titles[0]); await sleep(500); await eraseOut(out); await sleep(150); await typeIn(out, titles[1]); await sleep(450);
     settle(name, 'name-intro', '.page > :not(.fold), .fold > :not([data-intro])');
     i = 0;
   }
-  for (;; i++) { await sleep(4000); await erase(); await sleep(250); await type(names[i % 2], i % 2 === 1); }
+  const who = $('.who-name');
+  if (who) setTimeout(() => switchForever(who, ['นายอาลีฟ เกษมสวัสดิ์', 'Arlif Kaseamsawat'], 1), 2000);
+  switchForever(out, titles, i);
 })();
 
 // ---- Works: "ผลงาน" writes itself big in the middle, glitching a few times, then glides into place
@@ -302,13 +301,36 @@ if (works) {
 // ---- Typing (goal page): a typed line keeps its full text for screen readers; on screen it is the typed part, a caret,
 //      and the untyped rest, which stays laid out but invisible so nothing moves while it types
 const frame = () => new Promise(requestAnimationFrame);
+// Lines may hold markup (bold words): each text piece becomes a typed span + untyped span inside its own element, and the
+// single caret moves to wherever typing has got to.
 const prepType = el => {
-  const text = el.textContent.trim();
-  el.innerHTML = '<span class="sr-only"></span><span aria-hidden="true"><span class="tt"></span><span class="tc"></span><span class="tr"></span></span>';
-  $('.sr-only', el).textContent = $('.tr', el).textContent = text;
-  el.chars = graphemes(text);
+  const sr = document.createElement('span'), vis = document.createElement('span'), caret = document.createElement('span');
+  sr.className = 'sr-only'; vis.setAttribute('aria-hidden', 'true'); caret.className = 'tc';
+  vis.append(...el.childNodes);
+  const walker = document.createTreeWalker(vis, NodeFilter.SHOW_TEXT), nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  if (nodes.length) { nodes[0].data = nodes[0].data.trimStart(); nodes.at(-1).data = nodes.at(-1).data.trimEnd(); }
+  el.segs = nodes.filter(t => t.data).map(t => {
+    const tt = document.createElement('span'), tr = document.createElement('span');
+    tt.className = 'tt'; tr.className = 'tr'; tr.textContent = t.data;
+    t.replaceWith(tt, tr);
+    return { tt, tr, g: graphemes(t.data) };
+  });
+  sr.append(vis.cloneNode(true)); sr.querySelectorAll('.tr').forEach(x => x.className = '');
+  el.chars = el.segs.flatMap(s => s.g); el.caret = caret;
+  el.replaceChildren(sr, vis);
+  if (!el.segs.length) vis.append(caret);
 };
-const showTyped = (el, n) => { $('.tt', el).textContent = el.chars.slice(0, n).join(''); $('.tr', el).textContent = el.chars.slice(n).join(''); };
+const showTyped = (el, n) => {
+  let left = n, here = null;
+  for (const s of el.segs) {
+    const k = Math.max(0, Math.min(s.g.length, left));
+    s.tt.textContent = s.g.slice(0, k).join(''); s.tr.textContent = s.g.slice(k).join('');
+    if (!here && (k < s.g.length || s === el.segs.at(-1))) here = s;
+    left -= s.g.length;
+  }
+  if (here && el.caret.nextSibling !== here.tr) here.tt.after(el.caret);
+};
 // types el at data-type ms per character (several per frame when that is faster than the screen); the caret moves along
 // within scope; skip() true = show the rest at once
 const typeLine = async (el, scope, skip = () => false) => {

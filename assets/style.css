@@ -131,8 +131,8 @@ h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;margin:96px 0 32px}
 /* profile: an ID card as wide and tall as the screen, a gap from every edge so it still reads as a card; tilts with the mouse
    (main.js) and a light sheen sweeps across on hover. The about page is full width; its title and skills keep the page width */
 .fold>.crumb,.fold>.page-title{width:min(1120px,100% - 32px);margin-inline:auto}
-.card-wrap{--gap:clamp(10px,1.8vw,26px);margin:clamp(40px,6vh,64px) var(--gap) 0;overflow-x:clip} /* the big name behind the photo may not widen the page */
-.id-card{position:relative;display:grid;grid-template-areas:"head" "face";grid-template-rows:auto 1fr;gap:12px;min-height:clamp(520px,calc(100svh - 2 * var(--gap)),720px);
+.card-wrap{--gap:clamp(16px,3.4vw,52px);margin:clamp(40px,6vh,64px) var(--gap) 0;overflow-x:clip} /* the big name behind the photo may not widen the page */
+.id-card{position:relative;display:grid;grid-template-areas:"head" "face";grid-template-rows:auto 1fr;gap:12px;min-height:clamp(520px,calc(100svh - 2 * var(--gap)),760px);
   padding:clamp(14px,1.8vw,22px) clamp(16px,2.4vw,30px) clamp(16px,2vw,24px);border-radius:28px;border:1px solid rgba(255,255,255,.1);
   background:radial-gradient(120% 90% at 100% 0%,rgba(255,106,19,.2),transparent 55%),linear-gradient(160deg,#1f1813,#100b08);
   box-shadow:0 30px 80px -30px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.06);transition:transform .25s ease-out}
@@ -146,19 +146,17 @@ h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;margin:96px 0 32px}
 .id-word{font:800 clamp(20px,2.6vw,28px)/1.2 Kanit;letter-spacing:.2em}
 .id-word span{color:var(--orange);animation:glint 3.6s ease-in-out infinite;animation-delay:calc(var(--i) * 90ms)}
 @keyframes glint{0%,24%,100%{color:var(--orange)}12%{color:#fff}}
-/* the shown face turns visible at once (so it can take focus); the hidden one only after it has faded */
-.id-face{grid-area:face;transition:opacity .5s var(--ease),transform .5s var(--ease)}
-.id-card.show-edu .id-front,.id-card:not(.show-edu) .id-back{opacity:0;visibility:hidden;transform:translateY(12px) scale(.98);transition:opacity .5s var(--ease),transform .5s var(--ease),visibility 0s .5s}
-.id-front{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);grid-template-areas:"photo info" "photo flip";grid-template-rows:1fr auto;gap:12px clamp(20px,3vw,44px)}
-/* the photo: big and the focal point. Layered back to front: a giant outlined first name, a ring and an orange stage light,
-   then him, standing on the card's floor; his head comes out over the dashed line and the card's top edge (overlap).
-   Both photos share one crop, so the hover swap does not jump. The photo is small to begin with, so it is not blown up further */
-.me{grid-area:photo;position:relative;margin:0 0 calc(-1 * clamp(16px,2vw,24px));min-height:340px;isolation:isolate;z-index:3;
-  clip-path:inset(-100vh -100vw 0 -100vw)} /* only the bottom is cut, at the card's floor: he stands in the card, his head can go out over its top */
-.me::before{content:"";position:absolute;left:50%;bottom:0;width:min(80%,460px);aspect-ratio:1;translate:-50% 12%;z-index:-1;border-radius:50%;
-  background:radial-gradient(closest-side,rgba(255,106,19,.55),rgba(255,106,19,.12) 60%,transparent 72%);transition:opacity .5s var(--ease),scale .6s var(--ease)}
-.me::after{content:"";position:absolute;left:50%;bottom:10%;width:min(58%,340px);aspect-ratio:1;translate:-50% 0;z-index:-1;border-radius:50%;border:1px solid rgba(255,106,19,.35)}
-.me-word{position:absolute;inset:auto -14% 30%;z-index:-1;text-align:center;font:800 clamp(70px,11.5vw,200px)/.8 Kanit;letter-spacing:-.03em;
+.id-face{grid-area:face}
+.id-front{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);grid-template-areas:"photo info" "photo edu";grid-template-rows:1fr auto;gap:18px clamp(20px,3vw,44px)}
+/* the photo, the card's focal point. Back to front: a frame (studio dots, an orange light from below, a ring), the giant outlined
+   first name across it, then him; he is cut at the frame's floor and his head comes out over its top (overlap).
+   Both photos share one crop, so the hover swap does not jump */
+.me{grid-area:photo;position:relative;margin:0;min-height:420px;isolation:isolate;z-index:3;clip-path:inset(-100vh -100vw 0 -100vw)}
+.me-frame{position:absolute;inset:15% 3% 0;z-index:-2;border-radius:24px;border:1px solid rgba(255,106,19,.4);
+  background:radial-gradient(80% 55% at 50% 100%,rgba(255,106,19,.5),transparent 72%),radial-gradient(rgba(255,255,255,.07) 1px,transparent 1.3px) 0 0/14px 14px,linear-gradient(170deg,#2b1c14,#120c09);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 24px 50px -24px rgba(0,0,0,.85);transition:box-shadow .5s var(--ease),border-color .5s var(--ease)}
+.me-frame::after{content:"";position:absolute;left:50%;bottom:8%;width:min(72%,320px);aspect-ratio:1;translate:-50% 0;border-radius:50%;border:1px solid rgba(255,106,19,.32)}
+.me-word{position:absolute;inset:auto -14% 36%;z-index:-1;text-align:center;font:800 clamp(70px,11.5vw,200px)/.8 Kanit;letter-spacing:-.03em;
   color:transparent;-webkit-text-stroke:2px rgba(255,106,19,.62);user-select:none;pointer-events:none}
 .me img{position:absolute;left:50%;bottom:-9%;height:min(106%,640px);width:auto;max-width:none;translate:-50% 0;transform-origin:50% 100%;
   filter:drop-shadow(0 24px 30px rgba(0,0,0,.55));transition:opacity .35s var(--ease),transform .5s var(--ease)}
@@ -166,44 +164,44 @@ h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;margin:96px 0 32px}
 .me:hover .me-hover{opacity:1}
 .me:hover .me-idle{opacity:0}
 .me:hover img{transform:scale(1.03)}
-.me:hover::before{scale:1.08}
-
-@media (max-width:860px){
-  .id-front{grid-template-columns:1fr;grid-template-areas:"photo" "info" "flip";grid-template-rows:auto auto auto}
-  .me{height:min(46svh,400px);margin:0}
-  .me img{height:calc(100% + 20px);bottom:-6%}
-}
-.id-flip{grid-area:flip;justify-self:end;align-self:end;display:inline-flex;gap:8px;align-items:center;padding:10px 18px;border-radius:999px;border:1px solid rgba(255,106,19,.5);
-  background:var(--orange-dim);color:var(--orange);font:600 15px/1 Kanit;cursor:pointer;transition:background-color .3s,color .3s}
-.id-flip:hover{background:var(--orange);color:#1a0b02}
-.id-back{display:flex;flex-direction:column;gap:14px}
-.id-back h2{font-size:22px;font-weight:700;margin:0}
-.id-back .id-flip{align-self:flex-end;margin-top:auto}
-.crests{list-style:none;position:relative;margin:auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:center}
-.crests::before{content:"";position:absolute;left:16.7%;right:16.7%;top:44px;border-top:2px dashed rgba(255,106,19,.45)}
-.crests img{position:relative;display:block;width:88px;height:88px;object-fit:contain;margin:0 auto 12px;padding:4px;border-radius:50%;background:radial-gradient(circle,#1a130f 62%,transparent 64%)}
-.show-edu .crests li{animation:crest-in .6s var(--ease) backwards;animation-delay:calc(var(--i) * 120ms + 150ms)}
-@keyframes crest-in{from{opacity:0;transform:translateY(16px) scale(.9)}}
-.crests small{font:600 13px/1.2 Kanit;color:var(--orange)}
-.crests h3{font-size:17px;font-weight:600;line-height:1.4;margin-top:6px}
-.crests .next h3{color:var(--orange)}
-.crests p{color:var(--muted);font-size:14px}
+.me:hover .me-frame{border-color:rgba(255,106,19,.7);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 24px 50px -24px rgba(0,0,0,.85),0 0 46px -8px rgba(255,106,19,.5)}
+/* facts: the name big (it switches language, main.js), the rest in small tiles, the e-mail in a full-width row */
 .profile{grid-area:info;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:center}
 .profile div{padding:12px 16px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.035);transition:border-color .3s,background-color .3s}
 .profile div:hover{border-color:rgba(255,106,19,.4);background:rgba(255,106,19,.06)}
 .profile div:first-child,.profile div:last-child{grid-column:1/-1}
-.profile div:first-child{padding:0 0 8px;border:0;background:none}
+.profile .who{padding:0 0 6px;border:0;background:none}
+.profile .who:hover{background:none}
 .profile dt{color:var(--muted);font-size:13px}
 .profile dd{margin-top:2px;font:600 clamp(16px,1.45vw,21px)/1.35 Kanit;overflow-wrap:anywhere}
-.profile div:first-child dd{font:700 clamp(26px,3.1vw,44px)/1.15 Kanit}
-.profile div:first-child dd::after{content:"Arlif Kaseamsawat";display:block;margin-top:4px;font:500 clamp(13px,1.1vw,16px)/1.2 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;color:var(--orange)}
+.profile .who dd{min-height:1.2em;font:700 clamp(26px,3.1vw,44px)/1.2 Kanit}
+.who-name.accent{color:var(--orange)}
+.who .caret{width:.07em;height:.85em;vertical-align:-.06em;margin-left:.06em}
 .profile div:last-child dd{font-weight:500}
+/* education, under the facts: three crests on a dashed line; a crest turns once around when pointed at */
+.edu{grid-area:edu}
+.edu h2{display:flex;align-items:center;gap:12px;margin:0 0 14px;font:600 15px/1 Kanit;color:var(--muted);letter-spacing:.04em}
+.edu h2::after{content:"";flex:1;border-top:1px solid var(--line)}
+.crests{list-style:none;position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;text-align:center}
+.crests::before{content:"";position:absolute;left:16.7%;right:16.7%;top:34px;border-top:2px dashed rgba(255,106,19,.45)}
+.crests img{position:relative;display:block;width:68px;height:68px;object-fit:contain;margin:0 auto 10px;padding:4px;border-radius:50%;
+  background:radial-gradient(circle,#1a130f 62%,transparent 64%);transition:transform .9s var(--ease)}
+.crests li:hover img{transform:rotate(360deg)}
+.crests small{font:600 12px/1.2 Kanit;color:var(--orange)}
+.crests h3{font-size:16px;font-weight:600;line-height:1.35;margin-top:4px}
+.crests .next h3{color:var(--orange)}
+.crests p{color:var(--muted);font-size:13px}
+@media (max-width:860px){
+  .id-front{grid-template-columns:1fr;grid-template-areas:"photo" "info" "edu";grid-template-rows:auto auto auto}
+  .me{height:min(50svh,420px);min-height:0}
+  .me img{height:calc(100% + 20px);bottom:-6%}
+}
 @media (max-width:600px){
-  .id-card{padding:20px}
-  .crests{grid-template-columns:1fr;text-align:left}
-  .crests::before{left:31px;right:auto;top:32px;bottom:32px;border-top:0;border-left:2px dashed rgba(255,106,19,.45)}
-  .crests li{display:grid;grid-template-columns:64px 1fr;column-gap:14px;align-content:center}
-  .crests img{grid-row:span 3;width:64px;height:64px;margin:0}
+  .id-card{padding:18px}
+  .crests{grid-template-columns:1fr;gap:14px;text-align:left}
+  .crests::before{left:27px;right:auto;top:28px;bottom:28px;border-top:0;border-left:2px dashed rgba(255,106,19,.45)}
+  .crests li{display:grid;grid-template-columns:56px 1fr;column-gap:14px;align-content:center}
+  .crests img{grid-row:span 3;width:56px;height:56px;margin:0}
 }
 /* about: the name types in the middle of the screen, then glides into place (main.js) */
 .name{display:inline-block;transform-origin:0 0}
@@ -570,9 +568,20 @@ html:not(.js) .dock{display:none}
 .dock-hint.gone{opacity:0}
 @media (max-width:600px){.dock ul{gap:12px;padding:8px 10px}.dock-icon{width:48px;height:48px}}
 /* a quiet corner button: the whole statement of purpose as plain text, with no animation or blur at all */
-.sop-all-btn{position:fixed;left:12px;bottom:12px;z-index:60;width:34px;height:34px;padding:0;border-radius:9px;border:1px solid rgba(255,255,255,.12);background:rgba(13,10,8,.75);
-  color:var(--muted);font:700 9px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.04em;cursor:pointer;opacity:.35}
-.sop-all-btn:is(:hover,:focus-visible){opacity:1;color:var(--text)}
+/* the important words of the statement: bold and orange (two in blue) */
+:is(.sop-body,.sop-all-text) .hl{font-weight:700;color:var(--orange)}
+:is(.sop-body,.sop-all-text) .hl-blue{font-weight:700;color:#4da3ff}
+/* the corner button that opens the whole statement as plain text: a clear pill with a page icon */
+.sop-all-btn{position:fixed;left:14px;bottom:14px;z-index:60;display:inline-flex;align-items:center;gap:8px;padding:10px 16px 10px 12px;border-radius:999px;
+  border:1px solid rgba(255,106,19,.55);background:rgba(22,15,11,.92);color:var(--text);font:600 14px/1 Kanit;cursor:pointer;
+  box-shadow:0 10px 26px -8px rgba(0,0,0,.8),0 0 0 4px rgba(255,106,19,.08);transition:background-color .25s,border-color .25s,transform .25s var(--ease)}
+.sop-all-btn::before{content:"";width:18px;height:18px;flex:none;background:var(--orange);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z'/%3E%3Cpath d='M14 3v5h5M9 13h6M9 17h6'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z'/%3E%3Cpath d='M14 3v5h5M9 13h6M9 17h6'/%3E%3C/svg%3E") center/contain no-repeat}
+.sop-all-btn:is(:hover,:focus-visible){background:var(--orange);border-color:var(--orange);color:#1a0b02;transform:translateY(-2px)}
+.sop-all-btn:is(:hover,:focus-visible)::before{background:#1a0b02}
+/* phones: above the dock, so the two never meet */
+@media (max-width:720px){.sop-all-btn{bottom:104px;padding:9px 14px 9px 10px;font-size:13px}}
 .sop-all{position:fixed;inset:0;margin:auto;width:min(860px,calc(100% - 24px));height:fit-content;max-height:calc(100dvh - 48px);overflow:auto;overscroll-behavior:contain;padding:0;
   border:1px solid var(--line);border-radius:14px;background:#0d0a08;color:#e9ded6;animation:none}
 .sop-all::backdrop{background:rgba(0,0,0,.72)}
