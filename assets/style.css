@@ -153,12 +153,12 @@ h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;margin:96px 0 32px}
    Both photos share one crop, so the hover swap does not jump. The photo is small to begin with, so it is not blown up further */
 .me{grid-area:photo;position:relative;margin:0 0 calc(-1 * clamp(20px,2.6vw,32px));min-height:340px;isolation:isolate;z-index:3;
   clip-path:inset(-100vh -100vw 0 -100vw)} /* only the bottom is cut, at the card's floor: he stands in the card, his head can go out over its top */
-.me::before{content:"";position:absolute;left:50%;bottom:0;width:min(92%,560px);aspect-ratio:1;translate:-50% 12%;z-index:-1;border-radius:50%;
+.me::before{content:"";position:absolute;left:50%;bottom:0;width:min(80%,460px);aspect-ratio:1;translate:-50% 12%;z-index:-1;border-radius:50%;
   background:radial-gradient(closest-side,rgba(255,106,19,.55),rgba(255,106,19,.12) 60%,transparent 72%);transition:opacity .5s var(--ease),scale .6s var(--ease)}
-.me::after{content:"";position:absolute;left:50%;bottom:10%;width:min(70%,420px);aspect-ratio:1;translate:-50% 0;z-index:-1;border-radius:50%;border:1px solid rgba(255,106,19,.35)}
-.me-word{position:absolute;inset:auto -14% 40%;z-index:-1;text-align:center;font:800 clamp(80px,15vw,260px)/.8 Kanit;letter-spacing:-.03em;
+.me::after{content:"";position:absolute;left:50%;bottom:10%;width:min(58%,340px);aspect-ratio:1;translate:-50% 0;z-index:-1;border-radius:50%;border:1px solid rgba(255,106,19,.35)}
+.me-word{position:absolute;inset:auto -14% 30%;z-index:-1;text-align:center;font:800 clamp(70px,11.5vw,200px)/.8 Kanit;letter-spacing:-.03em;
   color:transparent;-webkit-text-stroke:2px rgba(255,106,19,.62);user-select:none;pointer-events:none}
-.me img{position:absolute;left:50%;bottom:-13%;height:min(calc(113% + 40px),880px);width:auto;max-width:none;translate:-50% 0;transform-origin:50% 100%;
+.me img{position:absolute;left:50%;bottom:-10%;height:min(82%,600px);width:auto;max-width:none;translate:-50% 0;transform-origin:50% 100%;
   filter:drop-shadow(0 24px 30px rgba(0,0,0,.55));transition:opacity .35s var(--ease),transform .5s var(--ease)}
 .me-hover{opacity:0}
 .me:hover .me-hover{opacity:1}
@@ -168,8 +168,8 @@ h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;margin:96px 0 32px}
 .profile dd{font-size:clamp(16px,1.3vw,19px)}
 @media (max-width:860px){
   .id-front{grid-template-columns:1fr;grid-template-areas:"photo" "info" "flip";grid-template-rows:auto auto auto}
-  .me{height:min(62svh,520px);margin:0}
-  .me img{height:calc(100% + 36px);bottom:-6%}
+  .me{height:min(46svh,400px);margin:0}
+  .me img{height:calc(100% + 20px);bottom:-6%}
 }
 .id-flip{grid-area:flip;justify-self:end;align-self:end;display:inline-flex;gap:8px;align-items:center;padding:10px 18px;border-radius:999px;border:1px solid rgba(255,106,19,.5);
   background:var(--orange-dim);color:var(--orange);font:600 15px/1 Kanit;cursor:pointer;transition:background-color .3s,color .3s}
@@ -214,6 +214,8 @@ h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;margin:96px 0 32px}
   animation:cloud-pop .8s cubic-bezier(.3,1.7,.5,1) 1.1s backwards,bob 3.2s ease-in-out 1.9s infinite}
 .name-intro .cloud{animation:none}
 @media (max-width:600px){.cloud{top:4%;right:2%}}
+/* wide screens: the cloud sits by his head (head top = photo height less the part below the card floor) */
+@media (min-width:861px){.me .cloud{top:auto;bottom:calc(min(82%,600px) - 10% - 34px);right:16%}}
 .cloud span{position:relative;z-index:1}
 .cloud::before,.cloud::after,.cloud i{content:"";position:absolute;border-radius:50%;background:#fff}
 .cloud::before{width:30px;height:30px;top:-13px;left:16px}
