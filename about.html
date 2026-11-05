@@ -5,11 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ประวัติ · อาลีฟ เกษมสวัสดิ์</title>
 <meta name="description" content="ประวัติส่วนตัว การศึกษา และทักษะของอาลีฟ เกษมสวัสดิ์">
+<!-- settings (menu): skip the page intros, read before anything is drawn -->
+<script>try{localStorage.getItem("skipIntro")&&document.documentElement.classList.add("no-intro")}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=14">
-<script src="assets/main.js?v=14" defer></script>
+<link rel="stylesheet" href="assets/style.css?v=15">
+<script src="assets/main.js?v=15" defer></script>
 </head>
 <body>
 <header class="site-header">
@@ -35,10 +37,6 @@
         <header class="id-head"><p class="id-word"><span style="--i:0">K</span><span style="--i:1">A</span><span style="--i:2">S</span><span style="--i:3">E</span><span style="--i:4">A</span><span style="--i:5">M</span><span style="--i:6">S</span><span style="--i:7">A</span><span style="--i:8">W</span><span style="--i:9">A</span><span style="--i:10">T</span></p></header>
         <!-- two faces share one spot; the buttons swap them (main.js) -->
         <div class="id-face id-front">
-          <div class="id-pic">
-            <img class="id-photo" src="assets/profile.webp" alt="รูปถ่ายอาลีฟ เกษมสวัสดิ์" width="480" height="640">
-            <a class="cloud" href="#skills"><span>SKILL ข้างล่าง ↓</span><i></i><i></i></a>
-          </div>
           <dl class="profile">
             <div><dt>ชื่อ-นามสกุล</dt><dd>นายอาลีฟ เกษมสวัสดิ์</dd></div>
             <div><dt>อายุ</dt><dd>17 ปี</dd></div>
@@ -59,6 +57,14 @@
           <button class="id-flip" type="button"><span aria-hidden="true">←</span> ข้อมูลส่วนตัว</button>
         </div>
       </article>
+      <!-- the photo beside the card: standing, and arms crossed while hovered; the head comes out over the frame -->
+      <figure class="me">
+        <div class="me-frame">
+          <img class="me-idle" src="assets/me-idle.webp" alt="อาลีฟ เกษมสวัสดิ์ ในชุดนักเรียน" width="284" height="438">
+          <img class="me-hover" src="assets/me-hover.webp" alt="" width="284" height="438" aria-hidden="true">
+        </div>
+        <a class="cloud" href="#skills"><span>SKILL ข้างล่าง ↓</span><i></i><i></i></a>
+      </figure>
     </div>
   </div>
 

@@ -6,6 +6,26 @@ const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
 const sleep = ms => new Promise(r => setTimeout(r, reduce ? 0 : ms));
 const seg = new Intl.Segmenter('th', { granularity: 'grapheme' }); // keeps Thai vowels/tone marks attached while typing
 const graphemes = s => [...seg.segment(s)].map(x => x.segment);
+// set in the menu's settings; each page's <head> reads it before anything is drawn
+const noIntro = document.documentElement.classList.contains('no-intro');
+
+// ---- Settings, at the foot of the menu: one switch that skips the page intros (the goal page's circle and story, the
+//      about page's name, the works title). Remembered in this browser only.
+$('#menu').insertAdjacentHTML('beforeend', `<li class="menu-set">
+  <button type="button" class="set-btn" aria-expanded="false" aria-controls="set-panel"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.6-2-3.4-2.4 1a7.4 7.4 0 0 0-1.7-1L15 3.5h-4l-.3 2.5a7.4 7.4 0 0 0-1.7 1l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 2l-2 1.6 2 3.4 2.4-1a7.4 7.4 0 0 0 1.7 1l.3 2.5h4l.3-2.5a7.4 7.4 0 0 0 1.7-1l2.4 1 2-3.4zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" transform="translate(-1 0)"/></svg>ตั้งค่า</button>
+  <div class="set-panel" id="set-panel" hidden>
+    <label class="switch"><input type="checkbox" role="switch"><span class="knob" aria-hidden="true"></span><span>ข้ามแอนิเมชันตอนเปิดหน้า</span></label>
+    <p class="set-note">มีผลตั้งแต่เปิดหน้าครั้งถัดไป</p>
+  </div>
+</li>`);
+{
+  const btn = $('.set-btn'), panel = $('#set-panel'), box = $('#set-panel input');
+  box.checked = noIntro;
+  btn.addEventListener('click', () => { panel.hidden = !panel.hidden; btn.setAttribute('aria-expanded', !panel.hidden); });
+  box.addEventListener('change', () => {
+    try { box.checked ? localStorage.setItem('skipIntro', '1') : localStorage.removeItem('skipIntro'); } catch {}
+  });
+}
 
 // ---- Menu
 const menuBtn = $('.menu-btn');
@@ -71,18 +91,22 @@ if (intro && !reduce) (async () => {
   const name = $('.name', intro), out = $('.typed', intro), names = ['อาลีฟ เกษมสวัสดิ์', 'Arlif Kaseamsawat'];
   const type = async (text, en = false) => { out.classList.toggle('accent', en); for (const g of graphemes(text)) { out.textContent += g; await sleep(55); } };
   const erase = async () => { const gs = graphemes(out.textContent); while (gs.length) { gs.pop(); out.textContent = gs.join(''); await sleep(25); } };
-  document.body.classList.add('name-intro');
-  out.textContent = '';
-  await document.fonts.ready;
-  await sleep(200);
-  await type(names[0]); await sleep(500); await erase(); await sleep(150); await type(names[1], true); await sleep(450);
-  settle(name, 'name-intro', '.page > :not(.fold), .fold > :not([data-intro])');
-  for (let i = 0; ; i++) { await sleep(4000); await erase(); await sleep(250); await type(names[i % 2], i % 2 === 1); }
+  let i = 1; // intro skipped (settings): the Thai name is already there, so English comes next
+  if (!noIntro) {
+    document.body.classList.add('name-intro');
+    out.textContent = '';
+    await document.fonts.ready;
+    await sleep(200);
+    await type(names[0]); await sleep(500); await erase(); await sleep(150); await type(names[1], true); await sleep(450);
+    settle(name, 'name-intro', '.page > :not(.fold), .fold > :not([data-intro])');
+    i = 0;
+  }
+  for (;; i++) { await sleep(4000); await erase(); await sleep(250); await type(names[i % 2], i % 2 === 1); }
 })();
 
 // ---- Works: "ผลงาน" writes itself big in the middle, glitching a few times, then glides into place
 const awTitle = $('.aw-title');
-if (awTitle && !reduce) (async () => {
+if (awTitle && !reduce && !noIntro) (async () => {
   const svg = $('svg', awTitle);
   document.body.classList.add('aw-intro');
   for (const ms of [200, 350, 350, 300]) {
@@ -179,6 +203,33 @@ tabs.forEach(t => t.addEventListener('click', () => {
   });
 }));
 
+// ---- About skills: while the section scrolls into view the chips are spread out and float slowly; scrolling a little
+//      further brings them home. Each chip gets its own spread and float; the scroll position sets --s from 1 (apart) to 0.
+const skillBox = $('.skills');
+if (skillBox && !reduce) {
+  const r = (a, b) => a + Math.random() * (b - a), side = () => (Math.random() < .5 ? -1 : 1);
+  const spread = () => Math.min(120, innerWidth * .1);
+  $$('.skill-grid .tile', skillBox).forEach(t => {
+    const set = (k, v) => t.style.setProperty(k, v);
+    set('--dx', side() * r(.35, 1) * spread() + 'px'); set('--dy', r(-1, 1) * spread() * .55 + 'px');
+    set('--fx', r(-22, 22) + 'px'); set('--fy', r(-16, 16) + 'px'); set('--r', r(-7, 7) + 'deg');
+    set('--dur', r(6, 11).toFixed(1) + 's'); set('--del', -r(0, 11).toFixed(1) + 's');
+  });
+  let raf = 0, last = -1;
+  const update = () => {
+    raf = 0;
+    const top = skillBox.getBoundingClientRect().top, h = innerHeight;
+    const s = Math.round(Math.max(0, Math.min(1, (top - h * .2) / (h * .5))) * 100) / 100; // apart at 70% of the screen, home at 20%
+    if (s === last) return;
+    last = s;
+    skillBox.style.setProperty('--s', s);
+    skillBox.classList.toggle('drifting', s > 0); // home: no animation left running at all
+  };
+  addEventListener('scroll', () => { raf ||= requestAnimationFrame(update); }, { passive: true });
+  addEventListener('resize', () => { raf ||= requestAnimationFrame(update); }, { passive: true });
+  update();
+}
+
 // ---- Featured skills: "ดูผลงาน" opens that skill's works below and scrolls to them
 const works = $('#works');
 if (works) $$('.see-works').forEach(b => b.addEventListener('click', () => {
@@ -273,8 +324,9 @@ const shatter = async (win, swap, at, speed = 1) => {
 //      on the window shatters the glass from where it was clicked; the shards fly back together and the next text types in.
 //      After the last one the white circle opens and lets the goal page in. goalReady resolves once the page is uncovered.
 const story = $('.story');
-let goalReady = $('.goal-intro') ? sleep(2700) : Promise.resolve();
-if (story) goalReady = new Promise(done => {
+let goalReady = $('.goal-intro') && !noIntro ? sleep(2700) : Promise.resolve();
+if (story && noIntro) document.body.classList.add('story-done'); // intros skipped (settings): straight to the desktop
+if (story && !noIntro) goalReady = new Promise(done => {
   const win = $('.glass-term', story), steps = $$('.story-step', story), cue = $('.story-cue'), outro = $('.goal-outro');
   const hold = ms => new Promise(r => setTimeout(r, ms)); // reading time: kept even with reduced motion
   const top0 = () => scrollTo({ top: 0, behavior: 'instant' });
