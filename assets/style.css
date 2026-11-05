@@ -41,7 +41,7 @@ html:active-view-transition-type(aw)::view-transition-new(root){animation:page-i
 .brand::after{content:".";color:var(--orange)}
 .brand:hover{color:var(--orange)}
 /* home: a hand-drawn arrow points at the menu until it has been opened once */
-.menu-hint{position:fixed;top:74px;left:34px;z-index:49;display:flex;align-items:flex-end;gap:8px;pointer-events:none;
+.menu-hint{position:fixed;top:68px;left:38px;z-index:49;display:flex;align-items:flex-end;gap:8px;pointer-events:none;
   font:600 16px/1.2 Kanit;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.7);animation:fade-up .6s var(--ease) 1.2s backwards,bob 2.6s ease-in-out 2.6s infinite;transition:opacity .3s,visibility .3s}
 .menu-hint svg{width:52px;height:52px;flex:none;overflow:visible}
 .menu-hint path{fill:none;stroke:var(--orange);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw .8s var(--ease) 1.4s forwards}
@@ -512,6 +512,18 @@ html:not(.js) .dock{display:none}
 .dock-hint::after{content:" ↓";color:var(--orange)}
 .dock-hint.gone{opacity:0}
 @media (max-width:600px){.dock ul{gap:12px;padding:8px 10px}.dock-icon{width:48px;height:48px}}
+/* a quiet corner button: the whole statement of purpose as plain text, with no animation or blur at all */
+.sop-all-btn{position:fixed;left:12px;bottom:12px;z-index:60;width:34px;height:34px;padding:0;border-radius:9px;border:1px solid rgba(255,255,255,.12);background:rgba(13,10,8,.75);
+  color:var(--muted);font:700 9px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.04em;cursor:pointer;opacity:.35}
+.sop-all-btn:is(:hover,:focus-visible){opacity:1;color:var(--text)}
+.sop-all{position:fixed;inset:0;margin:auto;width:min(860px,calc(100% - 24px));height:fit-content;max-height:calc(100dvh - 48px);overflow:auto;overscroll-behavior:contain;padding:0;
+  border:1px solid var(--line);border-radius:14px;background:#0d0a08;color:#e9ded6;animation:none}
+.sop-all::backdrop{background:rgba(0,0,0,.72)}
+.sop-all-head{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px 12px 20px;background:#0d0a08;border-bottom:1px solid var(--line)}
+.sop-all-head h2{margin:0;font:600 18px/1.2 Kanit;color:var(--text)}
+.sop-all-head button{flex:none;width:36px;height:36px;border:0;border-radius:50%;background:var(--surface-2);color:var(--text);font-size:20px;line-height:1;cursor:pointer}
+.sop-all-text{padding:18px clamp(16px,3vw,32px) 28px;font:16px/1.9 "IBM Plex Sans Thai",system-ui,sans-serif}
+.sop-all-text p+p{margin-top:1em}
 
 /* ---------- Page entrance: content fades in ---------- */
 main,.site-footer{animation:page-in .8s var(--ease) .3s backwards}
