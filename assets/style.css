@@ -132,14 +132,16 @@ h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;margin:96px 0 32px}
    (main.js) and a light sheen sweeps across on hover. The about page is full width; its title and skills keep the page width */
 .fold>.crumb,.fold>.page-title{width:min(1120px,100% - 32px);margin-inline:auto}
 .card-wrap{--gap:clamp(10px,1.8vw,26px);margin:clamp(40px,6vh,64px) var(--gap) 0;overflow-x:clip} /* the big name behind the photo may not widen the page */
-.id-card{position:relative;display:grid;grid-template-areas:"head" "face";grid-template-rows:auto 1fr;gap:14px;min-height:max(560px,calc(100svh - 2 * var(--gap)));
-  padding:clamp(18px,2.4vw,30px) clamp(20px,3vw,40px) clamp(20px,2.6vw,32px);border-radius:28px;border:1px solid rgba(255,255,255,.1);
+.id-card{position:relative;display:grid;grid-template-areas:"head" "face";grid-template-rows:auto 1fr;gap:12px;min-height:clamp(520px,calc(100svh - 2 * var(--gap)),720px);
+  padding:clamp(14px,1.8vw,22px) clamp(16px,2.4vw,30px) clamp(16px,2vw,24px);border-radius:28px;border:1px solid rgba(255,255,255,.1);
   background:radial-gradient(120% 90% at 100% 0%,rgba(255,106,19,.2),transparent 55%),linear-gradient(160deg,#1f1813,#100b08);
   box-shadow:0 30px 80px -30px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.06);transition:transform .25s ease-out}
 .id-card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
   background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.09) 48%,transparent 58%) 130% 0/250% 100% no-repeat;transition:background-position 1s var(--ease)}
 .id-card:hover::after{background-position:-30% 0}
-.id-head{grid-area:head;position:relative;z-index:2;padding-bottom:14px;border-bottom:1px dashed rgba(255,255,255,.14)}
+.id-head{grid-area:head;position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:12px;border-bottom:1px dashed rgba(255,255,255,.14)}
+@media (max-width:600px){.id-head::after{display:none}}
+.id-head::after{content:"STUDENT PROFILE";font:600 11px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.18em;color:var(--muted);white-space:nowrap}
 /* surname in orange; a white glint runs across the letters every few seconds */
 .id-word{font:800 clamp(20px,2.6vw,28px)/1.2 Kanit;letter-spacing:.2em}
 .id-word span{color:var(--orange);animation:glint 3.6s ease-in-out infinite;animation-delay:calc(var(--i) * 90ms)}
@@ -147,25 +149,25 @@ h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;margin:96px 0 32px}
 /* the shown face turns visible at once (so it can take focus); the hidden one only after it has faded */
 .id-face{grid-area:face;transition:opacity .5s var(--ease),transform .5s var(--ease)}
 .id-card.show-edu .id-front,.id-card:not(.show-edu) .id-back{opacity:0;visibility:hidden;transform:translateY(12px) scale(.98);transition:opacity .5s var(--ease),transform .5s var(--ease),visibility 0s .5s}
-.id-front{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-areas:"photo info" "photo flip";grid-template-rows:1fr auto;gap:14px clamp(24px,4vw,64px)}
+.id-front{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);grid-template-areas:"photo info" "photo flip";grid-template-rows:1fr auto;gap:12px clamp(20px,3vw,44px)}
 /* the photo: big and the focal point. Layered back to front: a giant outlined first name, a ring and an orange stage light,
    then him, standing on the card's floor; his head comes out over the dashed line and the card's top edge (overlap).
    Both photos share one crop, so the hover swap does not jump. The photo is small to begin with, so it is not blown up further */
-.me{grid-area:photo;position:relative;margin:0 0 calc(-1 * clamp(20px,2.6vw,32px));min-height:340px;isolation:isolate;z-index:3;
+.me{grid-area:photo;position:relative;margin:0 0 calc(-1 * clamp(16px,2vw,24px));min-height:340px;isolation:isolate;z-index:3;
   clip-path:inset(-100vh -100vw 0 -100vw)} /* only the bottom is cut, at the card's floor: he stands in the card, his head can go out over its top */
 .me::before{content:"";position:absolute;left:50%;bottom:0;width:min(80%,460px);aspect-ratio:1;translate:-50% 12%;z-index:-1;border-radius:50%;
   background:radial-gradient(closest-side,rgba(255,106,19,.55),rgba(255,106,19,.12) 60%,transparent 72%);transition:opacity .5s var(--ease),scale .6s var(--ease)}
 .me::after{content:"";position:absolute;left:50%;bottom:10%;width:min(58%,340px);aspect-ratio:1;translate:-50% 0;z-index:-1;border-radius:50%;border:1px solid rgba(255,106,19,.35)}
 .me-word{position:absolute;inset:auto -14% 30%;z-index:-1;text-align:center;font:800 clamp(70px,11.5vw,200px)/.8 Kanit;letter-spacing:-.03em;
   color:transparent;-webkit-text-stroke:2px rgba(255,106,19,.62);user-select:none;pointer-events:none}
-.me img{position:absolute;left:50%;bottom:-10%;height:min(82%,600px);width:auto;max-width:none;translate:-50% 0;transform-origin:50% 100%;
+.me img{position:absolute;left:50%;bottom:-9%;height:min(106%,640px);width:auto;max-width:none;translate:-50% 0;transform-origin:50% 100%;
   filter:drop-shadow(0 24px 30px rgba(0,0,0,.55));transition:opacity .35s var(--ease),transform .5s var(--ease)}
 .me-hover{opacity:0}
 .me:hover .me-hover{opacity:1}
 .me:hover .me-idle{opacity:0}
 .me:hover img{transform:scale(1.03)}
 .me:hover::before{scale:1.08}
-.profile dd{font-size:clamp(16px,1.3vw,19px)}
+
 @media (max-width:860px){
   .id-front{grid-template-columns:1fr;grid-template-areas:"photo" "info" "flip";grid-template-rows:auto auto auto}
   .me{height:min(46svh,400px);margin:0}
@@ -186,12 +188,16 @@ h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;margin:96px 0 32px}
 .crests h3{font-size:17px;font-weight:600;line-height:1.4;margin-top:6px}
 .crests .next h3{color:var(--orange)}
 .crests p{color:var(--muted);font-size:14px}
-.profile{grid-area:info;display:grid;grid-template-columns:1fr 1fr;gap:0 24px;align-content:center}
-.profile div{padding:11px 0;border-bottom:1px solid var(--line)}
+.profile{grid-area:info;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:center}
+.profile div{padding:12px 16px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.035);transition:border-color .3s,background-color .3s}
+.profile div:hover{border-color:rgba(255,106,19,.4);background:rgba(255,106,19,.06)}
 .profile div:first-child,.profile div:last-child{grid-column:1/-1}
-.profile div:last-child{border:0}
+.profile div:first-child{padding:0 0 8px;border:0;background:none}
 .profile dt{color:var(--muted);font-size:13px}
-.profile dd{font-weight:500;margin-top:2px;overflow-wrap:anywhere}
+.profile dd{margin-top:2px;font:600 clamp(16px,1.45vw,21px)/1.35 Kanit;overflow-wrap:anywhere}
+.profile div:first-child dd{font:700 clamp(26px,3.1vw,44px)/1.15 Kanit}
+.profile div:first-child dd::after{content:"Arlif Kaseamsawat";display:block;margin-top:4px;font:500 clamp(13px,1.1vw,16px)/1.2 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;color:var(--orange)}
+.profile div:last-child dd{font-weight:500}
 @media (max-width:600px){
   .id-card{padding:20px}
   .crests{grid-template-columns:1fr;text-align:left}
@@ -215,7 +221,7 @@ h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;margin:96px 0 32px}
 .name-intro .cloud{animation:none}
 @media (max-width:600px){.cloud{top:4%;right:2%}}
 /* wide screens: the cloud sits by his head (head top = photo height less the part below the card floor) */
-@media (min-width:861px){.me .cloud{top:auto;bottom:calc(min(82%,600px) - 10% - 34px);right:16%}}
+@media (min-width:861px){.me .cloud{top:auto;bottom:calc(min(106%,640px) - 9% - 30px);right:8%}}
 .cloud span{position:relative;z-index:1}
 .cloud::before,.cloud::after,.cloud i{content:"";position:absolute;border-radius:50%;background:#fff}
 .cloud::before{width:30px;height:30px;top:-13px;left:16px}
