@@ -244,6 +244,7 @@ const tabs = $$('.cat-tabs [data-filter]');
 tabs.forEach(t => t.addEventListener('click', () => {
   const f = t.dataset.filter;
   tabs.forEach(x => x.setAttribute('aria-pressed', x === t));
+  $('.aw-all').classList.toggle('merged', f === 'all');
   $$('.aw-cat').forEach(sec => {
     sec.hidden = f !== 'all' && sec.dataset.cat !== f;
     if (sec.hidden) return;
@@ -352,23 +353,6 @@ if (skillBox && term) {
   if (noIntro) { open(false); print(PROMPT + 'skilltech', 'wt-echo'); print(`${items.length - counts.length} skills found.`, 'wt-ok'); reveal(true); }
 }
 
-// ---- Featured skills: "ดูผลงาน" opens that skill's works below and scrolls to them
-const works = $('#works');
-if (works) $$('.see-works').forEach(b => b.addEventListener('click', () => {
-  works.hidden = false;
-  $$('.works-panel', works).forEach(p => p.hidden = p.dataset.skill !== b.dataset.skill);
-  const panel = $(`.works-panel[data-skill="${b.dataset.skill}"]`, works);
-  $$('.work', panel).forEach((w, i) => { w.classList.remove('in'); w.offsetWidth; w.style.animationDelay = 250 + i * 120 + 'ms'; w.classList.add('in'); });
-  panel.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
-}));
-// close the works again once the visitor scrolls back up past them
-if (works) {
-  let seen = false;
-  new IntersectionObserver(([e]) => {
-    if (e.isIntersecting) seen = true;
-    else if (seen && e.boundingClientRect.top > 0) { works.hidden = true; seen = false; }
-  }, { rootMargin: '0px 0px -15% 0px' }).observe(works); // works starts right at the fold, so ignore the bottom edge
-}
 
 // ---- Typing (goal page): a typed line keeps its full text for screen readers; on screen it is the typed part, a caret,
 //      and the untyped rest, which stays laid out but invisible so nothing moves while it types

@@ -11,8 +11,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=21">
-<script src="assets/main.js?v=21" defer></script>
+<link rel="stylesheet" href="assets/style.css?v=22">
+<script src="assets/main.js?v=22" defer></script>
 </head>
 <body>
 <header class="site-header">
@@ -33,7 +33,7 @@
   <!-- "ผลงาน" writes itself (Kanit ExtraBold outlined, like SKILL) big in the middle with sci-fi glitches, then glides into place (main.js) -->
   <h1 class="page-title skill-title aw-title" aria-label="ผลงาน"><svg viewBox="-1 -60 298 66" aria-hidden="true"><path style="--i:0" d="M4 0V-44.6Q4 -48.4 6 -51.2Q8 -54 12.1 -54H29.4L30.1 -40.8H25.7Q22.6 -40.8 22.6 -37.5V-25.5L29.4 -37.5H36.1L42.9 -25.5V-54H61.5V0H43.2L32.7 -19L22.3 0Z"/><path style="--i:1" d="M86.3 1Q81.1 1 76.8 -0.8Q72.6 -2.5 70 -6.4Q67.5 -10.3 67.5 -16.6Q67.5 -25.4 73 -29.9Q78.6 -34.4 89.1 -34.4H101.8V-35.7Q101.8 -40 91.5 -40Q87 -40 82.1 -39.2Q77.2 -38.5 72.8 -37.1V-51.3Q77.2 -53 83.7 -54Q90.1 -55 96 -55Q109.1 -55 116 -49.4Q122.8 -43.7 122.8 -32.2V0H101.8V-21H94.7Q92 -21 90.5 -20.1Q89.1 -19.2 89.1 -16.6Q89.1 -14.3 90.2 -13.4Q91.4 -12.5 93.6 -12.5Q94.8 -12.5 95.8 -12.6Q96.8 -12.7 97.9 -13V-0.6Q95.9 0.1 93 0.6Q90.1 1 86.3 1Z"/><path style="--i:2" d="M154.8 1Q151.5 1 147.3 0.5Q143.1 -0.1 140.2 -1.1L125.8 -37.5H146.2L155.5 -13.9Q162.5 -15.6 162.5 -28.4Q162.5 -34 160.4 -36.2Q158.2 -38.4 153.6 -38.4H149.9V-54H158.3Q170.8 -54 177.7 -47.7Q184.5 -41.3 184.5 -28.5Q184.5 -18.2 180.8 -11.7Q177 -5.1 170.4 -2.1Q163.7 1 154.8 1Z"/><path style="--i:3" d="M207.7 0V-30.1Q207.7 -34.5 205.8 -36.4Q204 -38.3 199.5 -38.3Q195.9 -38.3 192.6 -37.5Q189.2 -36.7 186.5 -35.6V-51.2Q189.5 -52.8 194.3 -53.9Q199.1 -55 204 -55Q216.6 -55 222.3 -49.4Q228.1 -43.7 228.1 -32.7V0Z"/><path style="--i:4" d="M254.8 1Q246.6 1 241.3 -3.8Q236.1 -8.6 236.1 -17.7V-54H257.6V-20.6Q257.6 -14.8 263.5 -14.8Q265.5 -14.8 267.6 -15.7Q269.8 -16.5 270.8 -17.7V-54H292.3V0H272.4L271.7 -3.7Q268.7 -1.7 264.4 -0.4Q260 1 254.8 1Z"/></svg></h1>
 
-  <!-- หมวดหมู่: กดเพื่อกรอง (main.js); ไม่มี JS ก็เห็นครบทุกหมวด -->
+  <!-- หมวดหมู่: กดเพื่อกรอง (main.js); "ทั้งหมด" (.merged) รวมการ์ดเป็นกริดเดียว ไม่มีหัวข้อหมวด และไม่แสดงการ์ด .also ที่ซ้ำกับหมวดอื่น -->
   <div class="cat-tabs" role="group" aria-label="เลือกหมวดหมู่">
     <button type="button" data-filter="all" aria-pressed="true">ทั้งหมด</button>
     <button type="button" data-filter="contest" aria-pressed="false">แข่งขัน</button>
@@ -42,6 +42,7 @@
     <button type="button" data-filter="diy" aria-pressed="false" class="rainbow-tab"><span>ทำด้วยตัวเอง</span></button>
   </div>
 
+  <div class="aw-all merged">
   <section class="aw-cat" id="cat-contest" data-cat="contest" aria-labelledby="h-contest">
     <h2 class="cat-head rv" id="h-contest">แข่งขัน <small>4</small></h2>
     <div class="aw-grid">
@@ -100,9 +101,9 @@
   </section>
 
   <section class="aw-cat" id="cat-workshop" data-cat="workshop" aria-labelledby="h-workshop">
-    <h2 class="cat-head rv" id="h-workshop">เวิร์คช็อป <small>4</small></h2>
+    <h2 class="cat-head rv" id="h-workshop">เวิร์คช็อป <small>3</small></h2>
     <div class="aw-grid">
-    <div class="aw-slot rv">
+    <div class="aw-slot rv also">
     <article class="aw-card" data-tier="plain" data-tilt>
       <div class="aw-photo"><img src="assets/ini-cvgame.webp" alt="หน้าจอ PyCharm เปิดโค้ดเกม CVGame ที่ใช้ MediaPipe" width="1200" height="1600" loading="lazy"></div>
       <div class="aw-body">
@@ -114,39 +115,27 @@
       </div>
     </article>
     </div>
-    <div class="aw-slot rv">
+    <div class="aw-slot rv also">
     <article class="aw-card" data-tier="plain" data-tilt>
       <div class="aw-photo doc"><img src="assets/cert-kmitl-kengineering.webp" alt="เกียรติบัตรเข้าร่วมกิจกรรม K-Engineering World Tour and Workshop 2025 คณะวิศวกรรมศาสตร์ สจล." width="1600" height="1131" loading="lazy"></div>
       <div class="aw-body">
-        <p class="aw-tags"><span class="badge flat">เวิร์คช็อป</span></p>
-        <h2>K-Engineering World Tour and Workshop 2025</h2>
-        <p class="aw-tease">คณะวิศวกรรมศาสตร์ สจล.</p>
+        <p class="aw-tags"><span class="badge flat">กิจกรรม</span></p>
+        <h2>เข้าร่วม Open House และทำ Workshop ที่ สจล.</h2>
+        <p class="aw-tease">สัมผัสบรรยากาศวิศวะ และเข้า Workshop วิศวกรรมซอฟต์แวร์</p>
         <p class="aw-stat">สจล. · 3 ส.ค. 2568</p>
-        <div class="aw-foot"><button class="aw-open" type="button" data-zoom="K-Engineering World Tour and Workshop 2025 · สจล. · 3 สิงหาคม 2568" data-src="assets/cert-kmitl-kengineering.webp" data-alt="เกียรติบัตรเข้าร่วมกิจกรรม K-Engineering World Tour and Workshop 2025 คณะวิศวกรรมศาสตร์ สจล.">ดูเกียรติบัตร <span>→</span></button><small>เกียรติบัตร</small></div>
+        <div class="aw-foot"><button class="aw-open" type="button" data-open="d-kmitl">ดูเพิ่มเติม <span>→</span></button><small>เกียรติบัตร</small></div>
       </div>
     </article>
     </div>
-    <div class="aw-slot rv">
+    <div class="aw-slot rv also">
     <article class="aw-card" data-tier="plain" data-tilt>
-      <div class="aw-photo doc"><img src="assets/cert-bu-fullstack.webp" alt="เกียรติบัตร BU Open House 2025 หัวข้อ Next-Gen Full-Stack: Integrating AI into Modern Web Apps มหาวิทยาลัยกรุงเทพ" width="1600" height="1132" loading="lazy"></div>
+      <div class="aw-photo"><img src="assets/bu-openhouse.webp" alt="หน้าจอ VS Code แก้โค้ดหน้าเว็บระหว่าง Workshop ที่ BU Open House" width="989" height="1600" loading="lazy"></div>
       <div class="aw-body">
-        <p class="aw-tags"><span class="badge flat">เวิร์คช็อป</span></p>
-        <h2>Next-Gen Full-Stack: Integrating AI into Modern Web Apps</h2>
-        <p class="aw-tease">BU Open House 2025 · มหาวิทยาลัยกรุงเทพ</p>
-        <p class="aw-stat">ม.กรุงเทพ · 29–30 ส.ค. 2568</p>
-        <div class="aw-foot"><button class="aw-open" type="button" data-zoom="BU Open House 2025 · Next-Gen Full-Stack · มหาวิทยาลัยกรุงเทพ" data-src="assets/cert-bu-fullstack.webp" data-alt="เกียรติบัตร BU Open House 2025 หัวข้อ Next-Gen Full-Stack: Integrating AI into Modern Web Apps มหาวิทยาลัยกรุงเทพ">ดูเกียรติบัตร <span>→</span></button><small>เกียรติบัตร</small></div>
-      </div>
-    </article>
-    </div>
-    <div class="aw-slot rv">
-    <article class="aw-card" data-tier="plain" data-tilt>
-      <div class="aw-photo doc"><img src="assets/cert-bu-accounting.webp" alt="เกียรติบัตร BU Open House 2025 หัวข้อเส้นทางอาชีพนักบัญชี มหาวิทยาลัยกรุงเทพ" width="1600" height="1132" loading="lazy"></div>
-      <div class="aw-body">
-        <p class="aw-tags"><span class="badge flat">เวิร์คช็อป</span></p>
-        <h2>เส้นทางอาชีพนักบัญชี</h2>
-        <p class="aw-tease">BU Open House 2025 · มหาวิทยาลัยกรุงเทพ</p>
-        <p class="aw-stat">ม.กรุงเทพ · 29–30 ส.ค. 2568</p>
-        <div class="aw-foot"><button class="aw-open" type="button" data-zoom="BU Open House 2025 · เส้นทางอาชีพนักบัญชี · มหาวิทยาลัยกรุงเทพ" data-src="assets/cert-bu-accounting.webp" data-alt="เกียรติบัตร BU Open House 2025 หัวข้อเส้นทางอาชีพนักบัญชี มหาวิทยาลัยกรุงเทพ">ดูเกียรติบัตร <span>→</span></button><small>เกียรติบัตร</small></div>
+        <p class="aw-tags"><span class="badge flat">กิจกรรม</span></p>
+        <h2>เข้าร่วม BU-Openhouse</h2>
+        <p class="aw-tease">สัมผัสบรรยากาศมหาวิทยาลัย เข้า Workshop ของ IT และเยี่ยมชมคณะการบัญชี</p>
+        <p class="aw-stat">ม.กรุงเทพ · 30 ส.ค. 2568</p>
+        <div class="aw-foot"><button class="aw-open" type="button" data-open="d-buoh">ดูเพิ่มเติม <span>→</span></button><small>1 รูป · 2 เกียรติบัตร</small></div>
       </div>
     </article>
     </div>
@@ -216,7 +205,7 @@
       </div>
     </article>
     </div>
-    <div class="aw-slot rv">
+    <div class="aw-slot rv also">
     <article class="aw-card" data-tier="orange" data-tilt>
       <div class="aw-photo"><img src="assets/wpb-buoy-award.webp" alt="ทีมนักเรียนนำเสนอนวัตกรรมทุ่นลอยน้ำต่อคุณครู โรงเรียนวัดพุทธบูชา" width="1800" height="1200" loading="lazy"></div>
       <div class="aw-body">
@@ -284,6 +273,7 @@
     </div>
     </div>
   </section>
+  </div>
 </main>
 
 <footer class="site-footer">
