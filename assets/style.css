@@ -498,6 +498,8 @@ html:not(.js) .story-step+.story-step{margin-top:48px}
 .story-hook{font:800 clamp(52px,11vw,130px)/1.2 Kanit;letter-spacing:-.02em}
 .story-step h2{margin:0 0 .5em;font-size:clamp(24px,3.6vw,42px);color:var(--orange)}
 .story-text{font:500 clamp(20px,2.7vw,30px)/1.75 Kanit;text-wrap:pretty}
+.caret{display:inline-block;width:9px;height:1.1em;background:var(--orange);vertical-align:-.2em;margin-left:2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
 /* typing: the untyped rest stays laid out but invisible, so the window never jumps; the caret takes no room */
 .tr{visibility:hidden}
 .tc{display:none;width:max(3px,.08em);height:.9em;margin-right:min(-3px,-.08em);vertical-align:-.1em;background:var(--orange);animation:blink 1s steps(1) infinite}
