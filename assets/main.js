@@ -280,6 +280,77 @@ if (skillBox && !reduce) {
   update();
 }
 
+// ---- About skills behind a Windows-style command prompt: at first only the SKILL title shows; clicking it opens the
+//      prompt, and the command skilltech (the hint; clicking the hint types it) lists the categories and chips, fading in
+//      one after another. With intros off (settings) the command has already run.
+const term = $('#skill-term');
+if (skillBox && term) {
+  const log = $('.wt-log', term), form = $('.wt-line', term), input = $('#wt-in'), opener = $('.skill-open', skillBox);
+  const items = $$('.skill-list .skill-cat, .skill-list .tile', skillBox);
+  const PROMPT = 'C:\\Users\\Arlif>';
+  const print = (text, cls) => { const p = document.createElement('p'); p.textContent = text; if (cls) p.className = cls; log.append(p); return p; };
+  const counts = $$('.skill-cat', skillBox).map(h => `${h.textContent} ${$$('.tile', h.nextElementSibling).length}`);
+  let busy = false;
+  const reveal = async instant => {
+    skillBox.classList.add('skills-on');
+    items.forEach(el => { el.classList.remove('in'); el.style.transitionDelay = ''; });
+    void skillBox.offsetWidth;
+    items.forEach((el, i) => { el.style.transitionDelay = instant ? '0ms' : i * 95 + 'ms'; el.classList.add('in'); });
+    setTimeout(() => items.forEach(el => { el.style.transitionDelay = ''; }), instant ? 0 : items.length * 95 + 500); // hover stays quick
+  };
+  const run = async raw => {
+    const cmd = raw.trim().toLowerCase();
+    print(PROMPT + raw, 'wt-echo');
+    if (cmd === 'skilltech') {
+      busy = true;
+      for (const [t, c] of [['Loading skilltech...', 'wt-dim'], [counts.join('  |  '), 'wt-y'], [`${items.length - counts.length} skills found.`, 'wt-ok']]) {
+        print(t, c);
+        await sleep(reduce ? 0 : 160);
+      }
+      reveal();
+      // bring the prompt up near the top so the chips coming in below it are on screen
+      scrollTo({ top: term.getBoundingClientRect().top + scrollY - 90, behavior: reduce ? 'auto' : 'smooth' });
+      busy = false;
+    } else if (cmd === 'cls') log.textContent = '';
+    else if (cmd === 'help') print('พิมพ์ skilltech แล้วกด Enter เพื่อดูทักษะทั้งหมด', 'wt-y');
+    else if (cmd) {
+      print(`'${raw.trim()}' is not recognized as an internal or external command,\noperable program or batch file.`, 'wt-err');
+      print('คำใบ้: enter skilltech', 'wt-y');
+    }
+    if (cmd !== 'skilltech') form.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+  };
+  const open = focus => {
+    skillBox.classList.add('term-on');
+    opener.setAttribute('aria-expanded', 'true');
+    if (focus) input.focus({ preventScroll: true });
+  };
+  opener.addEventListener('click', () => open(true));
+  $('.wt-close', term).addEventListener('click', () => {
+    skillBox.classList.remove('term-on', 'skills-on');
+    opener.setAttribute('aria-expanded', 'false');
+    opener.focus();
+  });
+  $('.wt-body', term).addEventListener('click', e => { if (!e.target.closest('a,button')) input.focus({ preventScroll: true }); });
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    if (busy) return;
+    const v = input.value;
+    input.value = '';
+    run(v);
+  });
+  $('.wt-try', skillBox).addEventListener('click', async () => {
+    if (busy) return;
+    open(false);
+    busy = true;
+    input.value = '';
+    for (const g of 'skilltech') { input.value += g; await sleep(reduce ? 0 : 55); }
+    await sleep(reduce ? 0 : 200);
+    busy = false;
+    form.requestSubmit();
+  });
+  if (noIntro) { open(false); print(PROMPT + 'skilltech', 'wt-echo'); print(`${items.length - counts.length} skills found.`, 'wt-ok'); reveal(true); }
+}
+
 // ---- Featured skills: "ดูผลงาน" opens that skill's works below and scrolls to them
 const works = $('#works');
 if (works) $$('.see-works').forEach(b => b.addEventListener('click', () => {
@@ -643,7 +714,21 @@ if (sopWin) {
   const body = $('.sop-body', sopWin), steps = $$('.sop-step', body), tap = $('.win-tap', body), meta = $('.win-meta', sopWin), cmd = $('.cmd', body);
   $$('[data-type]', body).forEach(prepType);
   let k = 0, ready = false, rush = false, started = false;
-  const label = () => { meta.textContent = `${k + 1} / ${steps.length}`; };
+  // the part counter in the title bar: a pill that breathes while idle; on a new part the number rolls up and the bar fills
+  meta.innerHTML = `<i class="pm-dot"></i><span class="pm-lbl">ย่อหน้า</span><span class="pm-num"></span><span class="pm-of">/ ${String(steps.length).padStart(2, '0')}</span><i class="pm-bar"></i>`;
+  const num = $('.pm-num', meta);
+  const label = () => {
+    const n = String(k + 1).padStart(2, '0'), old = num.lastElementChild;
+    meta.style.setProperty('--p', (k + 1) / steps.length);
+    if (old?.textContent === n) return;
+    const b = document.createElement('b');
+    b.textContent = n;
+    num.append(b);
+    if (!old) return;
+    old.classList.add('out'); b.classList.add('in');
+    setTimeout(() => old.remove(), 600);
+    meta.classList.remove('bump'); void meta.offsetWidth; meta.classList.add('bump');
+  };
   const show = async () => {
     steps[k].classList.add('on'); label();
     rush = false;
@@ -668,7 +753,7 @@ if (sopWin) {
       steps[k].classList.remove('on');
       k = (k + 1) % steps.length;
       $$('[data-type]', steps[k]).forEach(el => showTyped(el, 0));
-      steps[k].classList.add('on'); label();
+      steps[k].classList.add('on'); // the counter rolls once the glass is whole again (show)
       $$('.cur', body).forEach(x => x.classList.remove('cur'));
       desk?.grow?.();
     }, e.detail ? { x: e.clientX, y: e.clientY } : null, .6);

@@ -131,8 +131,8 @@ h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;margin:96px 0 32px}
 /* profile: an ID card as wide and tall as the screen, a gap from every edge so it still reads as a card; tilts with the mouse
    (main.js) and a light sheen sweeps across on hover. The about page is full width; its title and skills keep the page width */
 .fold>.crumb,.fold>.page-title{width:min(1120px,100% - 32px);margin-inline:auto}
-.card-wrap{--gap:clamp(16px,3.4vw,52px);margin:clamp(40px,6vh,64px) var(--gap) 0;overflow-x:clip} /* the big name behind the photo may not widen the page */
-.id-card{position:relative;display:grid;grid-template-areas:"head" "face";grid-template-rows:auto 1fr;gap:12px;min-height:clamp(520px,calc(100svh - 2 * var(--gap)),760px);
+.card-wrap{--gap:clamp(16px,3.4vw,52px);width:min(1220px,100% - 2 * var(--gap));margin:clamp(40px,6vh,64px) auto 0;overflow-x:clip} /* the big name behind the photo may not widen the page */
+.id-card{position:relative;display:grid;grid-template-areas:"head" "face";grid-template-rows:auto 1fr;gap:12px;min-height:clamp(500px,calc(100svh - 2 * var(--gap) - 60px),690px);
   padding:clamp(14px,1.8vw,22px) clamp(16px,2.4vw,30px) clamp(16px,2vw,24px);border-radius:28px;border:1px solid rgba(255,255,255,.1);
   background:radial-gradient(120% 90% at 100% 0%,rgba(255,106,19,.2),transparent 55%),linear-gradient(160deg,#1f1813,#100b08);
   box-shadow:0 30px 80px -30px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.06);transition:transform .25s ease-out}
@@ -152,10 +152,15 @@ h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;margin:96px 0 32px}
    first name across it, then him; he is cut at the frame's floor and his head comes out over its top (overlap).
    Both photos share one crop, so the hover swap does not jump */
 .me{grid-area:photo;position:relative;margin:0;min-height:420px;isolation:isolate;z-index:3;clip-path:inset(-100vh -100vw 0 -100vw)}
-.me-frame{position:absolute;inset:15% 3% 0;z-index:-2;border-radius:24px;border:1px solid rgba(255,106,19,.4);
-  background:radial-gradient(80% 55% at 50% 100%,rgba(255,106,19,.5),transparent 72%),radial-gradient(rgba(255,255,255,.07) 1px,transparent 1.3px) 0 0/14px 14px,linear-gradient(170deg,#2b1c14,#120c09);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 24px 50px -24px rgba(0,0,0,.85);transition:box-shadow .5s var(--ease),border-color .5s var(--ease)}
-.me-frame::after{content:"";position:absolute;left:50%;bottom:8%;width:min(72%,320px);aspect-ratio:1;translate:-50% 0;border-radius:50%;border:1px solid rgba(255,106,19,.32)}
+/* the frame is the Gradient Blob Card (dark variant): a raised card, a pink-red-yellow blob circling its middle, and a dark
+   glass pane 5px in from the edge over it. The glass's backdrop blur is folded into the blob's own blur (36px = 12 + 24),
+   which looks the same and keeps the running animation to a cheap transform */
+.me-frame{position:absolute;inset:15% 3% 0;z-index:-2;overflow:hidden;border-radius:18px;background:#16110e;
+  box-shadow:20px 20px 60px #0a0807,-20px -20px 60px #241c17;transition:box-shadow .5s var(--ease)}
+.me-blob{position:absolute;top:50%;left:50%;width:min(62%,300px);aspect-ratio:1;border-radius:50%;
+  background:linear-gradient(90deg,#ec4899,#ef4444,#eab308);filter:blur(36px);will-change:transform;animation:blob 5s linear infinite}
+@keyframes blob{0%,100%{transform:translate(-100%,-100%)}25%{transform:translate(0,-100%)}50%{transform:translate(0,0)}75%{transform:translate(-100%,0)}}
+.me-frame::before{content:"";position:absolute;inset:5px;z-index:1;border-radius:13px;background:rgba(0,0,0,.55);outline:2px solid #374151;outline-offset:-2px;transition:background-color .5s var(--ease)}
 .me-word{position:absolute;inset:auto -14% 36%;z-index:-1;text-align:center;font:800 clamp(70px,11.5vw,200px)/.8 Kanit;letter-spacing:-.03em;
   color:transparent;-webkit-text-stroke:2px rgba(255,106,19,.62);user-select:none;pointer-events:none}
 .me img{position:absolute;left:50%;bottom:-9%;height:min(106%,640px);width:auto;max-width:none;translate:-50% 0;transform-origin:50% 100%;
@@ -164,7 +169,8 @@ h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;margin:96px 0 32px}
 .me:hover .me-hover{opacity:1}
 .me:hover .me-idle{opacity:0}
 .me:hover img{transform:scale(1.03)}
-.me:hover .me-frame{border-color:rgba(255,106,19,.7);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 24px 50px -24px rgba(0,0,0,.85),0 0 46px -8px rgba(255,106,19,.5)}
+.me:hover .me-frame{box-shadow:20px 20px 60px #0a0807,-20px -20px 60px #241c17,0 0 46px -8px rgba(236,72,153,.45)}
+.me:hover .me-frame::before{background-color:rgba(0,0,0,.42)}
 /* facts: the name big (it switches language, main.js), the rest in small tiles, the e-mail in a full-width row */
 .profile{grid-area:info;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:center}
 .profile div{padding:12px 16px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.035);transition:border-color .3s,background-color .3s}
@@ -257,6 +263,49 @@ h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;margin:96px 0 32px}
 @keyframes write{to{stroke-dashoffset:0}}
 @keyframes ink{to{fill-opacity:1}}
 .js .skill-title.rv:not(.on) path{animation-play-state:paused}
+/* the SKILL title opens a Windows-style command prompt; skilltech lists the skills, fading in one after another (main.js).
+   Without JavaScript everything simply shows */
+.skill-open{display:block;padding:0;border:0;background:none;color:inherit;cursor:pointer;border-radius:12px}
+.skill-open svg{transition:filter .3s}
+.skill-open:hover svg,.skill-open:focus-visible svg{filter:drop-shadow(0 0 14px rgba(255,106,19,.55))}
+.skill-cue{display:none}
+.js .skills:not(.term-on) .skill-cue{display:inline-flex;align-items:center;gap:8px;margin-top:14px;font:500 14px/1.3 Kanit;color:var(--muted);animation:cue 2.4s ease-in-out infinite}
+.skill-cue::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--orange);box-shadow:0 0 10px var(--orange)}
+@keyframes cue{50%{opacity:.5;translate:0 2px}}
+.js .skills:not(.term-on) :is(.wterm,.wt-hint),.js .skills:not(.skills-on) .skill-list{display:none}
+.wterm{max-width:780px;margin-top:22px;border-radius:9px;overflow:hidden;background:#0c0c0c;border:1px solid #3c3c3c;
+  box-shadow:0 26px 60px -22px rgba(0,0,0,.85);font:15px/1.55 "Cascadia Mono",Consolas,"Lucida Console",ui-monospace,monospace;color:#cccccc;
+  animation:wt-open .38s cubic-bezier(.2,.9,.3,1.15)}
+@keyframes wt-open{from{opacity:0;transform:translateY(14px) scale(.97)}}
+.wt-bar{display:flex;align-items:stretch;height:38px;background:#202020;-webkit-user-select:none;user-select:none}
+.wt-tab{display:flex;align-items:center;gap:9px;margin:7px 0 0 8px;padding:0 16px 0 12px;border-radius:7px 7px 0 0;background:#0c0c0c;
+  font:12px/1 "Segoe UI",system-ui,sans-serif;color:#f2f2f2;white-space:nowrap}
+.wt-ico{position:relative;width:16px;height:13px;border:1px solid #9a9a9a;border-radius:2px;background:#000}
+.wt-ico::after{content:">_";position:absolute;left:2px;top:1px;font:700 7px/1 Consolas,monospace;color:#f2f2f2}
+.wt-ctl{display:flex;margin-left:auto}
+.wt-ctl i,.wt-close{display:grid;place-items:center;width:46px;font:12px/1 "Segoe UI",system-ui,sans-serif;font-style:normal;color:#dcdcdc}
+.wt-close{padding:0;border:0;background:none;cursor:pointer;transition:background-color .15s}
+.wt-close:hover,.wt-close:focus-visible{background:#c42b1c;color:#fff;outline:0}
+.wt-body{padding:12px 16px 18px;min-height:190px;cursor:text}
+.wt-body p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.wt-body>.wt-dim{margin-bottom:16px}
+.wt-dim{color:#9a9a9a}
+.wt-echo{margin-top:10px!important;color:#f2f2f2}
+.wt-y{color:#f9f1a5}
+.wt-ok{color:#16c60c}
+.wt-err{color:#e74856}
+.wt-log:not(:empty)+.wt-line{margin-top:10px}
+.wt-line{display:flex;align-items:baseline}
+.wt-line label{flex:none;color:#f2f2f2}
+.wt-line input{flex:1;min-width:0;padding:0 0 0 2px;border:0;outline:0;background:none;color:#f2f2f2;font:inherit;font-size:max(16px,1em);caret-color:#f2f2f2;caret-shape:underscore}
+.wt-line input::placeholder{color:#5f5f5f}
+.wt-hint{margin-top:12px;font-size:14px;color:var(--muted)}
+.wt-try{margin-left:4px;padding:4px 11px;border-radius:7px;border:1px solid rgba(255,106,19,.45);background:rgba(255,106,19,.1);color:var(--orange);
+  font:600 13px/1.2 ui-monospace,Menlo,Consolas,monospace;cursor:pointer;transition:background-color .2s,color .2s}
+.wt-try:hover,.wt-try:focus-visible{background:var(--orange);color:#1a0b02}
+.js .skill-list :is(.skill-cat,.tile){opacity:0;transform:translateY(16px) scale(.94);transition:opacity .45s var(--ease),transform .45s var(--ease),border-color .3s}
+.js .skill-list .in{opacity:1;transform:none}
+.js .skill-list .tile.in:hover{transform:translateY(-2px)}
 .skill-cat{margin:44px 0 16px;font-size:clamp(18px,2vw,22px);font-weight:600;color:var(--muted)}
 /* small horizontal chips: icon + name; featured ones wear a crown on top and link to their works */
 .skill-grid{list-style:none;display:flex;flex-wrap:wrap;gap:22px 12px;padding-top:12px}
@@ -528,6 +577,29 @@ html.no-intro:has(.goal-intro)::view-transition-new(root){animation:vt-in .55s v
 .dragging .win-bar{cursor:grabbing}
 .dragging{will-change:transform}
 .win-meta{position:relative;margin-left:auto;font:600 12px/1 ui-monospace,Menlo,Consolas,monospace;color:var(--muted)}
+/* the statement's part counter: a pill with a breathing dot and glow; a new part rolls the number up, bumps the pill,
+   sweeps a light across it and fills the progress line along its bottom */
+.sop .win-meta{display:inline-flex;align-items:center;gap:7px;padding:6px 13px 7px 11px;border-radius:999px;overflow:hidden;
+  border:1px solid rgba(255,106,19,.42);background:rgba(255,106,19,.09);font:600 13px/1 Kanit;color:#f3d9c6;
+  animation:pm-breathe 3.2s ease-in-out infinite}
+@keyframes pm-breathe{50%{box-shadow:0 0 18px -3px rgba(255,106,19,.55);border-color:rgba(255,106,19,.7)}}
+.sop .win-meta::after{content:"";position:absolute;inset:0;pointer-events:none;translate:-110% 0;
+  background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.28) 50%,transparent 70%)}
+.sop .win-meta.bump{animation:pm-bump .5s cubic-bezier(.3,1.6,.5,1),pm-breathe 3.2s ease-in-out .5s infinite}
+.sop .win-meta.bump::after{animation:pm-sweep .8s ease-out}
+@keyframes pm-bump{40%{scale:1.12}}
+@keyframes pm-sweep{to{translate:110% 0}}
+.pm-dot{width:7px;height:7px;border-radius:50%;background:var(--orange);animation:pm-dot 1.6s ease-in-out infinite}
+@keyframes pm-dot{50%{opacity:.35;scale:.7}}
+.pm-num{display:inline-grid;height:1.15em;overflow:hidden;font:800 21px/1.15 Kanit;color:var(--orange)}
+.pm-num b{grid-area:1/1}
+.pm-num b.in{animation:pm-in .5s cubic-bezier(.2,.9,.25,1.2) both}
+.pm-num b.out{animation:pm-out .4s ease-in both}
+@keyframes pm-in{from{translate:0 100%;opacity:0;filter:blur(3px)}}
+@keyframes pm-out{to{translate:0 -100%;opacity:0;filter:blur(3px)}}
+.pm-of{color:var(--muted);font-size:12px}
+.pm-bar{position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--orange);transform-origin:0 50%;scale:var(--p,0) 1;transition:scale .6s var(--ease)}
+@media (max-width:560px){.sop .pm-lbl{display:none}.sop .win-bar h2{place-items:center start;padding-left:86px;font-size:11px;letter-spacing:.08em}}
 .glass-term.win .tg-body{padding:clamp(18px,3vw,30px)}
 .glass-term.win .tg-cmd{margin-bottom:12px}
 .glass-term.win h2{margin:0 0 .45em;font-size:clamp(20px,2.4vw,26px);color:var(--orange)}
