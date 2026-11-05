@@ -190,8 +190,9 @@ const morph = (from, to, update) => {
 };
 $$('.aw-open[data-open]').forEach(b => {
   const d = $('#' + b.dataset.open), cover = $('.aw-photo img', b.closest('.aw-card')), photo = $('.aw-gallery img', d);
-  const close = () => morph(photo, cover, () => d.close());
-  b.addEventListener('click', () => morph(cover, photo, () => { d.showModal(); $('.aw-sheet', d).scrollTop = 0; }));
+  // a work listed under two categories shares one sheet: only the card that opened it closes it
+  const close = () => { if (d.opener === b) morph(photo, cover, () => d.close()); };
+  b.addEventListener('click', () => { d.opener = b; morph(cover, photo, () => { d.showModal(); $('.aw-sheet', d).scrollTop = 0; }); });
   d.addEventListener('click', e => { if (e.target === d || e.target.closest('.aw-close')) close(); });
   d.addEventListener('cancel', e => { e.preventDefault(); close(); });
 });

@@ -401,6 +401,7 @@ body:has(.aw-detail[open]){overflow:hidden}
 .aw-gallery{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px}
 .aw-gallery figure{flex:none;scroll-snap-align:start;cursor:zoom-in}
 .aw-gallery img{height:clamp(200px,40vh,340px);width:auto;border-radius:14px}
+.aw-gallery figcaption{margin-top:8px;font-size:14px;color:var(--muted)}
 .aw-sheet header{margin:24px 0 14px}
 .aw-sheet header h2{font:700 clamp(26px,3vw,36px)/1.2 Kanit;margin:10px 0 4px}
 .aw-org{color:var(--muted);font-size:15px}
