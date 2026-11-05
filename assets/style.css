@@ -257,6 +257,7 @@ h2{font-size:clamp(26px,3.4vw,38px);font-weight:700;margin:96px 0 32px}
 /* small horizontal chips: icon + name; featured ones wear a crown on top and link to their works */
 .skill-grid{list-style:none;display:flex;flex-wrap:wrap;gap:22px 12px;padding-top:12px}
 .skills{--s:0}
+.page:has(#skills){overflow-x:clip} /* drifting chips may float past the screen edge, never widen the page */
 .js .skills.drifting .tile{animation:drift var(--dur,9s) ease-in-out var(--del,0s) infinite alternate}
 @keyframes drift{
   from{translate:calc(var(--dx,0px) * var(--s)) calc(var(--dy,0px) * var(--s));rotate:calc(var(--r,0deg) * var(--s))}
