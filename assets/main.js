@@ -9,6 +9,55 @@ const graphemes = s => [...seg.segment(s)].map(x => x.segment);
 // set in the menu's settings; each page's <head> reads it before anything is drawn
 const noIntro = document.documentElement.classList.contains('no-intro');
 
+// ---- Loading screen (the first page of a visit; the <head> adds .loading): a small terminal window whose title types and
+//      deletes a few words while coloured code bars grow in, line after line, under a blinking cursor. It stays until the
+//      page has loaded and at least 2.6 s have passed, then fades; loaderDone resolves then, and the page intros start.
+const loaderDone = !document.documentElement.classList.contains('loading') ? Promise.resolve() : new Promise(done => {
+  const colors = ['#6b7280', '#14b8a6', '#3b82f6', '#4b5563', '#ec4899'];
+  const words = ['Setting things up...', 'Initializing modules...', 'Almost ready...'];
+  document.body.insertAdjacentHTML('beforeend', `<div class="loader" role="status"><span class="sr-only">กำลังโหลดเว็บไซต์</span>
+    <div class="ld-win" aria-hidden="true"><div class="ld-bar"><span class="ld-dots"><i></i><i></i><i></i></span><span class="ld-title"></span></div>
+    <div class="ld-body"><div class="ld-lines"><div class="ld-line ld-here"><i class="ld-cursor"></i></div></div></div></div></div>`);
+  const box = $('.loader'), body = $('.ld-body', box), list = $('.ld-lines', box), here = $('.ld-here', box), title = $('.ld-title', box);
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const rnd = (a, b) => a + Math.random() * (b - a), pick = a => a[Math.floor(Math.random() * a.length)];
+  let n = 0, alive = true;
+  const addLine = () => {
+    const line = document.createElement('div');
+    line.className = 'ld-line' + (n % 4 === 3 ? ' gap' : '') + (Math.random() > .7 ? ' indent' : '');
+    for (let i = 0, k = 1 + Math.floor(Math.random() * 4); i < k; i++) {
+      const seg = document.createElement('span');
+      seg.style.background = pick(colors);
+      if (Math.random() > .93) seg.className = 'dot';
+      else seg.style.setProperty('--w', Math.floor(rnd(50, 130)) + 'px');
+      line.append(seg);
+    }
+    list.insertBefore(line, here);
+    if (++n % 6 === 0) { const sep = document.createElement('div'); sep.className = 'ld-sep'; list.insertBefore(sep, here); }
+    while (list.children.length > 40) list.firstElementChild.remove(); // only what can be seen is kept
+    here.className = 'ld-line ld-here' + (Math.random() > .7 ? ' indent' : '');
+    body.scrollTop = body.scrollHeight;
+  };
+  const ticker = setInterval(addLine, 200);
+  (async () => {
+    for (let w = 0; alive; w = (w + 1) % words.length) {
+      for (const ch of words[w]) { if (!alive) return; title.textContent += ch; await wait(90); }
+      await wait(2000);
+      while (alive && title.textContent) { title.textContent = title.textContent.slice(0, -1); await wait(45); }
+      await wait(250);
+    }
+  })();
+  const t0 = performance.now();
+  const loaded = document.readyState === 'complete' ? Promise.resolve() : new Promise(r => addEventListener('load', r, { once: true }));
+  Promise.race([loaded, wait(6000)]).then(() => wait(Math.max(0, 2600 - (performance.now() - t0)))).then(() => {
+    try { sessionStorage.setItem('seenLoader', '1'); } catch {}
+    box.classList.add('out');
+    document.documentElement.classList.remove('loading');
+    done();
+    setTimeout(() => { alive = false; clearInterval(ticker); box.remove(); }, 600);
+  });
+});
+
 // ---- Settings, at the foot of the menu: one switch that skips the page intros (the goal page's circle and story, the
 //      about page's name, the works title). Remembered in this browser only.
 $('#menu').insertAdjacentHTML('beforeend', `<li class="menu-set">
@@ -95,6 +144,7 @@ if (intro && !reduce) (async () => {
   if (!noIntro) {
     document.body.classList.add('name-intro');
     out.textContent = '';
+    await loaderDone; // the loading screen goes first
     await document.fonts.ready;
     await sleep(200);
     await type(names[0]); await sleep(500); await erase(); await sleep(150); await type(names[1], true); await sleep(450);
@@ -109,6 +159,7 @@ const awTitle = $('.aw-title');
 if (awTitle && !reduce && !noIntro) (async () => {
   const svg = $('svg', awTitle);
   document.body.classList.add('aw-intro');
+  await loaderDone;
   for (const ms of [200, 350, 350, 300]) {
     await sleep(ms);
     svg.classList.remove('zap'); svg.offsetWidth; svg.classList.add('zap');
@@ -324,7 +375,7 @@ const shatter = async (win, swap, at, speed = 1) => {
 //      on the window shatters the glass from where it was clicked; the shards fly back together and the next text types in.
 //      After the last one the white circle opens and lets the goal page in. goalReady resolves once the page is uncovered.
 const story = $('.story');
-let goalReady = $('.goal-intro') && !noIntro ? sleep(2700) : Promise.resolve();
+let goalReady = $('.goal-intro') && !noIntro ? loaderDone.then(() => sleep(2700)) : loaderDone;
 if (story && noIntro) document.body.classList.add('story-done'); // intros skipped (settings): straight to the desktop
 if (story && !noIntro) goalReady = new Promise(done => {
   const win = $('.glass-term', story), steps = $$('.story-step', story), cue = $('.story-cue'), outro = $('.goal-outro');
@@ -374,6 +425,7 @@ if (story && !noIntro) goalReady = new Promise(done => {
     advance(e.detail ? { x: e.clientX, y: e.clientY } : null); // keyboard (Enter on the hint): break from the middle
   });
   (async () => {
+    await loaderDone;
     await sleep(2600); // the intro circle is closing
     win.classList.add('on');
     await sleep(120);

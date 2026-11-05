@@ -5,13 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ประวัติ · อาลีฟ เกษมสวัสดิ์</title>
 <meta name="description" content="ประวัติส่วนตัว การศึกษา และทักษะของอาลีฟ เกษมสวัสดิ์">
-<!-- settings (menu): skip the page intros, read before anything is drawn -->
-<script>try{localStorage.getItem("skipIntro")&&document.documentElement.classList.add("no-intro")}catch(e){}</script>
+<!-- read before anything is drawn: skip the page intros (settings in the menu); the loading screen only on the first page
+     of a visit (not with intros off or reduced motion); the page shows itself after 8 s whatever happens -->
+<script>(function(d){try{localStorage.getItem("skipIntro")&&d.classList.add("no-intro");if(!sessionStorage.getItem("seenLoader")&&!d.classList.contains("no-intro")&&!matchMedia("(prefers-reduced-motion: reduce)").matches){d.classList.add("loading");setTimeout(function(){d.classList.remove("loading")},8000)}}catch(e){}})(document.documentElement)</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=15">
-<script src="assets/main.js?v=15" defer></script>
+<link rel="stylesheet" href="assets/style.css?v=16">
+<script src="assets/main.js?v=16" defer></script>
 </head>
 <body>
 <header class="site-header">
@@ -27,7 +28,7 @@
   </nav>
 </header>
 
-<main class="page wrap">
+<main class="page">
   <div class="fold">
     <nav class="crumb" aria-label="ตำแหน่งหน้า"><a href="index.html">หน้าแรก</a><span>/</span>ประวัติ</nav>
     <h1 class="page-title" data-intro aria-label="อาลีฟ เกษมสวัสดิ์ (Arlif Kaseamsawat)"><span class="name" aria-hidden="true"><span class="typed">อาลีฟ เกษมสวัสดิ์</span><span class="caret"></span></span></h1>
@@ -37,6 +38,14 @@
         <header class="id-head"><p class="id-word"><span style="--i:0">K</span><span style="--i:1">A</span><span style="--i:2">S</span><span style="--i:3">E</span><span style="--i:4">A</span><span style="--i:5">M</span><span style="--i:6">S</span><span style="--i:7">A</span><span style="--i:8">W</span><span style="--i:9">A</span><span style="--i:10">T</span></p></header>
         <!-- two faces share one spot; the buttons swap them (main.js) -->
         <div class="id-face id-front">
+          <!-- the photo, big, standing in the card: a giant outlined first name behind him, an orange stage light below,
+               and the head coming out over the card's top edge; hovering swaps to arms crossed -->
+          <figure class="me">
+            <p class="me-word" aria-hidden="true">ARLIF</p>
+            <img class="me-idle" src="assets/me-idle.webp" alt="อาลีฟ เกษมสวัสดิ์ ในชุดนักเรียน" width="284" height="438">
+            <img class="me-hover" src="assets/me-hover.webp" alt="" width="284" height="438" aria-hidden="true">
+            <a class="cloud" href="#skills"><span>SKILL ข้างล่าง ↓</span><i></i><i></i></a>
+          </figure>
           <dl class="profile">
             <div><dt>ชื่อ-นามสกุล</dt><dd>นายอาลีฟ เกษมสวัสดิ์</dd></div>
             <div><dt>อายุ</dt><dd>17 ปี</dd></div>
@@ -57,18 +66,10 @@
           <button class="id-flip" type="button"><span aria-hidden="true">←</span> ข้อมูลส่วนตัว</button>
         </div>
       </article>
-      <!-- the photo beside the card: standing, and arms crossed while hovered; the head comes out over the frame -->
-      <figure class="me">
-        <div class="me-frame">
-          <img class="me-idle" src="assets/me-idle.webp" alt="อาลีฟ เกษมสวัสดิ์ ในชุดนักเรียน" width="284" height="438">
-          <img class="me-hover" src="assets/me-hover.webp" alt="" width="284" height="438" aria-hidden="true">
-        </div>
-        <a class="cloud" href="#skills"><span>SKILL ข้างล่าง ↓</span><i></i><i></i></a>
-      </figure>
     </div>
   </div>
 
-  <section class="skills" id="skills" aria-label="ทักษะ">
+  <section class="skills wrap" id="skills" aria-label="ทักษะ">
     <h2 class="skill-title rv" aria-label="SKILL"><svg viewBox="-3 -97 375 104" aria-hidden="true"><path style="--i:0" d="M36 1.4Q26.6 1.4 18.1 -0.1Q9.7 -1.7 3.8 -4.5V-28Q10.4 -24.9 18.3 -23Q26.2 -21 32.8 -21Q38.4 -21 41.4 -22.1Q44.4 -23.2 44.4 -26.3Q44.4 -29.8 39.8 -31.4Q35.1 -33 26.5 -36Q17.5 -39.1 12.4 -42.6Q7.3 -46.2 5 -51.3Q2.8 -56.4 2.8 -63.8Q2.8 -91.6 41.3 -91.6Q46.1 -91.6 51.5 -90.9Q56.8 -90.3 61.8 -89.4Q66.8 -88.5 70.3 -87.4V-63.7Q63.1 -66.5 57.2 -67.7Q51.2 -68.9 46.3 -68.9Q41.4 -68.9 37.5 -68.1Q33.5 -67.3 33.5 -64.1Q33.5 -61.5 37 -60.1Q40.5 -58.8 48.7 -56.6Q59.8 -53.5 65.5 -49.3Q71.1 -45.1 73.2 -39.4Q75.2 -33.7 75.2 -26.5Q75.2 -13.9 65.4 -6.2Q55.6 1.4 36 1.4Z"/><path style="--i:1" d="M83.6 0V-90.2H113.7V-61.6L137.2 -90.2H171.2L140 -52.9L173.7 0H141.8L121.5 -33.9L113.7 -24.8V0Z"/><path style="--i:2" d="M182.1 0V-90.2H212.2V0Z"/><path style="--i:3" d="M223.4 0V-90.2H253.5V-23H292.2V0Z"/><path style="--i:4" d="M297.8 0V-90.2H327.9V-23H366.5V0Z"/></svg></h2>
     <h3 class="skill-cat">ภาษาโปรแกรม</h3>
     <ul class="skill-grid">
